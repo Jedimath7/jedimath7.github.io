@@ -1,0 +1,1329 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тренажер: Входное тестирование — 9 класс</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&family=EB+Garamond:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <script>
+MathJax = { tex: { macros: { tg: "\\operatorname{tg}", ctg: "\\operatorname{ctg}" } } };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+/* === CORE.CSS — общие стили тренажёров === */
+/* Тема задаётся через CSS custom properties (вставляется build.js после этого файла) */
+
+body {
+  font-family: 'EB Garamond', serif;
+  background: radial-gradient(circle at center, var(--bg-start) 0%, var(--bg-mid) 80%, var(--bg-end) 100%);
+  color: #1a0f09;
+  max-width: var(--body-max-width);
+  margin: 0 auto;
+  padding: 40px 20px;
+  line-height: 1.6;
+  min-height: 100vh;
+  text-align: center;
+}
+
+h2 {
+  font-family: 'Cinzel', serif;
+  font-weight: 600;
+  color: #1a0f09;
+  text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.15);
+  margin-bottom: 30px;
+  position: relative;
+}
+
+h2::after {
+  content: '';
+  display: block;
+  width: 50%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  margin: 15px auto 0;
+}
+
+h3 {
+  font-family: 'Cinzel', serif;
+  font-weight: 600;
+  color: #1a0f09;
+  margin-bottom: 30px;
+}
+
+/* === Прогресс-бар === */
+
+#progress-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+#progress-bar-wrap {
+  flex: 1;
+  height: 5px;
+  background-color: rgba(42, 23, 16, 0.15);
+  border-radius: 3px;
+  overflow: hidden;
+  box-shadow: inset 0 1px 4px rgba(0,0,0,0.3);
+}
+
+#progress-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--accent), var(--accent-light));
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 0 5px rgba(48, 30, 21, 0.6);
+}
+
+#progress-text {
+  font-size: 0.95em;
+  color: var(--progress-text);
+  white-space: nowrap;
+  min-width: 60px;
+  text-align: right;
+}
+
+/* === Карточка задания === */
+
+#card {
+  margin: 30px 0 20px;
+  padding: 50px 20px 30px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.08);
+  position: relative;
+  min-height: 160px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.15s ease;
+}
+
+#task-counter {
+  position: absolute;
+  top: 12px;
+  left: 20px;
+  font-size: 1em;
+  color: var(--card-muted);
+}
+
+#round-badge {
+  position: absolute;
+  top: 12px;
+  right: 20px;
+  font-size: 0.85em;
+  color: #8b6b4f;
+  display: none;
+}
+
+#round-badge.visible {
+  display: block;
+}
+
+#math-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+#math-row.dual {
+  gap: 6px;
+}
+
+.eq-sign {
+  font-size: var(--math-font-size);
+  color: #1a0f09;
+  margin: 0 4px;
+}
+
+.sqrt-sign {
+  font-size: 1.8em;
+  color: #1a0f09;
+  margin: 0 2px;
+}
+
+#math-expr {
+  font-size: var(--math-font-size);
+  text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+/* === Поля ввода === */
+
+input[type="text"] {
+  width: var(--input-width);
+  padding: 8px 14px;
+  font-size: 1.6em;
+  text-align: center;
+  background-color: transparent;
+  border: none;
+  border-bottom: 2px solid var(--accent);
+  color: #1a0f09;
+  font-family: 'EB Garamond', serif;
+  transition: all 0.3s ease;
+}
+
+input[type="text"]:focus {
+  outline: none;
+  border-bottom-color: #1a0f09;
+  background-color: rgba(0, 0, 0, 0.06);
+  border-radius: 4px 4px 0 0;
+}
+
+input.small-input {
+  width: 60px;
+  padding: 8px 6px;
+  font-size: 1.4em;
+}
+
+input[type="text"]:disabled {
+  border-bottom-color: transparent;
+  color: #1a330e;
+  font-weight: bold;
+  text-shadow: 0 0 8px rgba(119, 148, 77, 0.3);
+}
+
+/* === Обратная связь === */
+
+#big-feedback {
+  font-size: 3em;
+  height: 1.2em;
+  line-height: 1.2;
+  opacity: 0;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+#big-feedback.show { opacity: 1; transform: scale(1.1); }
+#big-feedback.correct { color: #1a330e; }
+#big-feedback.incorrect { color: #5c0000; }
+
+#correct-answer {
+  font-size: 1.1em;
+  color: var(--card-muted);
+  min-height: 1.5em;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+#correct-answer.show { opacity: 1; }
+
+/* === Сообщение о завершении === */
+
+#done-message {
+  display: none;
+  margin-top: 40px;
+  padding: 20px;
+  font-family: 'Cinzel', serif;
+  font-size: 1.3em;
+  color: #1a330e;
+}
+
+/* === Цитата между спринтами === */
+
+#quote-overlay {
+  display: none;
+  margin: 30px 0 20px;
+  padding: 50px 20px 30px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.08);
+  min-height: 160px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+#quote-overlay.show { display: flex; }
+
+#quote-text {
+  font-size: 1.4em;
+  font-style: italic;
+  color: #1a0f09;
+  margin-bottom: 12px;
+  line-height: 1.5;
+}
+
+#quote-author {
+  font-family: 'Cinzel', serif;
+  font-size: 1em;
+  color: #5c5240;
+}
+
+#quote-continue {
+  margin-top: 20px;
+  font-size: 0.9em;
+  color: #8a8070;
+}
+
+/* === Эффекты streak === */
+
+#streak-flash {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.5);
+  pointer-events: none;
+  z-index: 200;
+  opacity: 0;
+  font-family: 'Cinzel', serif;
+  font-size: 2.2em;
+  color: #1a0f09;
+  text-shadow: 0 0 20px rgba(200, 170, 80, 0.6);
+  transition: none;
+}
+
+#streak-flash.fire {
+  animation: streakPopup 1.2s ease-out forwards;
+}
+
+@keyframes streakPopup {
+  0%   { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+  25%  { opacity: 1; transform: translate(-50%, -50%) scale(1.15); }
+  40%  { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  80%  { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
+}
+
+/* === Секция ошибок === */
+
+#error-section {
+  display: none;
+  margin-top: 40px;
+}
+
+#card-error {
+  padding: 30px 20px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.08);
+  position: relative;
+}
+
+#task-counter-error {
+  font-size: 1em;
+  color: var(--card-muted);
+  margin-bottom: 15px;
+}
+
+.error-math-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.error-math-row.dual {
+  gap: 4px;
+}
+
+#math-expr-error {
+  font-size: 2em;
+  text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+#big-feedback-error {
+  font-size: 3em;
+  height: 1.2em;
+  opacity: 0;
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+#correct-answer-error {
+  font-size: 1.1em;
+  color: var(--card-muted);
+  min-height: 1.5em;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+/* === LIST ENGINE (образец) === */
+
+body.list-mode {
+  text-align: left;
+}
+
+.list-mode h2 {
+  text-align: center;
+}
+
+.list-mode #progress-container {
+  width: 100%;
+  height: 6px;
+  background-color: rgba(42, 23, 16, 0.15);
+  border-radius: 3px;
+  margin-bottom: 40px;
+  overflow: hidden;
+  box-shadow: inset 0 1px 4px rgba(0,0,0,0.3);
+}
+
+.list-mode #progress-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--accent), var(--accent-light));
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 0 5px rgba(48, 30, 21, 0.6);
+}
+
+.task-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 25px;
+  padding: 10px;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+}
+
+.task-container:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.math-expr {
+  width: 50%;
+  text-align: right;
+  margin-right: 25px;
+  font-size: 1.5em;
+  text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.list-mode input[type="text"] {
+  width: 70px;
+  padding: 5px 10px;
+  font-size: 1.4em;
+}
+
+.feedback {
+  width: 40px;
+  margin-left: 20px;
+  font-size: 1.2em;
+  text-align: left;
+  opacity: 0;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.feedback.show { opacity: 1; transform: scale(1.2); }
+.feedback.correct { color: #1a330e; }
+.feedback.incorrect { color: #5c0000; }
+
+#error-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 10%;
+  right: 10%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #5c0000, transparent);
+  opacity: 0.5;
+}
+
+/* === Адаптивность === */
+
+@media (max-width: 600px) {
+  .task-container {
+    flex-direction: column;
+    background-color: rgba(0, 0, 0, 0.04);
+    border-radius: 12px;
+    padding: 20px 10px;
+  }
+  .math-expr {
+    width: 100%;
+    text-align: center;
+    margin-right: 0;
+    margin-bottom: 15px;
+  }
+  .list-mode input[type="text"] { width: 100px; }
+  .feedback {
+    margin-left: 0;
+    margin-top: 15px;
+    text-align: center;
+  }
+  h2::after { width: 80%; }
+}
+
+/* === Diagnostic engine === */
+#section-title {
+  font-family: 'Cinzel', serif;
+  font-size: 1.4em;
+  color: var(--accent);
+  margin-bottom: 4px;
+}
+#overall-counter {
+  font-size: 0.9em;
+  color: var(--card-muted);
+  margin-bottom: 10px;
+}
+#dunno-row {
+  margin-top: 14px;
+}
+#dunno-btn {
+  font-family: 'EB Garamond', serif;
+  font-size: 1em;
+  padding: 6px 24px;
+  border: 2px solid var(--accent);
+  border-radius: 20px;
+  background: transparent;
+  color: var(--accent);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  opacity: 0.7;
+}
+#dunno-btn:hover {
+  opacity: 1;
+  background: rgba(0,0,0,0.06);
+}
+#big-feedback.skipped {
+  color: #8b7a60;
+  font-size: 1.2em;
+  font-style: italic;
+}
+input[type="text"].skipped {
+  border-color: #8b7a60;
+  color: #8b7a60;
+}
+
+/* Report */
+#report-area {
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: left;
+}
+#report-area h2 {
+  text-align: center;
+  margin-bottom: 30px;
+}
+.report-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 24px;
+  font-size: 0.95em;
+}
+.report-table th {
+  background: rgba(0,0,0,0.08);
+  padding: 10px 12px;
+  text-align: left;
+  border-bottom: 2px solid rgba(0,0,0,0.15);
+  font-weight: 700;
+}
+.report-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(0,0,0,0.08);
+  vertical-align: top;
+}
+.sec-name { font-weight: 700; }
+.pct-good { color: #2a6a2a; font-weight: 700; }
+.pct-ok { color: #8a6a00; font-weight: 700; }
+.pct-bad { color: #8a2a2a; font-weight: 700; }
+.trainer-link {
+  color: var(--accent);
+  text-decoration: underline;
+  font-size: 0.9em;
+}
+.trainer-link:hover { opacity: 0.7; }
+.error-detail-row td { padding: 0 12px 16px; }
+.error-detail {
+  background: rgba(0,0,0,0.03);
+  border-radius: 6px;
+  padding: 12px 16px;
+  font-size: 0.9em;
+}
+.error-detail-title {
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: var(--accent);
+}
+.error-item {
+  margin-bottom: 4px;
+  padding: 4px 0;
+}
+.error-q { opacity: 0.8; }
+.report-total {
+  font-size: 1.2em;
+  text-align: center;
+  padding: 16px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  background: rgba(0,0,0,0.04);
+}
+.report-advice {
+  font-size: 0.95em;
+  color: var(--card-muted);
+  margin-bottom: 24px;
+  line-height: 1.6;
+}
+.report-restart {
+  text-align: center;
+  margin-top: 24px;
+}
+#restart-btn {
+  font-family: 'EB Garamond', serif;
+  font-size: 1.05em;
+  padding: 10px 32px;
+  border: 2px solid var(--accent);
+  border-radius: 24px;
+  background: transparent;
+  color: var(--accent);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+#restart-btn:hover {
+  background: var(--accent);
+  color: #fff;
+}
+
+@media (max-width: 500px) {
+  #math-expr { font-size: 1.6em; }
+  #card { padding: 40px 10px 20px; }
+  input[type="text"] { width: 80px; font-size: 1.3em; }
+  h2::after { width: 80%; }
+}
+
+
+      :root {
+        --bg-start: #a8b8c8;
+        --bg-mid: #8090a0;
+        --bg-end: #586878;
+        --accent: #2a3a4a;
+        --accent-light: #3a4a5a;
+        --progress-text: #1a2a3a;
+        --card-muted: #4a5a6a;
+        --input-width: 130px;
+        --math-font-size: 2.2em;
+        --body-max-width: 650px;
+      }
+    </style>
+</head>
+<body class="diagnostic-mode">
+    <div id="progress-row">
+        <div id="progress-bar-wrap"><div id="progress-bar"></div></div>
+        <div id="progress-text">0 / 40</div>
+    </div>
+
+    <h2>Входное тестирование — 9 класс</h2>
+
+    <div id="main-area">
+        <div id="section-title"></div>
+        <div id="overall-counter"></div>
+
+        <div id="card">
+            <div id="task-counter"></div>
+            <div id="math-row">
+                <div id="math-expr"></div>
+                <input type="text" id="answer-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Ваш ответ">
+            </div>
+            <div id="dunno-row">
+                <button id="dunno-btn" type="button">Не знаю</button>
+            </div>
+        </div>
+
+        <div id="big-feedback"></div>
+        <div id="correct-answer"></div>
+    </div>
+
+    <div id="report-area" style="display:none;">
+        <h2>Результаты диагностики</h2>
+        <div id="report-content"></div>
+        <div class="report-restart">
+            <button id="restart-btn" type="button">Пройти заново</button>
+        </div>
+    </div>
+    <script>
+window.TRAINER_CONFIG = {
+  "id": "диагностика 9 класс",
+  "title": "Входное тестирование — 9 класс",
+  "engine": "diagnostic",
+  "theme": {
+    "bg": [
+      "#a8b8c8",
+      "#8090a0",
+      "#586878"
+    ],
+    "accent": "#2a3a4a",
+    "accentLight": "#3a4a5a",
+    "progressText": "#1a2a3a",
+    "cardMuted": "#4a5a6a",
+    "inputWidth": "130px",
+    "mathFontSize": "2.2em"
+  },
+  "sections": [
+    {
+      "title": "Действия с дробями",
+      "trainerFile": "тренажер - сокращение дробей.html",
+      "trainerTitle": "Сокращение, сложение и вычитание, умножение и деление дробей",
+      "tasks": [
+        {
+          "q": "\\(\\frac{3}{4} + \\frac{1}{2} = \\)",
+          "a": "5/4"
+        },
+        {
+          "q": "\\(\\frac{5}{6} - \\frac{1}{3} = \\)",
+          "a": "1/2"
+        },
+        {
+          "q": "\\(\\frac{2}{3} \\cdot \\frac{3}{4} = \\)",
+          "a": "1/2"
+        },
+        {
+          "q": "\\(\\frac{3}{5} : \\frac{2}{3} = \\)",
+          "a": "9/10"
+        }
+      ]
+    },
+    {
+      "title": "Проценты",
+      "trainerFile": "тренажер - проценты от числа.html",
+      "trainerTitle": "Проценты от числа",
+      "tasks": [
+        {
+          "q": "\\(25\\%\\text{ от }200 = \\)",
+          "a": "50"
+        },
+        {
+          "q": "\\(10\\%\\text{ от }350 = \\)",
+          "a": "35"
+        },
+        {
+          "q": "\\(75\\%\\text{ от }80 = \\)",
+          "a": "60"
+        },
+        {
+          "q": "\\(5\\%\\text{ от }300 = \\)",
+          "a": "15"
+        }
+      ]
+    },
+    {
+      "title": "Свойства степеней",
+      "trainerFile": "тренажер - свойства степеней.html",
+      "trainerTitle": "Свойства степеней",
+      "tasks": [
+        {
+          "q": "\\(2^3 \\cdot 2^2 = \\)",
+          "a": "32"
+        },
+        {
+          "q": "\\(3^5 : 3^2 = \\)",
+          "a": "27"
+        },
+        {
+          "q": "\\((2^3)^2 = \\)",
+          "a": "64"
+        },
+        {
+          "q": "\\(2^2 \\cdot 5^2 = \\)",
+          "a": "100"
+        }
+      ]
+    },
+    {
+      "title": "Квадратные корни",
+      "trainerFile": "тренажер - квадратные корни.html",
+      "trainerTitle": "Квадратные корни",
+      "tasks": [
+        {
+          "q": "\\(\\sqrt{144} = \\)",
+          "a": "12"
+        },
+        {
+          "q": "\\(\\sqrt{169} = \\)",
+          "a": "13"
+        },
+        {
+          "q": "\\(\\sqrt{225} = \\)",
+          "a": "15"
+        },
+        {
+          "q": "\\(\\sqrt{16 \\cdot 25} = \\)",
+          "a": "20"
+        }
+      ]
+    },
+    {
+      "title": "Линейные уравнения",
+      "trainerFile": "тренажер - линейные уравнения.html",
+      "trainerTitle": "Линейные уравнения",
+      "tasks": [
+        {
+          "q": "\\(2x + 3 = 11,\\; x = \\)",
+          "a": "4"
+        },
+        {
+          "q": "\\(5x - 7 = 3x + 1,\\; x = \\)",
+          "a": "4"
+        },
+        {
+          "q": "\\(3(x - 2) = 12,\\; x = \\)",
+          "a": "6"
+        },
+        {
+          "q": "\\(4x + 2 = 3x - 1,\\; x = \\)",
+          "a": "-3"
+        }
+      ]
+    },
+    {
+      "title": "Раскрытие скобок",
+      "trainerFile": "тренажер - раскрытие скобок.html",
+      "trainerTitle": "Раскрытие скобок",
+      "tasks": [
+        {
+          "q": "\\(2(x + 3) = \\)",
+          "a": "2x+6"
+        },
+        {
+          "q": "\\(3(2x - 1) = \\)",
+          "a": "6x-3"
+        },
+        {
+          "q": "\\((x + 2)(x - 2) = \\)",
+          "a": "x^2-4"
+        },
+        {
+          "q": "\\(x(x + 5) = \\)",
+          "a": "x^2+5x"
+        }
+      ]
+    },
+    {
+      "title": "Формулы сокращённого умножения",
+      "trainerFile": "тренажер - фсу разность квадратов.html",
+      "trainerTitle": "ФСУ: разность квадратов, квадрат суммы/разности",
+      "tasks": [
+        {
+          "q": "\\(x^2 - 9 = \\) (разложите на множители)",
+          "a": "(x-3)(x+3)"
+        },
+        {
+          "q": "\\(a^2 + 6a + 9 = \\) (разложите на множители)",
+          "a": "(a+3)^2"
+        },
+        {
+          "q": "\\((x + 4)^2 = \\) (раскройте скобки)",
+          "a": "x^2+8x+16"
+        },
+        {
+          "q": "\\((2a - 1)^2 = \\) (раскройте скобки)",
+          "a": "4a^2-4a+1"
+        }
+      ]
+    },
+    {
+      "title": "Квадратные уравнения",
+      "trainerFile": "тренажер - квадратные уравнения.html",
+      "trainerTitle": "Квадратные уравнения",
+      "tasks": [
+        {
+          "q": "\\(x^2 - 4x + 4 = 0,\\; x = \\)",
+          "a": "2"
+        },
+        {
+          "q": "\\(x^2 + 6x + 9 = 0,\\; x = \\)",
+          "a": "-3"
+        },
+        {
+          "q": "\\(x^2 - 25 = 0\\),\nположительный корень \\(x = \\)",
+          "a": "5"
+        },
+        {
+          "q": "\\(x^2 - 3x + 2 = 0\\),\nбольший корень \\(x = \\)",
+          "a": "2"
+        }
+      ]
+    },
+    {
+      "title": "Теорема Пифагора",
+      "trainerFile": "тренажер - пифагоровы тройки.html",
+      "trainerTitle": "Пифагоровы тройки",
+      "tasks": [
+        {
+          "q": "Катеты 3 и 4, гипотенуза \\(c = \\)",
+          "a": "5"
+        },
+        {
+          "q": "Катет 5, гипотенуза 13,\nвторой катет \\(b = \\)",
+          "a": "12"
+        },
+        {
+          "q": "Катеты 6 и 8, гипотенуза \\(c = \\)",
+          "a": "10"
+        },
+        {
+          "q": "Катет 9, гипотенуза 15,\nвторой катет \\(b = \\)",
+          "a": "12"
+        }
+      ]
+    },
+    {
+      "title": "Отрицательные степени",
+      "trainerFile": "тренажер - отрицательный и нулевой показатель.html",
+      "trainerTitle": "Отрицательный и нулевой показатель",
+      "tasks": [
+        {
+          "q": "\\(2^{-3} = \\)",
+          "a": "1/8"
+        },
+        {
+          "q": "\\(5^0 = \\)",
+          "a": "1"
+        },
+        {
+          "q": "\\(\\left(\\frac{1}{2}\\right)^{-2} = \\)",
+          "a": "4"
+        },
+        {
+          "q": "\\(3^{-2} = \\)",
+          "a": "1/9"
+        }
+      ]
+    }
+  ],
+  "normMode": "basic",
+  "_totalTasks": 40
+};
+    </script>
+    <script>
+// norm.js — нормализаторы ответов (общий для всех движков, вставляется build.js перед engine)
+
+function buildNorm(mode) {
+  switch (mode) {
+    case 'lowercase':
+      return function(s) {
+        return s.trim().replace(/\s+/g, '').replace(/,/g, '.').replace(/[−–]/g, '-').replace(/°/g, '').toLowerCase();
+      };
+    case 'lowercase+pi':
+      return function(s) {
+        return s.trim().replace(/\s+/g, '').replace(/,/g, '.').replace(/[−–]/g, '-').replace(/°/g, '').toLowerCase().replace(/pi/g, 'π');
+      };
+    case 'sqrt':
+      return function(s) {
+        return s.trim().replace(/\s+/g, '').replace(/,/g, '.').replace(/[−–]/g, '-').replace(/°/g, '').toLowerCase()
+          .replace(/sqrt\(?(\d+)\)?/g, '√$1').replace(/г/g, '√').replace(/r/g, '√');
+      };
+    case 'sqrt+undef':
+      return function(s) {
+        s = s.trim().replace(/\s+/g, '').replace(/,/g, '.').replace(/[−–]/g, '-').replace(/°/g, '').toLowerCase()
+          .replace(/sqrt\(?(\d+)\)?/g, '√$1').replace(/г/g, '√').replace(/r/g, '√');
+        if (s === '—' || s === '-' || s === 'undef' || s === 'undefined') return '—';
+        return s;
+      };
+    case 'algebraic':
+      return canonicalizeAlgebraic;
+    default: // 'basic'
+      return function(s) {
+        return s.trim().replace(/\s+/g, '').replace(/,/g, '.').replace(/[−–]/g, '-').replace(/°/g, '');
+      };
+  }
+}
+
+function canonicalizeAlgebraic(s) {
+  s = s.trim()
+    .replace(/\s+/g, '')
+    .replace(/\^2/g, '²').replace(/\^3/g, '³').replace(/\^4/g, '⁴')
+    .replace(/\*/g, '')
+    .replace(/[−–]/g, '-')
+    .replace(/,/g, '.')
+    .replace(/°/g, '');
+
+  if (s.includes('(')) {
+    return canonicalizeFactored(s);
+  }
+  return canonicalizePolynomial(s);
+}
+
+function canonicalizePolynomial(s) {
+  if (s[0] !== '-' && s[0] !== '+') s = '+' + s;
+
+  var terms = [];
+  var parts = s.match(/[+-][^+-]+/g) || [];
+  for (var i = 0; i < parts.length; i++) {
+    var part = parts[i];
+    var sign = part[0] === '-' ? -1 : 1;
+    var body = part.substring(1);
+
+    var varMatch = body.match(/^(\d*\.?\d*)([a-z])([²³⁴]*)$/i);
+    if (varMatch) {
+      var coeffStr = varMatch[1];
+      var variable = varMatch[2];
+      var sup = varMatch[3];
+      var exp = sup === '²' ? 2 : sup === '³' ? 3 : sup === '⁴' ? 4 : 1;
+      var coeff = (coeffStr === '' || coeffStr === '.') ? 1 : parseFloat(coeffStr);
+      terms.push({ coeff: coeff * sign, variable: variable, exp: exp });
+    } else {
+      var singleVar = body.match(/^([a-z])([²³⁴]*)$/i);
+      if (singleVar) {
+        var v = singleVar[1];
+        var s2 = singleVar[2];
+        var e2 = s2 === '²' ? 2 : s2 === '³' ? 3 : s2 === '⁴' ? 4 : 1;
+        terms.push({ coeff: sign, variable: v, exp: e2 });
+      } else {
+        var num = parseFloat(body);
+        if (!isNaN(num)) {
+          terms.push({ coeff: num * sign, variable: null, exp: 0 });
+        } else {
+          var revMatch = body.match(/^([a-z])(\d+)$/i);
+          if (revMatch) {
+            terms.push({ coeff: parseInt(revMatch[2]) * sign, variable: revMatch[1], exp: 1 });
+          }
+        }
+      }
+    }
+  }
+
+  var combined = {};
+  for (var j = 0; j < terms.length; j++) {
+    var t = terms[j];
+    var key = (t.variable || '_') + '^' + t.exp;
+    if (!combined[key]) combined[key] = { coeff: 0, variable: t.variable, exp: t.exp };
+    combined[key].coeff += t.coeff;
+  }
+
+  var filtered = [];
+  var keys = Object.keys(combined);
+  for (var k = 0; k < keys.length; k++) {
+    var ct = combined[keys[k]];
+    if (ct.coeff !== 0) filtered.push(ct);
+  }
+
+  if (filtered.length === 0) return '0';
+
+  filtered.sort(function(a, b) {
+    if (b.exp !== a.exp) return b.exp - a.exp;
+    if ((a.variable || '') < (b.variable || '')) return -1;
+    if ((a.variable || '') > (b.variable || '')) return 1;
+    return Math.abs(b.coeff) - Math.abs(a.coeff);
+  });
+
+  var result = '';
+  for (var m = 0; m < filtered.length; m++) {
+    var ct2 = filtered[m];
+    var absCoeff = Math.abs(ct2.coeff);
+    if (m === 0) {
+      result += ct2.coeff < 0 ? '-' : '';
+    } else {
+      result += ct2.coeff < 0 ? '-' : '+';
+    }
+    if (ct2.variable) {
+      if (absCoeff !== 1) result += absCoeff;
+      result += ct2.variable;
+      if (ct2.exp === 2) result += '²';
+      else if (ct2.exp === 3) result += '³';
+      else if (ct2.exp === 4) result += '⁴';
+    } else {
+      result += absCoeff;
+    }
+  }
+  return result;
+}
+
+function canonicalizeFactored(s) {
+  var factors = [];
+  var regex = /\(([^)]+)\)([²³]*)/g;
+  var match;
+  while ((match = regex.exec(s)) !== null) {
+    var inner = canonicalizeFactorInner(match[1]);
+    var exp = match[2] === '²' ? 2 : match[2] === '³' ? 3 : 1;
+    factors.push({ inner: inner, exp: exp });
+  }
+  if (factors.length === 0) return s;
+
+  for (var i = 0; i < factors.length; i++) {
+    var f = factors[i];
+    var innerForCheck = f.inner;
+    f.variant = innerForCheck.match(/-/) ? 'minus' : 'plus';
+    var constMatch = innerForCheck.match(/([+-]?\d+)$/) || innerForCheck.match(/^(-?\d+)/);
+    f.constVal = constMatch ? parseInt(constMatch[1]) : 0;
+  }
+
+  factors.sort(function(a, b) {
+    if (a.variant === 'minus' && b.variant !== 'minus') return -1;
+    if (a.variant !== 'minus' && b.variant === 'minus') return 1;
+    var absA = Math.abs(a.constVal);
+    var absB = Math.abs(b.constVal);
+    if (absA !== absB) return absA - absB;
+    if (a.inner < b.inner) return -1;
+    if (a.inner > b.inner) return 1;
+    return 0;
+  });
+
+  var merged = [];
+  for (var j = 0; j < factors.length; j++) {
+    var cf = factors[j];
+    var last = merged[merged.length - 1];
+    if (last && last.inner === cf.inner) {
+      last.exp += cf.exp;
+    } else {
+      merged.push({ inner: cf.inner, exp: cf.exp });
+    }
+  }
+
+  var result = '';
+  for (var m = 0; m < merged.length; m++) {
+    var mf = merged[m];
+    result += '(' + mf.inner + ')';
+    if (mf.exp === 2) result += '²';
+    else if (mf.exp === 3) result += '³';
+  }
+  return result;
+}
+
+function canonicalizeFactorInner(inner) {
+  var poly = canonicalizePolynomial(inner);
+  var terms = poly.match(/[+-]?[^+-]+/g) || [];
+  if (terms.length === 2) {
+    var firstTerm = terms[0];
+    var varMatch = firstTerm.match(/^(-?)(\d*\.?\d*)([a-z])([²³⁴]*)$/i);
+    if (varMatch && varMatch[1] === '-') {
+      return terms[1].replace(/^\+/, '') + (firstTerm[0] === '-' ? firstTerm : '+' + firstTerm.substring(1));
+    }
+  }
+  return poly.replace(/^\+/, '');
+}
+
+// engine-diagnostic.js — движок «диагностика» (секции, одно задание, «Не знаю», отчёт)
+(function() {
+  const C = window.TRAINER_CONFIG;
+  const FEEDBACK_DELAY = 600;
+  const SECTIONS = C.sections;
+
+  const norm = buildNorm(C.normMode || 'basic');
+
+  // --- Compute total tasks ---
+  let totalTasks = 0;
+  for (var i = 0; i < SECTIONS.length; i++) {
+    totalTasks += SECTIONS[i].tasks.length;
+  }
+
+  // --- State ---
+  var sectionIdx = 0;
+  var taskIdx = 0;
+  var totalSolved = 0;
+  var locked = false;
+
+  // Per-task results
+  var results = []; // { sectionIdx, taskIdx, userAnswer, correctAnswer, isCorrect, isSkipped }
+
+  // --- DOM refs ---
+  var $sectionTitle = document.getElementById('section-title');
+  var $taskCounter = document.getElementById('task-counter');
+  var $overallCounter = document.getElementById('overall-counter');
+  var $expr = document.getElementById('math-expr');
+  var $input = document.getElementById('answer-input');
+  var $feedback = document.getElementById('big-feedback');
+  var $correct = document.getElementById('correct-answer');
+  var $dunnoBtn = document.getElementById('dunno-btn');
+  var $progressBar = document.getElementById('progress-bar');
+  var $progressText = document.getElementById('progress-text');
+  var $mainArea = document.getElementById('main-area');
+  var $reportArea = document.getElementById('report-area');
+  var $reportContent = document.getElementById('report-content');
+
+  // --- Current section/task ---
+  function currentSection() { return SECTIONS[sectionIdx]; }
+  function currentTask() { return currentSection().tasks[taskIdx]; }
+  function isLastTask() { return taskIdx >= currentSection().tasks.length - 1; }
+  function isLastSection() { return sectionIdx >= SECTIONS.length - 1; }
+
+  // --- Update UI ---
+  function updateCounters() {
+    $sectionTitle.textContent = currentSection().title;
+    $taskCounter.textContent = 'Задание ' + (taskIdx + 1) + ' из ' + currentSection().tasks.length;
+    // overall counter
+    var done = 0;
+    for (var s = 0; s < sectionIdx; s++) done += SECTIONS[s].tasks.length;
+    done += taskIdx;
+    $overallCounter.textContent = 'Секция ' + (sectionIdx + 1) + ' из ' + SECTIONS.length + ' / Всего пройдено: ' + done + ' из ' + totalTasks;
+  }
+
+  function updateProgress() {
+    var done = 0;
+    for (var s = 0; s < sectionIdx; s++) done += SECTIONS[s].tasks.length;
+    done += taskIdx;
+    var pct = (done / totalTasks) * 100;
+    $progressBar.style.width = pct + '%';
+    $progressText.textContent = done + ' / ' + totalTasks;
+  }
+
+  function showTask() {
+    updateCounters();
+    updateProgress();
+    var t = currentTask();
+    $expr.textContent = t.q;
+    $input.value = '';
+    $input.className = '';
+    $feedback.textContent = '';
+    $feedback.className = '';
+    $correct.textContent = '';
+    $correct.style.display = 'none';
+    $dunnoBtn.style.display = '';
+    locked = false;
+    MathJax.typesetPromise([$expr]).then(function() {
+      $input.focus();
+    });
+  }
+
+  function showReport() {
+    $mainArea.style.display = 'none';
+    document.getElementById('progress-row').style.display = 'none';
+    $reportArea.style.display = '';
+
+    var html = '<div class="report-summary">';
+
+    // Per-section table
+    html += '<table class="report-table"><thead><tr><th>Секция</th><th>Верно</th><th>Всего</th><th>%</th><th>Рекомендуемый тренажёр</th></tr></thead><tbody>';
+
+    var totalCorrect = 0;
+    var totalCount = 0;
+
+    for (var s = 0; s < SECTIONS.length; s++) {
+      var section = SECTIONS[s];
+      var sectionResults = [];
+      for (var r = 0; r < results.length; r++) {
+        if (results[r].sectionIdx === s) sectionResults.push(results[r]);
+      }
+
+      var correct = 0;
+      for (var c = 0; c < sectionResults.length; c++) {
+        if (sectionResults[c].isCorrect) correct++;
+      }
+      var total = sectionResults.length;
+      var pct = total > 0 ? Math.round((correct / total) * 100) : 0;
+
+      totalCorrect += correct;
+      totalCount += total;
+
+      var pctClass = pct >= 80 ? 'pct-good' : pct >= 50 ? 'pct-ok' : 'pct-bad';
+
+      html += '<tr>';
+      html += '<td class="sec-name">' + section.title + '</td>';
+      html += '<td>' + correct + '</td><td>' + total + '</td>';
+      html += '<td class="' + pctClass + '">' + pct + '%</td>';
+      html += '<td><a href="' + section.trainerFile + '" target="_blank" class="trainer-link">' + section.trainerTitle + '</a></td>';
+      html += '</tr>';
+
+      // Error list for this section
+      var errors = [];
+      for (var e = 0; e < sectionResults.length; e++) {
+        if (!sectionResults[e].isCorrect) errors.push(sectionResults[e]);
+      }
+
+      if (errors.length > 0) {
+        html += '<tr class="error-detail-row"><td colspan="5"><div class="error-detail">';
+        html += '<div class="error-detail-title">Ошибки в секции «' + section.title + '»:</div>';
+        for (var er = 0; er < errors.length; er++) {
+          var err = errors[er];
+          var icon = err.isSkipped ? '⊘' : '✗';
+          var label = err.isSkipped ? 'Пропущено' : 'Ответ: ' + err.userAnswer;
+          html += '<div class="error-item">' + icon + ' <span class="error-q">' + err.q + '</span> → ' + label + ' (правильно: <strong>' + err.correctAnswer + '</strong>)</div>';
+        }
+        html += '</div></td></tr>';
+      }
+    }
+
+    var totalPct = totalCount > 0 ? Math.round((totalCorrect / totalCount) * 100) : 0;
+    var totalPctClass = totalPct >= 80 ? 'pct-good' : totalPct >= 50 ? 'pct-ok' : 'pct-bad';
+
+    html += '</tbody></table>';
+
+    html += '<div class="report-total ' + totalPctClass + '">Общий результат: ' + totalCorrect + ' из ' + totalCount + ' (' + totalPct + '%)</div>';
+
+    html += '<div class="report-advice">';
+    html += '<p>Рекомендуется повторить темы, по которым процент ниже 80% — откройте соответствующий тренажёр (ссылки в таблице) и нарешайте до автоматизма.</p>';
+    html += '</div>';
+
+    html += '</div>';
+
+    $reportContent.innerHTML = html;
+    MathJax.typesetPromise([$reportContent]);
+  }
+
+  function advance() {
+    if (isLastTask()) {
+      if (isLastSection()) {
+        // All done
+        showReport();
+      } else {
+        sectionIdx++;
+        taskIdx = 0;
+        showTask();
+      }
+    } else {
+      taskIdx++;
+      showTask();
+    }
+  }
+
+  function handleAnswer(userAnswer, isSkipped) {
+    if (locked) return;
+    locked = true;
+    $dunnoBtn.style.display = 'none';
+
+    var t = currentTask();
+    var isCorrect = false;
+
+    if (!isSkipped) {
+      isCorrect = norm(userAnswer) === norm(t.a);
+    }
+
+    results.push({
+      sectionIdx: sectionIdx,
+      taskIdx: taskIdx,
+      q: t.q,
+      userAnswer: userAnswer,
+      correctAnswer: t.a,
+      isCorrect: isCorrect,
+      isSkipped: isSkipped
+    });
+
+    if (isSkipped) {
+      $feedback.textContent = 'Пропущено';
+      $feedback.className = 'skipped';
+      $correct.textContent = 'Правильный ответ: ' + t.a;
+      $correct.style.display = '';
+    } else if (isCorrect) {
+      $feedback.textContent = '✓';
+      $feedback.className = 'correct';
+      totalSolved++;
+    } else {
+      $feedback.textContent = '✗';
+      $feedback.className = 'wrong';
+      $correct.textContent = 'Правильный ответ: ' + t.a;
+      $correct.style.display = '';
+    }
+
+    $input.className = isCorrect ? 'correct' : (isSkipped ? 'skipped' : 'wrong');
+    updateProgress();
+
+    setTimeout(function() {
+      advance();
+    }, FEEDBACK_DELAY);
+  }
+
+  // --- Event handlers ---
+  $input.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      var val = $input.value;
+      if (val.trim() === '') return;
+      handleAnswer(val, false);
+    }
+  });
+
+  $dunnoBtn.addEventListener('click', function() {
+    handleAnswer('', true);
+  });
+
+  var $restartBtn = document.getElementById('restart-btn');
+  $restartBtn.addEventListener('click', function() {
+    sectionIdx = 0;
+    taskIdx = 0;
+    totalSolved = 0;
+    results = [];
+    $reportArea.style.display = 'none';
+    $mainArea.style.display = '';
+    document.getElementById('progress-row').style.display = '';
+    showTask();
+  });
+
+  // --- Start ---
+  showTask();
+})();
+
+    </script>
+</body>
+</html>
