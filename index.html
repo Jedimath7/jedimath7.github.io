@@ -62,6 +62,8 @@ h1,h2,h3,h4{
 
 .wrap{max-width:var(--maxw);margin:0 auto;padding:0 26px;position:relative;z-index:2}
 section{position:relative;z-index:2}
+/* Чтобы sticky-шапка не перекрывала заголовок при переходе по якорю из меню */
+section[id]{scroll-margin-top:80px}
 
 /* Маленький заголовок-надпись над секциями */
 .eyebrow{
@@ -119,7 +121,7 @@ section{position:relative;z-index:2}
   letter-spacing:.02em;
 }
 .brandmark span{color:var(--terracotta)}
-.topnav{display:flex;gap:30px;align-items:center}
+.topnav{display:flex;gap:24px;align-items:center}
 .topnav a{
   color:var(--ink-soft);text-decoration:none;font-size:15px;font-weight:600;
   letter-spacing:.01em;transition:color .2s;
@@ -504,11 +506,13 @@ footer{background:var(--ink);color:rgba(246,241,232,.55);padding:40px 0;border-t
       <span></span><span></span><span></span>
     </button>
     <nav class="topnav" id="topnav">
-      <a href="#about">О репетиторе</a>
+      <a href="#about">Обо мне</a>
       <a href="#pyramid">Подход</a>
       <a href="#trainers">Тренажёры</a>
+      <a href="#priorities">Приоритеты</a>
       <a href="#reviews">Отзывы</a>
       <a href="#price">Стоимость</a>
+      <a href="#consult">Консультация</a>
     </nav>
   </div>
 </header>
@@ -519,9 +523,9 @@ footer{background:var(--ink);color:rgba(246,241,232,.55);padding:40px 0;border-t
 
     <div class="hero-grid">
       <div>
-        <p class="role">Профессиональный репетитор · <b>ЕГЭ · ОГЭ</b></p>
+        <p class="role">Профессиональный репетитор по математике · <b>ЕГЭ · ОГЭ</b></p>
         <h1>Михаил<br>Бахадов</h1>
-        <p class="hero-sub" style="opacity:.55"><em>[Здесь будет ваш короткий слоган — напишите сами, я вставлю.]</em></p>
+        <p class="hero-sub"><em>Люблю своё дело</em></p>
         <div class="btns">
           <!-- ↓↓↓ ЗАМЕНИТЕ ссылки на свои Telegram и WhatsApp ↓↓↓ -->
           <a class="btn btn-tg" href="https://t.me/Jedimath7" target="_blank" rel="noopener">
@@ -586,7 +590,6 @@ footer{background:var(--ink);color:rgba(246,241,232,.55);padding:40px 0;border-t
         <!-- Видео временно убрано (будет записано новое):
         <p>Подробнее обо мне и моём подходе к занятиям смотрите в видео.</p>
         -->
-        <p class="signature">— Михаил Бахадов</p>
       </div>
       <!-- Видео-визитка временно убрана. Чтобы вернуть: поставь у .about-grid выше grid-template-columns:1fr 1fr и раскомментируй блок ниже, подставив ссылку на видео.
       <a class="video-frame reveal" href="ССЫЛКА_НА_ВИДЕО" rel="noopener" target="_blank">
@@ -594,6 +597,27 @@ footer{background:var(--ink);color:rgba(246,241,232,.55);padding:40px 0;border-t
         <span class="cap">Канал «Джедайская математика»</span>
       </a>
       -->
+    </div>
+  </div>
+</section>
+
+<!-- ============ ПОМОГАЮ УЧЕНИКУ ============ -->
+<section class="section sec-help">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <h2>Помогаю каждому ученику</h2>
+      <p class="lead" style="margin-top:14px">Приглашаю школьников 5–11 классов и студентов 1–2 курса на групповые и индивидуальные занятия по математике.</p>
+    </div>
+    <div class="help-list">
+      <div class="help-item reveal"><span class="chk"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg></span><p>Почувствовать в себе силы и интерес к предмету</p></div>
+      <div class="help-item reveal"><span class="chk"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg></span><p>Концентрировать внимание</p></div>
+      <div class="help-item reveal"><span class="chk"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg></span><p>Обрести уверенность</p></div>
+      <div class="help-item reveal"><span class="chk"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg></span><p>Учиться себя проверять</p></div>
+      <div class="help-item reveal"><span class="chk"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg></span><p>Вспомнить всё, что слышал, знал, но забыл</p></div>
+      <div class="help-item reveal"><span class="chk"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg></span><p>Научиться быстро считать</p></div>
+      <div class="help-item reveal"><span class="chk"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg></span><p>Видеть смысл, а не просто решать по шаблону</p></div>
+      <div class="help-item reveal"><span class="chk"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg></span><p>Научиться выносливости в сложных задачах</p></div>
+      <div class="help-item reveal"><span class="chk"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg></span><p>Подготовиться и сдать экзамен (ЕГЭ, ОГЭ и другие) на нужный, высокий балл</p></div>
     </div>
   </div>
 </section>
@@ -623,7 +647,7 @@ footer{background:var(--ink);color:rgba(246,241,232,.55);padding:40px 0;border-t
   <div class="wrap">
     <div class="section-head reveal">
       <span class="eyebrow">Занятия онлайн</span>
-      <h2>Эффективны ли онлайн-уроки? Однозначно да</h2>
+      <h2>Эффективны ли онлайн-уроки? Однозначно да!</h2>
     </div>
     <p class="work-intro reveal">И школьник, и преподаватель экономят силы на дорогу, не связаны географией, находятся в комфортной домашней обстановке. Более того, для меня лично в онлайне заниматься стало <b>удобнее и плодотворнее</b>, чем очно: можно быстрее, нагляднее и более структурировано разобрать большинство тем. А по присланным фото хорошо заранее смотреть домашку и знать, на что сделать акцент.</p>
     <div class="tools">
@@ -652,8 +676,7 @@ footer{background:var(--ink);color:rgba(246,241,232,.55);padding:40px 0;border-t
   <div class="wrap">
     <div class="trainers-feature reveal">
       <div class="tf-text">
-        <h2>Тренажёры, которые<br>я сделал сам</h2>
-        <p style="opacity:.55"><em>[Здесь — ваш текст о тренажёрах: что это, чем полезны, что сделали их вы. Напишите сами, я вставлю.]</em></p>
+        <h2>Авторские тренажёры</h2>
         <!-- ↓ Ссылка-заглушка: заработает после выкладки сайта тренажёров ↓ -->
         <a class="btn btn-trainers" href="https://jedimath7.github.io/trainers" target="_blank" rel="noopener">Открыть тренажёры →</a>
       </div>
@@ -675,32 +698,11 @@ footer{background:var(--ink);color:rgba(246,241,232,.55);padding:40px 0;border-t
   </div>
 </section>
 
-<!-- ============ ПОМОГАЮ УЧЕНИКУ ============ -->
-<section class="section sec-help">
-  <div class="wrap">
-    <div class="section-head reveal">
-      <h2>Помогаю каждому ученику</h2>
-      <p class="lead" style="margin-top:14px">Приглашаю школьников 5–11 классов и студентов 1–2 курса на групповые и индивидуальные занятия по математике.</p>
-    </div>
-    <div class="help-list">
-      <div class="help-item reveal"><span class="chk"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg></span><p>Почувствовать в себе силы и интерес к предмету</p></div>
-      <div class="help-item reveal"><span class="chk"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg></span><p>Концентрировать внимание</p></div>
-      <div class="help-item reveal"><span class="chk"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg></span><p>Обрести уверенность</p></div>
-      <div class="help-item reveal"><span class="chk"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg></span><p>Учиться себя проверять</p></div>
-      <div class="help-item reveal"><span class="chk"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg></span><p>Вспомнить всё, что слышал, знал, но забыл</p></div>
-      <div class="help-item reveal"><span class="chk"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg></span><p>Научиться быстро считать</p></div>
-      <div class="help-item reveal"><span class="chk"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg></span><p>Видеть смысл, а не просто решать по шаблону</p></div>
-      <div class="help-item reveal"><span class="chk"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg></span><p>Научиться выносливости в сложных задачах</p></div>
-      <div class="help-item reveal"><span class="chk"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg></span><p>Подготовиться и сдать экзамен (ЕГЭ, ОГЭ и другие) на нужный, высокий балл</p></div>
-    </div>
-  </div>
-</section>
-
 <!-- ============ ПРИНЦИПЫ ============ -->
-<section class="section">
+<section class="section" id="priorities">
   <div class="wrap">
     <div class="section-head reveal">
-      <h2>Что для меня важно</h2>
+      <h2>Наши приоритеты</h2>
       <p class="lead" style="margin-top:14px">Каждый преподаватель по-разному расставляет акценты и приоритеты. Вот что важно для меня.</p>
     </div>
     <div class="principles">
@@ -724,6 +726,51 @@ footer{background:var(--ink);color:rgba(246,241,232,.55);padding:40px 0;border-t
         <p>Она важна каждому человеку, но особенно важна родителям: что происходит с твоим ребенком? Нужна ли ему поддержка и помощь, строгая или ласковая? Какие сейчас успехи в математике? Нужно ли поднажать или все нормально и можно не переживать?</p>
         <p>Стараюсь всегда, особенно в начале пути, давать родителям обратную связь, рассказывать о том, что делаем на уроках, как выполняется домашка, есть ли контакт и взаимопонимание на уроках.</p>
         <p>Пишу родителям 1–2 раза в месяц, чтобы они всегда были в курсе происходящего, держали руку на пульсе и были спокойны.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ПРАВИЛА РАБОТЫ ============ -->
+<section class="section">
+  <div class="wrap">
+    <div class="section-head reveal" style="text-align:center;margin-left:auto;margin-right:auto">
+      <h2>Как строится наша работа</h2>
+    </div>
+    <div class="accordion">
+      <div class="acc-item reveal">
+        <button class="acc-head"><span>Организация занятий</span><span class="ico"></span></button>
+        <div class="acc-body"><div class="acc-body-inner"><ul>
+          <li>Мы оба заинтересованы, чтобы все запланированные занятия были проведены.</li>
+          <li>Дату и время планируем минимум на месяц вперёд (летом — на две недели).</li>
+          <li>Оплата — 1-го числа текущего месяца (1 сентября за сентябрь и т.д.).</li>
+          <li>При отмене учеником заранее (за 1–2 дня) ученик ищет удобное учителю время для восполнения.</li>
+          <li>При отмене учителем (крайне редко) учитель ищет удобное ученику время для восполнения.</li>
+          <li>При отмене учеником в день урока занятие считается проведённым.</li>
+          <li>Длительность: 60 или 90 минут + 5 минут перерыв по желанию.</li>
+          <li>Каникулы, праздники и отъезды оговариваются заранее, в начале месяца, оплата корректируется.</li>
+        </ul></div></div>
+      </div>
+      <div class="acc-item reveal">
+        <button class="acc-head"><span>За что я отвечаю</span><span class="ico"></span></button>
+        <div class="acc-body"><div class="acc-body-inner"><ul>
+          <li>Проводить уроки по договорённому расписанию.</li>
+          <li>Следить за качеством урока, выполнения домашки и рабочей атмосферой.</li>
+          <li>Помогать ученику понимать и применять знания — но не делать работу за него.</li>
+          <li>К каждому уроку давать домашнее задание и проверять его.</li>
+          <li>Уведомлять родителей о трудных ситуациях и нужном участии.</li>
+          <li>Сообщать об успехах и задачах не реже раза в месяц.</li>
+          <li>Регулярно контролировать знания, чтобы прогресс был виден ученику и родителям.</li>
+        </ul></div></div>
+      </div>
+      <div class="acc-item reveal">
+        <button class="acc-head"><span>Наши принципы</span><span class="ico"></span></button>
+        <div class="acc-body"><div class="acc-body-inner">
+          <p>Ученик, родители и преподаватель работают в одной команде.</p>
+          <p>Наша цель — помочь ученику стать самостоятельным, заинтересованным и компетентным в своём предмете.</p>
+          <p>Мы открыто обсуждаем любые вопросы, уважаем друг друга и бережём общее время.</p>
+          <p>Мы даём друг другу обратную связь и сами готовы её принимать.</p>
+        </div></div>
       </div>
     </div>
   </div>
@@ -839,51 +886,6 @@ footer{background:var(--ink);color:rgba(246,241,232,.55);padding:40px 0;border-t
   </div>
 </section>
 
-<!-- ============ ПРАВИЛА РАБОТЫ ============ -->
-<section class="section">
-  <div class="wrap">
-    <div class="section-head reveal" style="text-align:center;margin-left:auto;margin-right:auto">
-      <h2>Как строится наша работа</h2>
-    </div>
-    <div class="accordion">
-      <div class="acc-item reveal">
-        <button class="acc-head"><span>Организация занятий</span><span class="ico"></span></button>
-        <div class="acc-body"><div class="acc-body-inner"><ul>
-          <li>Мы оба заинтересованы, чтобы все запланированные занятия были проведены.</li>
-          <li>Дату и время планируем минимум на месяц вперёд (летом — на две недели).</li>
-          <li>Оплата — 1-го числа текущего месяца (1 сентября за сентябрь и т.д.).</li>
-          <li>При отмене учеником заранее (за 1–2 дня) ученик ищет удобное учителю время для восполнения.</li>
-          <li>При отмене учителем (крайне редко) учитель ищет удобное ученику время для восполнения.</li>
-          <li>При отмене учеником в день урока занятие считается проведённым.</li>
-          <li>Длительность: 60 или 90 минут + 5 минут перерыв по желанию.</li>
-          <li>Каникулы, праздники и отъезды оговариваются заранее, в начале месяца, оплата корректируется.</li>
-        </ul></div></div>
-      </div>
-      <div class="acc-item reveal">
-        <button class="acc-head"><span>За что я отвечаю</span><span class="ico"></span></button>
-        <div class="acc-body"><div class="acc-body-inner"><ul>
-          <li>Проводить уроки по договорённому расписанию.</li>
-          <li>Следить за качеством урока, выполнения домашки и рабочей атмосферой.</li>
-          <li>Помогать ученику понимать и применять знания — но не делать работу за него.</li>
-          <li>К каждому уроку давать домашнее задание и проверять его.</li>
-          <li>Уведомлять родителей о трудных ситуациях и нужном участии.</li>
-          <li>Сообщать об успехах и задачах не реже раза в месяц.</li>
-          <li>Регулярно контролировать знания, чтобы прогресс был виден ученику и родителям.</li>
-        </ul></div></div>
-      </div>
-      <div class="acc-item reveal">
-        <button class="acc-head"><span>Наши принципы</span><span class="ico"></span></button>
-        <div class="acc-body"><div class="acc-body-inner">
-          <p>Ученик, родители и преподаватель работают в одной команде.</p>
-          <p>Наша цель — помочь ученику стать самостоятельным, заинтересованным и компетентным в своём предмете.</p>
-          <p>Мы открыто обсуждаем любые вопросы, уважаем друг друга и бережём общее время.</p>
-          <p>Мы даём друг другу обратную связь и сами готовы её принимать.</p>
-        </div></div>
-      </div>
-    </div>
-  </div>
-</section>
-
 <!-- ============ ЦЕНЫ ============ -->
 <section class="section sec-price" id="price">
   <div class="wrap">
@@ -908,7 +910,7 @@ footer{background:var(--ink);color:rgba(246,241,232,.55);padding:40px 0;border-t
 </section>
 
 <!-- ============ ФИНАЛЬНЫЙ CTA ============ -->
-<section class="sec-cta">
+<section class="sec-cta" id="consult">
   <div class="wrap">
     <h2>Бесплатная <em>консультация</em></h2>
     <span class="free">40 минут</span>
