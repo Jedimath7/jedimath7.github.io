@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Михаил Бахадов — репетитор по математике | ЕГЭ, ОГЭ, 5–11 классы</title>
-<meta name="description" content="Профессиональный репетитор по математике с опытом более 12 лет. Подготовка к ЕГЭ и ОГЭ, занятия для 5–11 классов онлайн. Выпускник МГТУ им. Баумана.">
+<title>Михаил Бахадов — репетитор по математике | ЕГЭ, ОГЭ, 5–11 классы и студенты 1–2 курса</title>
+<meta name="description" content="Профессиональный репетитор по математике с опытом более 17 лет. Подготовка к ЕГЭ и ОГЭ, занятия для 5–11 классов и студентов 1–2 курса онлайн. Выпускник МГТУ им. Баумана.">
 
 <!-- Шрифты: Cormorant Garamond (заголовки) + Manrope (текст), оба с кириллицей -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -97,23 +97,44 @@ section{position:relative;z-index:2}
 }
 .btn-ghost:hover{background:var(--ink);color:var(--cream)}
 
-/* ===== HERO ===== */
-.hero{padding:46px 0 70px}
+/* ===== Шапка (sticky-навигация) ===== */
+.site-header{
+  position:sticky;top:0;z-index:50;
+  background:rgba(246,241,232,.92);
+  backdrop-filter:saturate(140%) blur(8px);
+  -webkit-backdrop-filter:saturate(140%) blur(8px);
+  border-bottom:1px solid transparent;
+  transition:border-color .3s, box-shadow .3s;
+}
+.site-header.scrolled{border-color:var(--line);box-shadow:0 4px 18px rgba(34,30,26,.06)}
 .topbar{
   display:flex;justify-content:space-between;align-items:center;
-  padding:8px 0 40px;
+  padding:13px 0;position:relative;
 }
+
+/* ===== HERO ===== */
+.hero{padding:40px 0 70px}
 .brandmark{
   font-family:'Cormorant Garamond',serif;font-weight:700;font-size:24px;
   letter-spacing:.02em;
 }
 .brandmark span{color:var(--terracotta)}
-.topnav{display:flex;gap:30px}
+.topnav{display:flex;gap:30px;align-items:center}
 .topnav a{
   color:var(--ink-soft);text-decoration:none;font-size:15px;font-weight:600;
   letter-spacing:.01em;transition:color .2s;
 }
 .topnav a:hover{color:var(--terracotta)}
+/* Кнопка-бургер (видна только на мобильном) */
+.nav-toggle{
+  display:none;width:44px;height:44px;border:1px solid var(--line);
+  background:var(--paper);border-radius:11px;cursor:pointer;
+  align-items:center;justify-content:center;flex-direction:column;gap:4px;
+}
+.nav-toggle span{display:block;width:20px;height:2px;background:var(--ink);border-radius:2px;transition:.3s}
+.nav-toggle.open span:nth-child(1){transform:translateY(6px) rotate(45deg)}
+.nav-toggle.open span:nth-child(2){opacity:0}
+.nav-toggle.open span:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
 
 .hero-grid{
   display:grid;grid-template-columns:1.15fr .85fr;gap:50px;align-items:center;
@@ -157,7 +178,8 @@ section{position:relative;z-index:2}
   display:flex;gap:0;margin-top:54px;border-top:1px solid var(--line);
   border-bottom:1px solid var(--line);
 }
-.stat{flex:1;padding:22px 10px;text-align:center;border-right:1px solid var(--line)}
+.stat{flex:1;padding:22px 10px;text-align:center;border-right:1px solid var(--line);
+  display:flex;flex-direction:column;justify-content:center;align-items:center}
 .stat:last-child{border-right:none}
 .stat b{
   display:block;font-family:'Cormorant Garamond',serif;
@@ -221,21 +243,25 @@ section{position:relative;z-index:2}
 .pyramid-grid p{color:rgba(246,241,232,.78);margin-bottom:18px}
 .pyramid-grid p strong{color:var(--gold);font-weight:600}
 
-.pyramid{display:flex;flex-direction:column;align-items:center;gap:10px}
+.pyramid{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;max-width:440px;margin:0 auto}
 .tier{
-  height:88px;display:flex;align-items:center;justify-content:center;flex-direction:column;
-  color:#fff;position:relative;transition:transform .4s ease;
+  height:74px;display:flex;align-items:center;justify-content:center;flex-direction:column;
+  color:#fff;position:relative;transition:transform .35s ease;text-align:center;
 }
 .tier:hover{transform:scale(1.03)}
-.tier b{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:700;line-height:1}
-.tier span{font-size:13px;letter-spacing:.06em;opacity:.92;margin-top:3px}
-.tier-1{width:42%;background:linear-gradient(135deg,var(--gold),var(--amber));
+.tier b{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:700;line-height:1}
+.tier span{font-size:12px;letter-spacing:.04em;opacity:.92;margin-top:4px}
+/* Ровная пирамида из 4 ярусов: ширины 25/50/75/100%, одинаковый наклон граней */
+.tier-1{width:25%;background:linear-gradient(135deg,var(--gold),var(--amber));
   clip-path:polygon(50% 0,100% 100%,0 100%)}
-.tier-1 b,.tier-1 span{margin-top:24px}
-.tier-2{width:70%;background:linear-gradient(135deg,var(--amber),var(--terracotta));
-  clip-path:polygon(12% 0,88% 0,100% 100%,0 100%)}
-.tier-3{width:100%;background:linear-gradient(135deg,var(--terracotta),var(--terracotta-deep));
-  clip-path:polygon(9% 0,91% 0,100% 100%,0 100%)}
+.tier-1 b{margin-top:26px;font-size:22px}
+.tier-1 span{display:none}
+.tier-2{width:50%;background:linear-gradient(135deg,var(--amber),#C5762F);
+  clip-path:polygon(25% 0,75% 0,100% 100%,0 100%)}
+.tier-3{width:75%;background:linear-gradient(135deg,#C5762F,var(--terracotta));
+  clip-path:polygon(16.667% 0,83.333% 0,100% 100%,0 100%)}
+.tier-4{width:100%;background:linear-gradient(135deg,var(--terracotta),var(--terracotta-deep));
+  clip-path:polygon(12.5% 0,87.5% 0,100% 100%,0 100%)}
 
 /* ===== Как я работаю (онлайн) ===== */
 .work-intro{max-width:62ch;margin-bottom:46px;font-size:21px;color:var(--ink-soft)}
@@ -438,7 +464,17 @@ footer{background:var(--ink);color:rgba(246,241,232,.55);padding:40px 0;border-t
 /* ===== Адаптив ===== */
 @media(max-width:900px){
   body{font-size:17px}
-  .topnav{display:none}
+  .nav-toggle{display:flex}
+  .topnav{
+    position:absolute;top:calc(100% + 6px);right:0;left:0;
+    flex-direction:column;gap:0;align-items:stretch;
+    background:var(--paper);border:1px solid var(--line);border-radius:12px;
+    padding:6px 18px;box-shadow:0 14px 30px rgba(34,30,26,.12);
+    opacity:0;transform:translateY(-8px);pointer-events:none;transition:.25s;
+  }
+  .topnav.open{opacity:1;transform:none;pointer-events:auto}
+  .topnav a{padding:13px 4px;border-bottom:1px solid var(--line);font-size:16px}
+  .topnav a:last-child{border-bottom:none}
   .hero-grid{grid-template-columns:1fr;gap:36px}
   .portrait{max-width:360px;margin:0 auto}
   .about-grid,.pyramid-grid,.price-cols,.trainers-feature{grid-template-columns:1fr;gap:36px}
@@ -460,19 +496,26 @@ footer{background:var(--ink);color:rgba(246,241,232,.55);padding:40px 0;border-t
 </head>
 <body>
 
+<!-- ============ ШАПКА (sticky-навигация) ============ -->
+<header class="site-header">
+  <div class="wrap topbar">
+    <div class="brandmark">М. Бахадов<span>.</span></div>
+    <button class="nav-toggle" aria-label="Открыть меню" aria-expanded="false" aria-controls="topnav">
+      <span></span><span></span><span></span>
+    </button>
+    <nav class="topnav" id="topnav">
+      <a href="#about">О репетиторе</a>
+      <a href="#pyramid">Подход</a>
+      <a href="#trainers">Тренажёры</a>
+      <a href="#reviews">Отзывы</a>
+      <a href="#price">Стоимость</a>
+    </nav>
+  </div>
+</header>
+
 <!-- ============ HERO ============ -->
-<header class="hero">
+<section class="hero">
   <div class="wrap">
-    <div class="topbar">
-      <div class="brandmark">М. Бахадов<span>.</span></div>
-      <nav class="topnav">
-        <a href="#about">О репетиторе</a>
-        <a href="#pyramid">Подход</a>
-        <a href="#trainers">Тренажёры</a>
-        <a href="#reviews">Отзывы</a>
-        <a href="#price">Стоимость</a>
-      </nav>
-    </div>
 
     <div class="hero-grid">
       <div>
@@ -505,11 +548,12 @@ footer{background:var(--ink);color:rgba(246,241,232,.55);padding:40px 0;border-t
     <div class="stats">
       <div class="stat"><b>17+</b><span>лет опыта</span></div>
       <div class="stat"><b>5–11</b><span>классы</span></div>
-      <div class="stat"><b>МГТУ</b><span>им. Баумана, ФН-1</span></div>
+      <div class="stat"><b>1–2</b><span>курс вуза</span></div>
+      <div class="stat"><b style="font-size:23px;line-height:1.12">МГТУ им. Баумана</b><span>Высшая математика (ФН-1)</span></div>
       <div class="stat"><b>Онлайн</b><span>занятия через Zoom</span></div>
     </div>
   </div>
-</header>
+</section>
 
 <!-- ============ ПРОБЛЕМЫ ============ -->
 <section class="section sec-problems">
@@ -534,19 +578,22 @@ footer{background:var(--ink);color:rgba(246,241,232,.55);padding:40px 0;border-t
 <!-- ============ ЗНАКОМСТВО ============ -->
 <section class="section" id="about">
   <div class="wrap">
-    <div class="about-grid">
+    <div class="about-grid" style="grid-template-columns:1fr;max-width:780px">
       <div class="about reveal">
         <h2 style="font-size:clamp(34px,4.5vw,52px);margin-bottom:22px">Давайте знакомиться!</h2>
         <p>Меня зовут Михаил Бахадов, я репетитор по математике с опытом работы <strong>больше 17 лет</strong>.</p>
         <p>Выпускник <strong>МГТУ имени Баумана</strong> (магистратура кафедры ФН-1 «Высшая математика»).</p>
+        <!-- Видео временно убрано (будет записано новое):
         <p>Подробнее обо мне и моём подходе к занятиям смотрите в видео.</p>
+        -->
         <p class="signature">— Михаил Бахадов</p>
       </div>
-      <!-- ↓ Замените ссылку на ваше видео с YouTube ↓ -->
-      <a class="video-frame reveal" href="#" rel="noopener">
+      <!-- Видео-визитка временно убрана. Чтобы вернуть: поставь у .about-grid выше grid-template-columns:1fr 1fr и раскомментируй блок ниже, подставив ссылку на видео.
+      <a class="video-frame reveal" href="ССЫЛКА_НА_ВИДЕО" rel="noopener" target="_blank">
         <span class="play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span>
         <span class="cap">Канал «Джедайская математика»</span>
       </a>
+      -->
     </div>
   </div>
 </section>
@@ -557,14 +604,15 @@ footer{background:var(--ink);color:rgba(246,241,232,.55);padding:40px 0;border-t
     <div class="pyramid-grid">
       <div class="reveal">
         <h2 style="font-size:clamp(34px,4.5vw,56px);margin-bottom:24px">Пирамида математики</h2>
-        <p>Школьная математика — это максимально навыковый предмет. Он подобен пирамиде, где нижние уровни 5–6 класс, средние 7–9, верхние 10–11. И любой пробел на уровне 5–6 будет давать малые или большие сбои вплоть до конца 11 класса.</p>
-        <p>Нет смысла заниматься заданиями текущего класса, если есть пробелы в прошлом. Но в том то и соль, что вернувшись назад, мы можем как следует разогнаться — пройти в быстром темпе предыдущую программу, например, 2–3 урока на учебник за прошлые классы и уже на нормальной скорости войти в программу своего класса и чувствовать себя спокойно, свободно и уверенно.</p>
-        <p>Так всегда и поступаем.</p>
+        <p>Школьная математика — это максимально навыковый предмет. Это пирамида, где нижние уровни 5–6 класс, средние 7–8, далее 9, а верхние 10–11. И любой пробел на уровне 5–6 класса будет давать малые или большие сбои вплоть до конца 11 класса. Всегда.</p>
+        <p>Нет смысла заниматься заданиями текущего класса, если есть пробелы в прошлом. Хорошая новость: вернувшись назад, мы можем как следует разогнаться — пройти в быстром темпе предыдущую программу, например, 2–3 урока на учебник за прошлые классы и уже на нормальной скорости войти в программу своего класса и чувствовать себя спокойно, свободно и уверенно.</p>
+        <p>В процессе наших уроков мы всегда именно так и делаем, не давая провалиться ни одному прошлому навыку.</p>
       </div>
       <div class="pyramid reveal">
-        <div class="tier tier-1"><b>10–11</b><span>вершина</span></div>
-        <div class="tier tier-2"><b>7–9</b><span>середина</span></div>
-        <div class="tier tier-3"><b>5–6</b><span>основание · фундамент навыков</span></div>
+        <div class="tier tier-1"><b>10–11</b><span>классы</span></div>
+        <div class="tier tier-2"><b>9</b><span>класс</span></div>
+        <div class="tier tier-3"><b>7–8</b><span>классы</span></div>
+        <div class="tier tier-4"><b>5–6</b><span>фундамент навыков</span></div>
       </div>
     </div>
   </div>
@@ -632,7 +680,7 @@ footer{background:var(--ink);color:rgba(246,241,232,.55);padding:40px 0;border-t
   <div class="wrap">
     <div class="section-head reveal">
       <h2>Помогаю каждому ученику</h2>
-      <p class="lead" style="margin-top:14px">Приглашаю школьников 5–11 классов на групповые и индивидуальные занятия по математике.</p>
+      <p class="lead" style="margin-top:14px">Приглашаю школьников 5–11 классов и студентов 1–2 курса на групповые и индивидуальные занятия по математике.</p>
     </div>
     <div class="help-list">
       <div class="help-item reveal"><span class="chk"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg></span><p>Почувствовать в себе силы и интерес к предмету</p></div>
@@ -882,7 +930,7 @@ footer{background:var(--ink);color:rgba(246,241,232,.55);padding:40px 0;border-t
 <footer>
   <div class="wrap foot">
     <div class="fb">Михаил Бахадов<span>.</span> Репетитор по математике</div>
-    <small>ЕГЭ · ОГЭ · 5–11 классы · занятия онлайн</small>
+    <small>ЕГЭ · ОГЭ · 5–11 классы · студенты 1–2 курса · занятия онлайн</small>
   </div>
 </footer>
 
@@ -910,6 +958,31 @@ var io = new IntersectionObserver(function(entries){
   });
 }, { threshold:.14 });
 document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
+
+// Мобильное меню (бургер): открыть/закрыть
+var navToggle = document.querySelector('.nav-toggle');
+var topnav = document.getElementById('topnav');
+if(navToggle && topnav){
+  navToggle.addEventListener('click', function(){
+    var open = topnav.classList.toggle('open');
+    navToggle.classList.toggle('open', open);
+    navToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+  // После клика по пункту меню — закрываем
+  topnav.querySelectorAll('a').forEach(function(a){
+    a.addEventListener('click', function(){
+      topnav.classList.remove('open');
+      navToggle.classList.remove('open');
+      navToggle.setAttribute('aria-expanded','false');
+    });
+  });
+}
+
+// Лёгкая тень у шапки, когда страница прокручена
+var siteHeader = document.querySelector('.site-header');
+window.addEventListener('scroll', function(){
+  if(siteHeader){ siteHeader.classList.toggle('scrolled', window.scrollY > 10); }
+}, { passive:true });
 </script>
 
 </body>
