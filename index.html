@@ -123,7 +123,7 @@ section[id]{scroll-margin-top:78px}
 .portrait::after{content:"";position:absolute;inset:12px;border:1px solid rgba(201,168,106,.4);border-radius:4px;pointer-events:none}
 
 /* Статистика — золотые числа Prata, золотые волоски-разделители */
-.stats{display:grid;grid-template-columns:repeat(5,1fr);margin-top:56px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);margin-top:56px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
 .stat{padding:24px 12px;text-align:center;border-right:1px solid var(--line-soft)}
 .stat:last-child{border-right:none}
 .stat b{display:block;font-family:var(--display);font-size:38px;color:var(--gold);line-height:1}
@@ -285,9 +285,11 @@ footer{background:#0C1115;color:var(--ink-soft);padding:40px 0;border-top:1px so
   .tools{grid-template-columns:1fr}
   .problems,.help-list,.embed-grid{grid-template-columns:1fr}
   .quotes{columns:1}
+  .hero::before{display:none}                 /* убираем золотистое свечение за цитатой — только на телефоне */
   .stats{grid-template-columns:repeat(2,1fr)}
   .stat{border-bottom:1px solid var(--line-soft)}
   .stat:nth-child(odd){border-right:1px solid var(--line-soft)}
+  .stat:nth-child(even){border-right:none}    /* правый столбец без лишней линии у края */
 }
 @media(max-width:560px){
   .wrap{padding:0 18px}.section{padding:66px 0}
@@ -357,7 +359,6 @@ footer{background:#0C1115;color:var(--ink-soft);padding:40px 0;border-top:1px so
       <div class="stat"><b>5–11</b><span>классы</span></div>
       <div class="stat"><b>1–2</b><span>курс вуза</span></div>
       <div class="stat"><b class="sm">МГТУ</b><span>им. Баумана</span></div>
-      <div class="stat"><b class="sm">Онлайн</b><span>через Zoom</span></div>
     </div>
   </div>
 </section>
