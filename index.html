@@ -47,7 +47,7 @@ h1,h2,h3,h4{font-family:var(--display);font-weight:400;line-height:1.16;letter-s
 .section{padding:96px 0;position:relative}
 section[id]{scroll-margin-top:78px}
 .section-head{max-width:760px;margin-bottom:50px}
-.section-head h2{font-size:clamp(33px,4.6vw,56px);margin-bottom:16px}
+.section-head h2{font-size:clamp(26px,3.2vw,40px);margin-bottom:16px}
 
 /* надпись над секциями + тонкая золотая черта */
 .eyebrow{
@@ -107,7 +107,7 @@ section[id]{scroll-margin-top:78px}
 .hero .role{font-size:13px;font-weight:600;letter-spacing:.26em;text-transform:uppercase;color:var(--gold);margin-bottom:24px;
   display:flex;align-items:center;gap:12px}
 .hero .role::before{content:"";width:34px;height:1px;background:var(--gold);opacity:.6;flex-shrink:0}
-.hero h1{font-size:clamp(48px,7vw,92px);margin-bottom:18px;letter-spacing:.01em}
+.hero h1{font-size:clamp(40px,5vw,66px);margin-bottom:18px;letter-spacing:.01em}
 .hero .rule{width:96px;height:1px;background:var(--gold);margin:0 0 24px}
 .hero-sub{font-size:21px;color:var(--ink-soft);max-width:44ch;margin-bottom:32px}
 .hero-sub em{font-style:italic;color:var(--ink)}
@@ -255,7 +255,7 @@ section[id]{scroll-margin-top:78px}
   border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
 .sec-cta::before{content:"";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:70%;height:160%;
   background:radial-gradient(circle,rgba(201,168,106,.13),transparent 60%);pointer-events:none}
-.sec-cta h2{font-size:clamp(38px,5.4vw,68px);color:var(--ink);margin-bottom:16px}
+.sec-cta h2{font-size:clamp(30px,4vw,50px);color:var(--ink);margin-bottom:16px}
 .sec-cta h2 em{font-style:italic;color:var(--gold)}
 .sec-cta .free{font-family:var(--display);font-size:24px;color:var(--gold);display:inline-block;margin-bottom:26px}
 .sec-cta p{font-size:18px;color:var(--ink-soft);max-width:56ch;margin:0 auto 16px}
@@ -340,7 +340,7 @@ footer{background:#0C1115;color:var(--ink-soft);padding:40px 0;border-top:1px so
             <svg viewBox="0 0 24 24" fill="#14181B"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/></svg>
             Написать в Telegram
           </a>
-          <a class="btn btn-ghost" href="https://wa.me/79688677867" target="_blank" rel="noopener">WhatsApp</a>
+          <a class="btn btn-ghost" href="https://wa.me/79688677867?text=%D0%A1%D0%B8%D0%BB%20%D0%BD%D0%B5%D1%82%2C%20%D0%BA%D0%B0%D0%BA%20%D1%85%D0%BE%D1%82%D0%B8%D0%BC%20%D0%B7%D0%B0%D0%BD%D0%B8%D0%BC%D0%B0%D1%82%D1%8C%D1%81%D1%8F" target="_blank" rel="noopener">WhatsApp</a>
         </div>
       </div>
 
@@ -368,14 +368,13 @@ footer{background:#0C1115;color:var(--ink-soft);padding:40px 0;border-top:1px so
   <div class="wrap">
     <div class="section-head reveal">
       <span class="eyebrow">с чего всё начинается</span>
-      <h2>С какими проблемами в математике чаще всего сталкиваются школьники?</h2>
+      <h2>С какими проблемами в математике чаще всего сталкивается школьник?</h2>
     </div>
     <div class="problems reveal">
-      <div class="problem"><span class="mk"></span><p>Не понимаешь текущие и старые темы.</p></div>
-      <div class="problem"><span class="mk"></span><p>Испытываешь неуверенность и страх ошибиться.</p></div>
-      <div class="problem"><span class="mk"></span><p>Тратишь много времени на домашку, а всё равно вылезают ошибки.</p></div>
-      <div class="problem"><span class="mk"></span><p>Потеряна мотивация и уже нет сил менять ситуацию.</p></div>
-      <div class="problem"><span class="mk"></span><p>Низкие оценки в школе и низкие баллы на пробниках и экзаменах.</p></div>
+      <div class="problem"><span class="mk"></span><p>Не понимает текущие и старые темы, а пробелы только копятся.</p></div>
+      <div class="problem"><span class="mk"></span><p>Испытывает сильную неуверенность и паникует из-за страха ошибиться.</p></div>
+      <div class="problem"><span class="mk"></span><p>Тратит много времени на домашнее задание, но всё равно приносит низкие оценки.</p></div>
+      <div class="problem"><span class="mk"></span><p>Потеряна мотивация, опускаются руки и кажется, что «понять математику мне не дано».</p></div>
       <div class="problem resolve"><span class="mk">→</span><p>С этим можно и нужно работать, и это реально изменить.</p></div>
     </div>
   </div>
@@ -388,7 +387,7 @@ footer{background:#0C1115;color:var(--ink-soft);padding:40px 0;border-top:1px so
   <div class="wrap">
     <div class="about reveal">
       <span class="eyebrow">знакомство</span>
-      <h2 style="font-size:clamp(33px,4.6vw,52px);margin-bottom:22px">Давайте знакомиться!</h2>
+      <h2 style="font-size:clamp(26px,3.2vw,40px);margin-bottom:22px">Давайте знакомиться!</h2>
       <p>Меня зовут Михаил Бахадов, я репетитор по математике с опытом работы <strong>больше 17 лет</strong>.</p>
       <p>Выпускник <strong>МГТУ имени Баумана</strong> (магистратура кафедры ФН-1 «Высшая математика»).</p>
       <!-- ЛИЧНЫЕ ФАКТЫ: сюда позже впишешь 2–4 предложения о себе (почему математика, чем ещё живёшь) -->
@@ -424,7 +423,7 @@ footer{background:#0C1115;color:var(--ink-soft);padding:40px 0;border-top:1px so
     <div class="pyramid-grid">
       <div class="reveal">
         <span class="eyebrow">метод</span>
-        <h2 style="font-size:clamp(33px,4.6vw,56px);margin-bottom:22px">Пирамида математики</h2>
+        <h2 style="font-size:clamp(26px,3.2vw,40px);margin-bottom:22px">Пирамида математики</h2>
         <p>Школьная математика — это максимально навыковый предмет. Это пирамида, где нижние уровни 5–6 класс, средние 7–8, далее 9, а верхние 10–11. И любой пробел на уровне 5–6 класса будет давать малые или большие сбои вплоть до конца 11 класса. Всегда.</p>
         <p>Нет смысла заниматься заданиями текущего класса, если есть пробелы в прошлом. Хорошая новость: вернувшись назад, мы можем как следует разогнаться — пройти в быстром темпе предыдущую программу, например, 2–3 урока на учебник за прошлые классы и уже на нормальной скорости войти в программу своего класса и чувствовать себя спокойно, свободно и уверенно.</p>
         <p>В процессе наших уроков мы всегда именно так и делаем, не давая провалиться ни одному прошлому навыку.</p>
@@ -640,7 +639,7 @@ footer{background:#0C1115;color:var(--ink-soft);padding:40px 0;border-top:1px so
         <svg viewBox="0 0 24 24" fill="#14181B"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/></svg>
         Telegram
       </a>
-      <a class="btn btn-ghost" href="https://wa.me/79688677867" target="_blank" rel="noopener">WhatsApp</a>
+      <a class="btn btn-ghost" href="https://wa.me/79688677867?text=%D0%A1%D0%B8%D0%BB%20%D0%BD%D0%B5%D1%82%2C%20%D0%BA%D0%B0%D0%BA%20%D1%85%D0%BE%D1%82%D0%B8%D0%BC%20%D0%B7%D0%B0%D0%BD%D0%B8%D0%BC%D0%B0%D1%82%D1%8C%D1%81%D1%8F" target="_blank" rel="noopener">WhatsApp</a>
     </div>
   </div>
 </section>
