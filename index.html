@@ -161,6 +161,7 @@ section[id]{scroll-margin-top:78px}
 .pyramid-grid p strong{color:var(--gold);font-weight:600}
 .pyramid-grid a{color:var(--gold-bright);font-weight:600}
 .pyramid{display:flex;flex-direction:column;align-items:center;gap:5px;max-width:430px;margin:0 auto}
+.pyramid-inline{display:none}  /* мобильная копия пирамиды — на десктопе скрыта */
 .tier{height:72px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#14181B;text-align:center;transition:transform .3s}
 .tier:hover{transform:scale(1.03)}
 .tier b{font-family:var(--display);font-size:24px}
@@ -281,6 +282,8 @@ footer{background:#0C1115;color:var(--ink-soft);padding:40px 0;border-top:1px so
   .topnav a{padding:14px 4px;border-bottom:1px solid var(--line-soft)}
   .topnav a:last-child{border-bottom:none}
   .hero-grid,.pyramid-grid,.price-cols{grid-template-columns:1fr;gap:40px}
+  .pyramid-inline{display:block;margin:8px auto 28px}  /* на телефоне показываем пирамиду между абзацами */
+  .pyramid-aside{display:none}                          /* и прячем боковую копию */
   .portrait{max-width:360px;margin:0 auto}
   .tools{grid-template-columns:1fr}
   .problems,.help-list,.embed-grid{grid-template-columns:1fr}
@@ -436,12 +439,23 @@ footer{background:#0C1115;color:var(--ink-soft);padding:40px 0;border-top:1px so
         <span class="eyebrow">метод</span>
         <h2 style="font-size:clamp(26px,3.2vw,40px);margin-bottom:22px">Пирамида математики</h2>
         <p>Школьная математика — это максимально навыковый предмет. Это пирамида, где нижние уровни 5–6 класс, средние 7–8, далее 9, а верхние 10–11. И любой пробел на уровне 5–6 класса будет давать малые или большие сбои вплоть до конца 11 класса. Всегда.</p>
+
+        <!-- Мобильная копия пирамиды: видна только на телефоне (≤900px), встаёт сразу под описанием уровней -->
+        <div class="pyramid-inline reveal">
+          <div class="pyramid">
+            <div class="tier tier-1"><b>10–11</b><span>классы</span></div>
+            <div class="tier tier-2"><b>9</b><span>класс</span></div>
+            <div class="tier tier-3"><b>7–8</b><span>классы</span></div>
+            <div class="tier tier-4"><b>5–6</b><span>фундамент навыков</span></div>
+          </div>
+        </div>
+
         <p>Нет смысла заниматься заданиями текущего класса, если есть пробелы в прошлом. Хорошая новость: вернувшись назад, мы можем как следует разогнаться — пройти в быстром темпе предыдущую программу, например, 2–3 урока на учебник за прошлые классы и уже на нормальной скорости войти в программу своего класса и чувствовать себя спокойно, свободно и уверенно.</p>
         <p>В процессе наших уроков мы всегда именно так и делаем, не давая провалиться ни одному прошлому навыку.</p>
         <!-- МОСТИК К ТРЕНАЖЁРАМ — текст-заглушка, перепиши под себя -->
         <p>А чтобы отточить каждый навык до автоматизма, я сделал <a href="https://jedimath7.github.io/trainers" target="_blank" rel="noopener">авторские тренажёры</a> — отдельный под каждую тему.</p>
       </div>
-      <div class="reveal">
+      <div class="reveal pyramid-aside">
         <div class="pyramid">
           <div class="tier tier-1"><b>10–11</b><span>классы</span></div>
           <div class="tier tier-2"><b>9</b><span>класс</span></div>
