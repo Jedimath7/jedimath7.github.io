@@ -10,8 +10,10 @@
 
         body {
             font-family: 'EB Garamond', serif;
-            background: radial-gradient(circle at 50% 20%, #e8e0d0 0%, #d4c8b0 70%, #b8a890 100%);
-            color: #1a0f09;
+            /* Тёмный фон в гамме визитки bakhadov.ru: мягкое свечение сверху */
+            background: radial-gradient(circle at 50% 18%, #1d2a30 0%, #131a1f 62%, #0f151a 100%);
+            background-attachment: fixed;
+            color: #ece6d8;
             min-height: 100vh;
             line-height: 1.6;
         }
@@ -30,8 +32,8 @@
         .hero h1 {
             font-family: 'Cinzel', serif;
             font-size: 2.2em;
-            color: #1a0f09;
-            text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.15);
+            color: #e4c892;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
             margin-bottom: 16px;
         }
         .hero h1::after {
@@ -39,12 +41,12 @@
             display: block;
             width: 40%;
             height: 2px;
-            background: linear-gradient(90deg, transparent, #8b7a60, transparent);
+            background: linear-gradient(90deg, transparent, #c9a86a, transparent);
             margin: 20px auto 0;
         }
         .hero p {
             font-size: 1.15em;
-            color: #4a3828;
+            color: #a7aea9;
             max-width: 600px;
             margin: 0 auto;
         }
@@ -61,22 +63,22 @@
             font-family: 'EB Garamond', serif;
             font-size: 1.05em;
             padding: 8px 22px;
-            border: 2px solid rgba(74, 56, 40, 0.3);
+            border: 2px solid rgba(201, 168, 106, 0.35);
             border-radius: 24px;
             background: transparent;
-            color: #4a3828;
+            color: #cdd2cd;
             cursor: pointer;
             transition: all 0.25s ease;
             letter-spacing: 0.02em;
         }
         .filter-btn:hover {
-            border-color: #4a3828;
-            background: rgba(74, 56, 40, 0.06);
+            border-color: #c9a86a;
+            background: rgba(201, 168, 106, 0.10);
         }
         .filter-btn.active {
-            background: #4a3828;
-            color: #e8e0d0;
-            border-color: #4a3828;
+            background: #c9a86a;
+            color: #131a1f;
+            border-color: #c9a86a;
             font-weight: 700;
         }
 
@@ -84,7 +86,7 @@
         .section-title {
             font-family: 'Cinzel', serif;
             font-size: 1.3em;
-            color: #1a0f09;
+            color: #e4c892;
             margin-bottom: 24px;
             text-align: center;
         }
@@ -92,7 +94,7 @@
         /* ── Trainer grid ── */
         .trainer-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            grid-template-columns: repeat(3, 1fr);  /* на компьютере — 3 плитки в ряд */
             gap: 22px;
             margin-bottom: 70px;
         }
@@ -173,26 +175,26 @@
         }
 
         .testing-card {
-            border: 2px dashed rgba(74, 56, 40, 0.2);
+            border: 2px dashed rgba(201, 168, 106, 0.25);
             border-radius: 8px;
             padding: 24px 20px;
             text-align: center;
-            background: rgba(0, 0, 0, 0.02);
+            background: rgba(255, 255, 255, 0.03);
             transition: border-color 0.2s, background 0.2s;
         }
         .testing-card:hover {
-            border-color: rgba(74, 56, 40, 0.4);
-            background: rgba(0, 0, 0, 0.04);
+            border-color: rgba(201, 168, 106, 0.5);
+            background: rgba(255, 255, 255, 0.05);
         }
         .testing-card .test-title {
             font-family: 'Cinzel', serif;
             font-size: 1.05em;
-            color: #1a0f09;
+            color: #ece6d8;
             margin-bottom: 4px;
         }
         .testing-card .test-sub {
             font-size: 0.9em;
-            color: #6b5848;
+            color: #a7aea9;
         }
         .testing-card .test-badge {
             display: inline-block;
@@ -200,8 +202,8 @@
             font-size: 0.78em;
             padding: 3px 12px;
             border-radius: 12px;
-            background: rgba(0, 0, 0, 0.06);
-            color: #6b5848;
+            background: rgba(255, 255, 255, 0.08);
+            color: #a7aea9;
         }
 
         /* ── Footer ── */
@@ -209,14 +211,19 @@
             text-align: center;
             margin-top: 70px;
             font-size: 0.85em;
-            color: #8b7a60;
+            color: #8a8472;
+        }
+
+        /* Планшет: 2 плитки в ряд */
+        @media (max-width: 760px) and (min-width: 601px) {
+            .trainer-grid { grid-template-columns: 1fr 1fr; }
         }
 
         @media (max-width: 600px) {
             .container { padding: 24px 16px 60px; }
             .hero h1 { font-size: 1.6em; }
             .hero p { font-size: 1em; }
-            .trainer-grid { grid-template-columns: 1fr; }
+            .trainer-grid { grid-template-columns: 1fr; }  /* телефон: 1 в ряд */
             .testing-grid { grid-template-columns: 1fr 1fr; }
         }
     </style>
@@ -578,7 +585,7 @@
             card.innerHTML =
                 '<div class="test-title">' + t.grade + '</div>' +
                 '<div class="test-sub">Сборное тестирование из разных тем</div>' +
-                '<span class="test-badge" style="background:rgba(42,106,42,0.12);color:#2a6a2a;">Пройти</span>';
+                '<span class="test-badge" style="background:rgba(143,168,155,0.18);color:#a9c4b5;">Пройти</span>';
             testingGrid.appendChild(card);
         } else {
             const card = document.createElement('div');
