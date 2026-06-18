@@ -6,509 +6,316 @@
 <title>Михаил Бахадов — репетитор по математике | ЕГЭ, ОГЭ, 5–11 классы и студенты 1–2 курса</title>
 <meta name="description" content="Профессиональный репетитор по математике с опытом более 17 лет. Подготовка к ЕГЭ и ОГЭ, занятия для 5–11 классов и студентов 1–2 курса онлайн. Выпускник МГТУ им. Баумана.">
 
-<!-- Шрифты: Cormorant Garamond (заголовки) + Manrope (текст), оба с кириллицей -->
+<!-- ЧЕРНОВИК 3 — направление «Вечерний кабинет»: глубокий сине-графит + тёплое золото, дидон Prata + Inter -->
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Prata&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<!-- Помечаем, что JS работает: страховка для блоков .reveal и сворачивания отзывов -->
+<script>document.documentElement.classList.add('js');</script>
 
 <style>
-/* ===== Палитра и базовые переменные ===== */
+/* ===== Палитра «Вечерний кабинет» ===== */
 :root{
-  --cream:#F6F1E8;        /* тёплый кремовый фон */
-  --cream-deep:#EFE6D6;   /* фон секций потемнее */
-  --paper:#FCFAF5;        /* карточки, «бумага» */
-  --ink:#221E1A;          /* основной тёмный текст */
-  --ink-soft:#5C544B;     /* приглушённый текст */
-  --line:#E2D7C4;         /* тонкие линии */
-  --terracotta:#BB5A33;   /* основной акцент */
-  --terracotta-deep:#9E4724;
-  --amber:#C98A3C;        /* второй акцент */
-  --gold:#CBA168;         /* золотистый штрих */
-  --tg:#2AABEE;           /* фирменный Telegram */
-  --wa:#25D366;           /* фирменный WhatsApp */
-  --maxw:1180px;
+  --bg:#131A1F;          /* глубокий сине-графит */
+  --bg-deep:#0F151A;     /* секции темнее / футер */
+  --surface:#1B262B;     /* карточки */
+  --surface-2:#212E33;
+  --ink:#ECE6D8;         /* тёплый пергамент */
+  --ink-soft:#A7AEA9;    /* приглушённый */
+  --gold:#C9A86A;        /* тёплое золото */
+  --gold-bright:#E4C892;
+  --gold-deep:#A9854A;
+  --sage:#8FA89B;        /* холодный второй штрих, изредка */
+  --line:rgba(201,168,106,.22);   /* золотая волосяная линия */
+  --line-soft:rgba(236,230,216,.09);
+  --maxw:1160px;
+  --display:'Prata',Georgia,serif;
+  --body:'Inter',system-ui,sans-serif;
 }
-
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
 body{
-  background:var(--cream);
-  color:var(--ink);
-  font-family:'Manrope',sans-serif;
-  font-size:18px;
-  line-height:1.65;
-  -webkit-font-smoothing:antialiased;
-  overflow-x:hidden;
-  position:relative;
+  background:var(--bg);color:var(--ink);
+  font-family:var(--body);font-size:17.5px;line-height:1.7;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;
 }
+h1,h2,h3,h4{font-family:var(--display);font-weight:400;line-height:1.16;letter-spacing:.005em}
 
-/* Зернистая «бумажная» текстура поверх всего фона */
-body::before{
-  content:"";
-  position:fixed;
-  inset:0;
-  pointer-events:none;
-  z-index:1;
-  opacity:.05;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 28px;position:relative;z-index:2}
+.section{padding:96px 0;position:relative}
+section[id]{scroll-margin-top:78px}
+.section-head{max-width:760px;margin-bottom:50px}
+.section-head h2{font-size:clamp(33px,4.6vw,56px);margin-bottom:16px}
 
-h1,h2,h3,h4{
-  font-family:'Cormorant Garamond',serif;
-  font-weight:600;
-  line-height:1.08;
-  letter-spacing:-.01em;
-}
-
-.wrap{max-width:var(--maxw);margin:0 auto;padding:0 26px;position:relative;z-index:2}
-section{position:relative;z-index:2}
-/* Чтобы sticky-шапка не перекрывала заголовок при переходе по якорю из меню */
-section[id]{scroll-margin-top:80px}
-
-/* Маленький заголовок-надпись над секциями */
+/* надпись над секциями + тонкая золотая черта */
 .eyebrow{
-  font-family:'Manrope',sans-serif;
-  font-size:13px;
-  font-weight:700;
-  letter-spacing:.22em;
-  text-transform:uppercase;
-  color:var(--terracotta);
-  margin-bottom:18px;
-  display:inline-block;
+  font-family:var(--body);font-size:12px;font-weight:600;letter-spacing:.28em;
+  text-transform:uppercase;color:var(--gold);margin-bottom:20px;display:inline-flex;align-items:center;gap:12px;
 }
+.eyebrow::before{content:"";width:34px;height:1px;background:var(--gold);opacity:.6}
+.lead{font-size:20px;color:var(--ink-soft);max-width:62ch}
 
-.lead{font-size:21px;color:var(--ink-soft);max-width:60ch}
+/* Декоративный разделитель между секциями: золотая линия с ромбом */
+.section-divider{display:flex;justify-content:center;align-items:center;gap:14px;
+  max-width:var(--maxw);padding:0 28px;margin:0 auto;position:relative;z-index:2}
+.section-divider::before,.section-divider::after{content:"";flex:1;height:1px;background:var(--line)}
+.section-divider .diamond{width:10px;height:10px;border:1px solid var(--gold);transform:rotate(45deg);
+  flex-shrink:0;background:var(--bg)}
 
 /* ===== Кнопки ===== */
 .btns{display:flex;gap:14px;flex-wrap:wrap}
 .btn{
-  display:inline-flex;align-items:center;gap:10px;
-  padding:15px 26px;border-radius:50px;
-  font-family:'Manrope',sans-serif;font-weight:600;font-size:16px;
-  text-decoration:none;color:#fff;border:none;cursor:pointer;
-  transition:transform .25s ease, box-shadow .25s ease;
-  box-shadow:0 6px 18px rgba(34,30,26,.12);
+  display:inline-flex;align-items:center;gap:10px;padding:15px 28px;border-radius:50px;
+  font-family:var(--body);font-weight:600;font-size:15.5px;text-decoration:none;cursor:pointer;
+  border:1px solid transparent;transition:transform .25s,background .25s,color .25s,border-color .25s,box-shadow .25s;
 }
-.btn svg{width:20px;height:20px}
-.btn:hover{transform:translateY(-3px);box-shadow:0 12px 26px rgba(34,30,26,.2)}
-.btn-tg{background:var(--tg)}
-.btn-wa{background:var(--wa)}
-.btn-ghost{
-  background:transparent;color:var(--ink);
-  border:1.5px solid var(--ink);box-shadow:none;
-}
-.btn-ghost:hover{background:var(--ink);color:var(--cream)}
+.btn svg{width:19px;height:19px}
+.btn-gold{background:var(--gold);color:#14181B;box-shadow:0 4px 20px rgba(201,168,106,.25)}
+.btn-gold:hover{background:var(--gold-bright);transform:translateY(-3px);box-shadow:0 8px 30px rgba(201,168,106,.35)}
+.btn-ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+.btn-ghost:hover{border-color:var(--gold);color:var(--gold);transform:translateY(-3px)}
 
-/* ===== Шапка (sticky-навигация) ===== */
+/* ===== Шапка ===== */
 .site-header{
-  position:sticky;top:0;z-index:50;
-  background:rgba(246,241,232,.92);
-  backdrop-filter:saturate(140%) blur(8px);
-  -webkit-backdrop-filter:saturate(140%) blur(8px);
-  border-bottom:1px solid transparent;
-  transition:border-color .3s, box-shadow .3s;
+  position:sticky;top:0;z-index:50;background:rgba(19,26,31,.82);
+  backdrop-filter:saturate(140%) blur(10px);-webkit-backdrop-filter:saturate(140%) blur(10px);
+  border-bottom:1px solid transparent;transition:border-color .3s,box-shadow .3s;
 }
-.site-header.scrolled{border-color:var(--line);box-shadow:0 4px 18px rgba(34,30,26,.06)}
-.topbar{
-  display:flex;justify-content:space-between;align-items:center;
-  padding:13px 0;position:relative;
-}
-
-/* ===== HERO ===== */
-.hero{padding:40px 0 70px}
-.brandmark{
-  font-family:'Cormorant Garamond',serif;font-weight:700;font-size:24px;
-  letter-spacing:.02em;
-}
-.brandmark span{color:var(--terracotta)}
-.topnav{display:flex;gap:24px;align-items:center}
-.topnav a{
-  color:var(--ink-soft);text-decoration:none;font-size:15px;font-weight:600;
-  letter-spacing:.01em;transition:color .2s;
-}
-.topnav a:hover{color:var(--terracotta)}
-/* Кнопка-бургер (видна только на мобильном) */
-.nav-toggle{
-  display:none;width:44px;height:44px;border:1px solid var(--line);
-  background:var(--paper);border-radius:11px;cursor:pointer;
-  align-items:center;justify-content:center;flex-direction:column;gap:4px;
-}
-.nav-toggle span{display:block;width:20px;height:2px;background:var(--ink);border-radius:2px;transition:.3s}
+.site-header.scrolled{border-color:var(--line)}
+.topbar{display:flex;justify-content:space-between;align-items:center;padding:15px 0}
+.brandmark{display:flex;align-items:center;gap:11px;font-family:var(--display);font-size:21px;color:var(--ink)}
+.brandmark .glyph{width:32px;height:32px;border:1px solid var(--gold);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;color:var(--gold);font-family:var(--display);font-size:15px;flex-shrink:0}
+.topnav{display:flex;gap:28px;align-items:center}
+.topnav a{color:var(--ink-soft);text-decoration:none;font-size:14px;font-weight:500;letter-spacing:.02em;transition:color .2s}
+.topnav a:hover{color:var(--gold)}
+.nav-toggle{display:none;width:44px;height:44px;border:1px solid var(--line);background:var(--surface);
+  border-radius:8px;cursor:pointer;flex-direction:column;align-items:center;justify-content:center;gap:4px}
+.nav-toggle span{display:block;width:20px;height:2px;background:var(--ink);transition:.3s}
 .nav-toggle.open span:nth-child(1){transform:translateY(6px) rotate(45deg)}
 .nav-toggle.open span:nth-child(2){opacity:0}
 .nav-toggle.open span:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
 
-.hero-grid{
-  display:grid;grid-template-columns:1.15fr .85fr;gap:50px;align-items:center;
-}
-.hero h1{
-  font-size:clamp(44px,6.5vw,82px);
-  margin-bottom:8px;
-}
-.hero .role{
-  font-family:'Manrope',sans-serif;font-weight:700;
-  font-size:14px;letter-spacing:.24em;text-transform:uppercase;
-  color:var(--terracotta);margin-bottom:26px;
-}
-.hero .role b{color:var(--ink);font-weight:700}
-.hero-sub{font-size:22px;color:var(--ink-soft);margin-bottom:32px;max-width:46ch}
-.hero-sub em{font-style:italic;color:var(--ink);font-family:'Cormorant Garamond',serif;font-size:26px}
+/* ===== HERO ===== */
+.hero{padding:54px 0 70px;position:relative;overflow:hidden}
+/* мягкое золотое свечение «вечернего кабинета» */
+.hero::before{content:"";position:absolute;top:-20%;left:8%;width:60%;height:120%;z-index:0;pointer-events:none;
+  background:radial-gradient(circle,rgba(201,168,106,.12),transparent 60%)}
+.hero-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:54px;align-items:center}
+.hero .role{font-size:13px;font-weight:600;letter-spacing:.26em;text-transform:uppercase;color:var(--gold);margin-bottom:24px;
+  display:flex;align-items:center;gap:12px}
+.hero .role::before{content:"";width:34px;height:1px;background:var(--gold);opacity:.6;flex-shrink:0}
+.hero h1{font-size:clamp(48px,7vw,92px);margin-bottom:18px;letter-spacing:.01em}
+.hero .rule{width:96px;height:1px;background:var(--gold);margin:0 0 24px}
+.hero-sub{font-size:21px;color:var(--ink-soft);max-width:44ch;margin-bottom:32px}
+.hero-sub em{font-style:italic;color:var(--ink)}
 
-/* Карточка-портрет справа */
-.portrait{
-  position:relative;border-radius:14px;overflow:hidden;
-  background:linear-gradient(160deg,var(--cream-deep),#E6D9C2);
-  aspect-ratio:4/5;
-  border:1px solid var(--line);
-  box-shadow:0 24px 60px rgba(34,30,26,.16);
-  display:flex;align-items:center;justify-content:center;
-}
+/* Портрет в золотой рамке */
+.portrait{position:relative;border-radius:8px;overflow:hidden;aspect-ratio:4/5;
+  background:linear-gradient(160deg,#23303550,#161e22);border:1px solid var(--line);
+  box-shadow:0 30px 70px rgba(0,0,0,.45)}
 .portrait img{width:100%;height:100%;object-fit:cover;display:block}
-/* Заглушка для фото, пока его нет */
-.portrait .ph{
-  text-align:center;color:var(--ink-soft);padding:30px;
-}
-.portrait .ph svg{width:54px;height:54px;opacity:.4;margin-bottom:14px}
-.portrait .ph small{display:block;font-size:13px;line-height:1.5;letter-spacing:.02em}
-.portrait::after{ /* декоративная рамка-уголок */
-  content:"";position:absolute;inset:14px;border:1px solid rgba(255,255,255,.35);
-  border-radius:8px;pointer-events:none;
-}
+.portrait .ph{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--ink-soft);text-align:center;padding:28px}
+.portrait .ph svg{width:50px;height:50px;opacity:.4;margin-bottom:12px}
+.portrait .ph small{font-size:12px}
+.portrait::after{content:"";position:absolute;inset:12px;border:1px solid rgba(201,168,106,.4);border-radius:4px;pointer-events:none}
 
-/* Статистика под hero */
-.stats{
-  display:flex;gap:0;margin-top:54px;border-top:1px solid var(--line);
-  border-bottom:1px solid var(--line);
-}
-.stat{flex:1;padding:22px 10px;text-align:center;border-right:1px solid var(--line);
-  display:flex;flex-direction:column;justify-content:center;align-items:center}
+/* Статистика — золотые числа Prata, золотые волоски-разделители */
+.stats{display:grid;grid-template-columns:repeat(5,1fr);margin-top:56px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.stat{padding:24px 12px;text-align:center;border-right:1px solid var(--line-soft)}
 .stat:last-child{border-right:none}
-.stat b{
-  display:block;font-family:'Cormorant Garamond',serif;
-  font-size:40px;font-weight:700;color:var(--terracotta);line-height:1;
-}
-.stat span{font-size:13.5px;color:var(--ink-soft);letter-spacing:.04em}
-
-/* ===== Общие секции ===== */
-.section{padding:88px 0}
-.section-head{max-width:760px;margin-bottom:54px}
-.section-head h2{font-size:clamp(34px,4.5vw,54px);margin-bottom:14px}
+.stat b{display:block;font-family:var(--display);font-size:38px;color:var(--gold);line-height:1}
+.stat .sm{font-size:22px}
+.stat span{display:block;font-size:12.5px;color:var(--ink-soft);margin-top:8px;letter-spacing:.03em}
 
 /* ===== Проблемы ===== */
-.sec-problems{background:var(--cream-deep)}
-.problems{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--line);
-  border:1px solid var(--line);border-radius:14px;overflow:hidden}
-.problem{
-  background:var(--cream-deep);padding:32px 30px;display:flex;gap:20px;align-items:flex-start;
-  transition:background .3s;
-}
-.problem:hover{background:var(--paper)}
-.problem .num{
-  font-family:'Cormorant Garamond',serif;font-size:34px;font-weight:700;
-  color:var(--gold);line-height:1;flex-shrink:0;
-}
-.problem p{font-size:17px;color:var(--ink);line-height:1.5}
-.problems-note{
-  text-align:center;margin-top:44px;font-family:'Cormorant Garamond',serif;
-  font-size:clamp(26px,3.5vw,38px);font-style:italic;color:var(--terracotta-deep);
-}
+.sec-problems{background:var(--bg-deep)}
+.problems{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.problem{background:var(--surface);border:1px solid var(--line-soft);border-radius:8px;padding:26px 28px;
+  display:flex;gap:16px;align-items:flex-start;transition:border-color .25s,transform .25s,box-shadow .25s}
+.problem:hover{border-color:var(--line);transform:translateY(-2px);box-shadow:0 8px 30px rgba(0,0,0,.2)}
+.problem .mk{flex-shrink:0;width:9px;height:9px;margin-top:8px;background:var(--gold);transform:rotate(45deg)}
+.problem p{font-size:16.5px;color:var(--ink)}
+.problem.resolve{grid-column:1 / -1;background:linear-gradient(120deg,var(--gold-deep),var(--gold));border:none}
+.problem.resolve .mk{transform:none;width:auto;height:auto;margin-top:0;color:#14181B;font-size:18px;font-weight:700}
+.problem.resolve p{color:#14181B;font-weight:600}
 
 /* ===== Знакомство ===== */
-.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:54px;align-items:start}
-.about p{margin-bottom:18px;color:var(--ink-soft)}
+.about{max-width:780px}
+.about p{margin-bottom:16px;color:var(--ink-soft)}
 .about p strong{color:var(--ink);font-weight:600}
-.about .signature{
-  font-family:'Cormorant Garamond',serif;font-style:italic;font-size:24px;
-  color:var(--terracotta);margin-top:8px;
-}
-.video-frame{
-  position:relative;border-radius:14px;overflow:hidden;
-  background:#1a1714;aspect-ratio:16/9;border:1px solid var(--line);
-  box-shadow:0 18px 44px rgba(34,30,26,.18);
-  display:flex;align-items:center;justify-content:center;flex-direction:column;
-  text-decoration:none;
-}
-.video-frame .play{
-  width:74px;height:74px;border-radius:50%;background:var(--terracotta);
-  display:flex;align-items:center;justify-content:center;
-  box-shadow:0 8px 24px rgba(187,90,51,.5);transition:transform .3s;
-}
-.video-frame:hover .play{transform:scale(1.08)}
-.video-frame .play svg{width:28px;height:28px;fill:#fff;margin-left:4px}
-.video-frame .cap{color:rgba(255,255,255,.85);margin-top:16px;font-size:14px;letter-spacing:.04em}
-
-/* ===== Пирамида ===== */
-.sec-pyramid{background:var(--ink);color:var(--cream)}
-.sec-pyramid .eyebrow{color:var(--gold)}
-.sec-pyramid h2{color:var(--cream)}
-.pyramid-grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:60px;align-items:center}
-.pyramid-grid p{color:rgba(246,241,232,.78);margin-bottom:18px}
-.pyramid-grid p strong{color:var(--gold);font-weight:600}
-
-.pyramid{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;max-width:440px;margin:0 auto}
-.tier{
-  height:74px;display:flex;align-items:center;justify-content:center;flex-direction:column;
-  color:#fff;position:relative;transition:transform .35s ease;text-align:center;
-}
-.tier:hover{transform:scale(1.03)}
-.tier b{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:700;line-height:1}
-.tier span{font-size:12px;letter-spacing:.04em;opacity:.92;margin-top:4px}
-/* Ровная пирамида из 4 ярусов: ширины 25/50/75/100%, одинаковый наклон граней */
-.tier-1{width:25%;background:linear-gradient(135deg,var(--gold),var(--amber));
-  clip-path:polygon(50% 0,100% 100%,0 100%)}
-.tier-1 b{margin-top:26px;font-size:22px}
-.tier-1 span{display:none}
-.tier-2{width:50%;background:linear-gradient(135deg,var(--amber),#C5762F);
-  clip-path:polygon(25% 0,75% 0,100% 100%,0 100%)}
-.tier-3{width:75%;background:linear-gradient(135deg,#C5762F,var(--terracotta));
-  clip-path:polygon(16.667% 0,83.333% 0,100% 100%,0 100%)}
-.tier-4{width:100%;background:linear-gradient(135deg,var(--terracotta),var(--terracotta-deep));
-  clip-path:polygon(12.5% 0,87.5% 0,100% 100%,0 100%)}
-
-/* ===== Как я работаю (онлайн) ===== */
-.work-intro{max-width:62ch;margin-bottom:46px;font-size:21px;color:var(--ink-soft)}
-.work-intro b{color:var(--ink);font-weight:600}
-.tools{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
-.tool{
-  background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:32px 28px;
-  transition:transform .3s, box-shadow .3s;
-}
-.tool:hover{transform:translateY(-5px);box-shadow:0 16px 36px rgba(34,30,26,.1)}
-.tool .ic{
-  width:52px;height:52px;border-radius:12px;background:var(--cream-deep);
-  display:flex;align-items:center;justify-content:center;margin-bottom:20px;
-}
-.tool .ic svg{width:26px;height:26px;stroke:var(--terracotta);fill:none;stroke-width:1.7}
-.tool h3{font-size:25px;margin-bottom:10px}
-.tool p{font-size:16px;color:var(--ink-soft);line-height:1.55}
-
-/* ===== Тренажёры (авторские) ===== */
-.trainers-feature{
-  display:grid;grid-template-columns:1.1fr .9fr;gap:48px;align-items:center;
-  background:
-    radial-gradient(circle at 82% 12%, rgba(203,161,104,.20), transparent 55%),
-    linear-gradient(150deg,#efe6d4,#e6d8bf);
-  border:1px solid var(--line);border-radius:22px;
-  padding:54px 50px;position:relative;overflow:hidden;
-  box-shadow:0 20px 50px rgba(34,30,26,.12);
-}
-.trainers-feature::before{ /* водяной знак из формул */
-  content:"√  ×  ∑  π  x²";
-  position:absolute;right:0;bottom:-26px;
-  font-family:'Cormorant Garamond',serif;font-size:118px;font-weight:700;
-  color:rgba(158,71,36,.07);letter-spacing:.08em;pointer-events:none;white-space:nowrap;
-}
-.tf-text h2{font-size:clamp(32px,4vw,50px);margin:10px 0 20px}
-.tf-text p{color:var(--ink-soft);margin-bottom:16px;max-width:48ch}
-.tf-text p strong{color:var(--terracotta-deep);font-weight:700}
-.btn-trainers{background:var(--ink);color:var(--cream);margin-top:8px}
-.btn-trainers:hover{background:var(--terracotta-deep)}
-.tf-note{font-size:14px!important;color:var(--ink-soft);margin-top:18px!important;font-style:italic}
-.tf-visual{display:flex;flex-wrap:wrap;gap:10px;align-content:center;position:relative;z-index:2}
-.chip{
-  background:var(--paper);border:1px solid var(--line);border-radius:30px;
-  padding:9px 16px;font-size:14px;color:var(--ink);font-weight:600;
-  box-shadow:0 3px 8px rgba(34,30,26,.05);
-}
-.chip.more{background:var(--terracotta);color:#fff;border-color:var(--terracotta)}
 
 /* ===== Помогаю ученику ===== */
-.sec-help{background:var(--cream-deep)}
-.help-list{display:grid;grid-template-columns:repeat(2,1fr);gap:14px 40px;margin-top:10px}
-.help-item{
-  display:flex;gap:16px;align-items:center;padding:18px 0;
-  border-bottom:1px solid var(--line);
-}
-.help-item .chk{
-  width:30px;height:30px;border-radius:50%;background:var(--terracotta);flex-shrink:0;
-  display:flex;align-items:center;justify-content:center;
-}
-.help-item .chk svg{width:16px;height:16px;stroke:#fff;fill:none;stroke-width:2.4}
-.help-item p{font-size:17px}
+.help-list{display:grid;grid-template-columns:repeat(2,1fr);gap:2px 40px;margin-top:8px}
+.help-item{display:flex;gap:15px;align-items:center;padding:17px 0;border-bottom:1px solid var(--line-soft)}
+.help-item .chk{width:28px;height:28px;border:1px solid var(--gold);border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.help-item .chk svg{width:14px;height:14px;stroke:var(--gold);fill:none;stroke-width:2.4}
+.help-item p{font-size:16px;color:var(--ink)}
 
-/* ===== Принципы (глубина) ===== */
-.principles{display:flex;flex-direction:column;gap:22px;max-width:840px;margin:0 auto}
-.principle{
-  background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:38px 32px;
-  position:relative;overflow:hidden;
-}
-.principle::before{
-  content:"";position:absolute;top:0;left:0;width:100%;height:4px;
-  background:linear-gradient(90deg,var(--terracotta),var(--amber));
-}
-.principle .q{
-  font-family:'Cormorant Garamond',serif;font-size:60px;font-weight:700;
-  color:var(--line);line-height:.6;height:30px;display:block;
-}
-.principle h3{font-size:28px;margin:8px 0 16px}
-.principle p{font-size:16px;color:var(--ink-soft);line-height:1.6}
+/* ===== Пирамида ===== */
+.sec-pyramid{background:var(--bg-deep)}
+.pyramid-grid{display:grid;grid-template-columns:.95fr 1.05fr;gap:56px;align-items:center}
+.pyramid-grid p{color:var(--ink-soft);margin-bottom:16px}
+.pyramid-grid p strong{color:var(--gold);font-weight:600}
+.pyramid-grid a{color:var(--gold-bright);font-weight:600}
+.pyramid{display:flex;flex-direction:column;align-items:center;gap:5px;max-width:430px;margin:0 auto}
+.tier{height:72px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#14181B;text-align:center;transition:transform .3s}
+.tier:hover{transform:scale(1.03)}
+.tier b{font-family:var(--display);font-size:24px}
+.tier span{font-size:11.5px;opacity:.8;margin-top:3px;font-weight:500}
+.tier-1{width:28%;background:var(--gold-bright);clip-path:polygon(50% 0,100% 100%,0 100%)}
+.tier-1 b{margin-top:22px;font-size:19px}.tier-1 span{display:none}
+.tier-2{width:52%;background:#D7B87E;clip-path:polygon(25% 0,75% 0,100% 100%,0 100%)}
+.tier-3{width:76%;background:var(--gold);clip-path:polygon(16.6% 0,83.4% 0,100% 100%,0 100%)}
+.tier-4{width:100%;background:var(--gold-deep);clip-path:polygon(12.5% 0,87.5% 0,100% 100%,0 100%)}
 
-/* ===== Отзывы ===== */
-.sec-reviews{background:var(--ink);color:var(--cream)}
-.sec-reviews .eyebrow{color:var(--gold)}
-.sec-reviews h2{color:var(--cream)}
-.video-row{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-bottom:44px}
-/* Встроенные видео VK */
-.embed-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:24px;margin-bottom:40px}
-.vid-embed{position:relative;aspect-ratio:16/9;border-radius:12px;overflow:hidden;background:#000;
-  border:1px solid rgba(203,161,104,.25);box-shadow:0 12px 32px rgba(0,0,0,.28)}
-.vid-embed iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
-.vid-cap{margin-top:12px;color:var(--gold);font-weight:600;font-size:15px}
-.reviews-subhead{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:31px;
-  color:var(--cream);margin:6px 0 24px;padding-bottom:10px;
-  border-bottom:1px solid rgba(203,161,104,.25)}
-.vid-mini{
-  aspect-ratio:16/10;border-radius:12px;background:#2b2620;
-  border:1px solid rgba(203,161,104,.25);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  text-decoration:none;transition:border-color .3s;
-}
-.vid-mini:hover{border-color:var(--gold)}
-.vid-mini .play{
-  width:54px;height:54px;border-radius:50%;background:var(--terracotta);
-  display:flex;align-items:center;justify-content:center;margin-bottom:12px;
-}
-.vid-mini .play svg{width:20px;height:20px;fill:#fff;margin-left:3px}
-.vid-mini span{color:rgba(246,241,232,.8);font-size:14px;text-align:center;padding:0 14px}
-.quotes{column-count:2;column-gap:22px;max-width:940px;margin:0 auto}
-.quote{
-  background:rgba(246,241,232,.04);border-left:3px solid var(--gold);
-  border-radius:0 12px 12px 0;padding:26px 28px;
-  break-inside:avoid;-webkit-column-break-inside:avoid;width:100%;margin-bottom:22px;
-}
-.quote p{color:rgba(246,241,232,.85);font-size:16.5px;line-height:1.6;margin-bottom:14px;font-style:italic}
-.quote .who{color:var(--gold);font-weight:600;font-style:normal;font-size:15px}
-.reviews-channel{text-align:center;margin-top:46px}
-.reviews-note{
-  margin-top:30px;text-align:center;font-size:14px;color:rgba(246,241,232,.45);
-  letter-spacing:.03em;
-}
+/* ===== Онлайн ===== */
+.work-intro{max-width:64ch;margin-bottom:40px;font-size:19px;color:var(--ink-soft)}
+.work-intro b{color:var(--ink);font-weight:600}
+.tools{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.tool{background:var(--surface);border:1px solid var(--line-soft);border-radius:8px;padding:24px 24px;
+  display:grid;grid-template-columns:auto 1fr;column-gap:15px;row-gap:4px;align-items:start;transition:border-color .25s,transform .25s}
+.tool:hover{border-color:var(--line);transform:translateY(-4px)}
+.tool .ic{width:42px;height:42px;border:1px solid var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;grid-column:1;grid-row:1 / span 2}
+.tool .ic svg{width:21px;height:21px;stroke:var(--gold);fill:none;stroke-width:1.7}
+.tool h3{grid-column:2;font-size:21px;margin-bottom:4px}
+.tool p{grid-column:2;font-size:14.5px;color:var(--ink-soft);line-height:1.55}
+.work-note{margin-top:32px;color:var(--ink-soft);max-width:64ch}
+
+/* ===== Принципы ===== */
+.principles{display:flex;flex-direction:column;gap:18px;max-width:880px}
+.principle{background:var(--surface);border:1px solid var(--line-soft);border-radius:8px;padding:36px 34px;
+  display:grid;grid-template-columns:auto 1fr;column-gap:28px;transition:box-shadow .3s}
+.principle:hover{box-shadow:0 8px 30px rgba(0,0,0,.15)}
+.principle .no{font-family:var(--display);font-size:30px;color:var(--gold);line-height:1}
+.principle h3{font-size:27px;margin-bottom:14px}
+.principle p{font-size:15.5px;color:var(--ink-soft);margin-bottom:12px}
+.principle p:last-child{margin-bottom:0}
 
 /* ===== Правила (аккордеон) ===== */
-.accordion{max-width:860px;margin:0 auto}
-.acc-item{border-bottom:1px solid var(--line)}
-.acc-head{
-  width:100%;background:none;border:none;cursor:pointer;text-align:left;
-  padding:26px 0;display:flex;justify-content:space-between;align-items:center;gap:20px;
-  font-family:'Cormorant Garamond',serif;font-size:27px;font-weight:600;color:var(--ink);
-}
-.acc-head .ico{
-  width:34px;height:34px;border-radius:50%;border:1.5px solid var(--terracotta);
-  flex-shrink:0;position:relative;transition:background .3s;
-}
-.acc-head .ico::before,.acc-head .ico::after{
-  content:"";position:absolute;background:var(--terracotta);transition:.3s;
-  top:50%;left:50%;transform:translate(-50%,-50%);
-}
-.acc-head .ico::before{width:14px;height:2px}
-.acc-head .ico::after{width:2px;height:14px}
-.acc-item.open .ico{background:var(--terracotta)}
-.acc-item.open .ico::before,.acc-item.open .ico::after{background:#fff}
+.accordion{max-width:880px}
+.acc-item{border-top:1px solid var(--line-soft)}
+.acc-item:last-child{border-bottom:1px solid var(--line-soft)}
+.acc-head{width:100%;background:none;border:none;cursor:pointer;text-align:left;padding:26px 0;
+  display:flex;justify-content:space-between;align-items:center;gap:20px;font-family:var(--display);font-size:24px;color:var(--ink)}
+.acc-head .ico{width:32px;height:32px;border:1px solid var(--gold);border-radius:50%;flex-shrink:0;position:relative;transition:background .3s}
+.acc-head .ico::before,.acc-head .ico::after{content:"";position:absolute;background:var(--gold);top:50%;left:50%;transform:translate(-50%,-50%);transition:.3s}
+.acc-head .ico::before{width:12px;height:2px}
+.acc-head .ico::after{width:2px;height:12px}
+.acc-item.open .ico{background:var(--gold)}
+.acc-item.open .ico::before,.acc-item.open .ico::after{background:#14181B}
 .acc-item.open .ico::after{transform:translate(-50%,-50%) rotate(90deg);opacity:0}
 .acc-body{max-height:0;overflow:hidden;transition:max-height .45s ease}
 .acc-body-inner{padding:0 0 28px}
-.acc-body-inner ul{list-style:none;padding:0}
-.acc-body-inner li{
-  padding:9px 0 9px 28px;position:relative;color:var(--ink-soft);font-size:16.5px;line-height:1.5;
-}
-.acc-body-inner li::before{
-  content:"";position:absolute;left:0;top:14px;width:8px;height:8px;
-  background:var(--gold);border-radius:50%;
-}
-.acc-body-inner p{color:var(--ink-soft);margin-bottom:12px}
+.acc-body-inner ul{list-style:none}
+.acc-body-inner li{padding:8px 0 8px 26px;position:relative;color:var(--ink-soft);font-size:16px}
+.acc-body-inner li::before{content:"";position:absolute;left:0;top:13px;width:7px;height:7px;background:var(--gold);transform:rotate(45deg)}
+.acc-body-inner li strong{color:var(--gold);font-weight:600}
+.acc-body-inner p{color:var(--ink-soft);margin-bottom:10px}
+.acc-body-inner p strong{color:var(--gold);font-weight:600}
+
+/* ===== Отзывы ===== */
+.sec-reviews{background:var(--bg-deep)}
+.reviews-subhead{font-size:13px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);
+  margin:36px 0 20px;padding-bottom:12px;border-bottom:1px solid var(--line)}
+.reviews-subhead:first-of-type{margin-top:6px}
+.embed-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:22px;margin-bottom:32px}
+.vid-embed{position:relative;aspect-ratio:16/9;border-radius:8px;overflow:hidden;background:#000;border:1px solid var(--line)}
+.vid-embed iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.vid-cap{margin-top:11px;font-size:14px;color:var(--gold);font-weight:600}
+.quotes{columns:2;column-gap:20px;max-width:960px}
+.quote{background:var(--surface);border-left:2px solid var(--gold);border-radius:0 8px 8px 0;padding:24px 26px;break-inside:avoid;margin-bottom:20px;
+  box-shadow:0 4px 16px rgba(0,0,0,.15);transition:transform .25s,box-shadow .25s}
+.quote:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(0,0,0,.2)}
+.quote p{color:var(--ink);font-size:15.5px;line-height:1.65;margin-bottom:12px;font-style:italic}
+.quote .who{font-size:14px;color:var(--gold);font-style:normal;font-weight:600}
+.js .quotes-more{display:none}
+.js .quotes-more.show{display:block}
+.more-reviews-wrap{display:none;text-align:center;margin-top:8px}
+.js .more-reviews-wrap{display:block}
+.reviews-channel{text-align:center;margin-top:42px}
 
 /* ===== Цены ===== */
-.sec-price{background:var(--cream-deep)}
-.price-cols{display:grid;grid-template-columns:1.4fr 1fr;gap:34px}
-.price-card{
-  background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:40px 38px;
-}
-.price-card.feature{border:1.5px solid var(--terracotta);position:relative}
-/* бейдж «Популярный формат» убран */
-.price-card h3{font-size:32px;margin-bottom:24px}
-.price-row{
-  display:flex;justify-content:space-between;align-items:baseline;gap:16px;
-  padding:16px 0;border-bottom:1px dashed var(--line);
-}
+.price-cols{display:grid;grid-template-columns:1.3fr 1fr;gap:24px}
+.price-card{background:var(--surface);border:1px solid var(--line-soft);border-radius:10px;padding:38px 36px;transition:border-color .3s,box-shadow .3s}
+.price-card.feature{border:1px solid var(--gold);box-shadow:0 0 30px rgba(201,168,106,.08)}
+.price-card:hover{box-shadow:0 8px 30px rgba(0,0,0,.2)}
+.price-card h3{font-size:29px;margin-bottom:6px}
+.price-card .ptag{font-size:12px;color:var(--gold);letter-spacing:.16em;text-transform:uppercase;display:block;margin-bottom:22px}
+.price-row{display:flex;justify-content:space-between;align-items:baseline;gap:16px;padding:16px 0;border-bottom:1px solid var(--line-soft)}
 .price-row:last-child{border-bottom:none}
-.price-row .desc{color:var(--ink-soft);font-size:16px}
-.price-row .desc b{color:var(--ink);font-weight:600;display:block;font-size:17px}
-.price-row .val{
-  font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:700;
-  color:var(--terracotta);white-space:nowrap;
-}
+.price-row .desc{color:var(--ink-soft);font-size:15.5px}
+.price-row .desc b{color:var(--ink);font-weight:600;display:block}
+.price-row .val{font-family:var(--display);font-size:27px;color:var(--gold);white-space:nowrap}
 
 /* ===== Финальный CTA ===== */
-.sec-cta{
-  background:var(--ink);color:var(--cream);text-align:center;
-  padding:96px 0;
-}
-.sec-cta h2{font-size:clamp(38px,5.5vw,68px);margin-bottom:20px;color:var(--cream)}
+.sec-cta{background:var(--bg-deep);text-align:center;padding:100px 0;position:relative;overflow:hidden;
+  border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.sec-cta::before{content:"";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:70%;height:160%;
+  background:radial-gradient(circle,rgba(201,168,106,.13),transparent 60%);pointer-events:none}
+.sec-cta h2{font-size:clamp(38px,5.4vw,68px);color:var(--ink);margin-bottom:16px}
 .sec-cta h2 em{font-style:italic;color:var(--gold)}
-.sec-cta p{font-size:20px;color:rgba(246,241,232,.78);max-width:54ch;margin:0 auto 18px}
-.sec-cta .free{
-  display:inline-block;font-family:'Cormorant Garamond',serif;font-style:italic;
-  font-size:26px;color:var(--gold);margin-bottom:30px;
-}
-.sec-cta .btns{justify-content:center;margin-top:8px}
+.sec-cta .free{font-family:var(--display);font-size:24px;color:var(--gold);display:inline-block;margin-bottom:26px}
+.sec-cta p{font-size:18px;color:var(--ink-soft);max-width:56ch;margin:0 auto 16px}
+.sec-cta .btns{justify-content:center;margin-top:12px}
 
 /* ===== Footer ===== */
-footer{background:var(--ink);color:rgba(246,241,232,.55);padding:40px 0;border-top:1px solid rgba(246,241,232,.1)}
-.foot{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
-.foot .fb{font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--cream)}
-.foot .fb span{color:var(--gold)}
-.foot small{font-size:14px}
+footer{background:#0C1115;color:var(--ink-soft);padding:40px 0;border-top:1px solid var(--line-soft)}
+.foot{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px}
+.foot .fb{font-family:var(--display);font-size:21px;color:var(--ink)}
+.foot small{font-size:13px}
 
-/* ===== Анимация появления при скролле ===== */
-.reveal{opacity:0;transform:translateY(28px);transition:opacity .8s ease, transform .8s ease}
+/* ===== Анимация появления ===== */
+.js .reveal{opacity:0;transform:translateY(24px);transition:opacity .8s ease,transform .8s ease}
 .reveal.in{opacity:1;transform:none}
 
 /* ===== Адаптив ===== */
 @media(max-width:900px){
-  body{font-size:17px}
   .nav-toggle{display:flex}
-  .topnav{
-    position:absolute;top:calc(100% + 6px);right:0;left:0;
-    flex-direction:column;gap:0;align-items:stretch;
-    background:var(--paper);border:1px solid var(--line);border-radius:12px;
-    padding:6px 18px;box-shadow:0 14px 30px rgba(34,30,26,.12);
-    opacity:0;transform:translateY(-8px);pointer-events:none;transition:.25s;
-  }
+  .topnav{position:absolute;top:calc(100% + 6px);right:0;left:0;flex-direction:column;gap:0;align-items:stretch;
+    background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:6px 18px;
+    box-shadow:0 18px 40px rgba(0,0,0,.4);opacity:0;transform:translateY(-8px);pointer-events:none;transition:.25s}
   .topnav.open{opacity:1;transform:none;pointer-events:auto}
-  .topnav a{padding:13px 4px;border-bottom:1px solid var(--line);font-size:16px}
+  .topnav a{padding:14px 4px;border-bottom:1px solid var(--line-soft)}
   .topnav a:last-child{border-bottom:none}
-  .hero-grid{grid-template-columns:1fr;gap:36px}
+  .hero-grid,.pyramid-grid,.price-cols{grid-template-columns:1fr;gap:40px}
   .portrait{max-width:360px;margin:0 auto}
-  .about-grid,.pyramid-grid,.price-cols,.trainers-feature{grid-template-columns:1fr;gap:36px}
-  .trainers-feature{padding:40px 30px}
-  .tools,.principles,.video-row{grid-template-columns:1fr}
+  .tools{grid-template-columns:1fr}
   .problems,.help-list,.embed-grid{grid-template-columns:1fr}
-  .quotes{column-count:1}
-  .stat b{font-size:32px}
-  .pyramid{max-width:420px;margin:0 auto}
+  .quotes{columns:1}
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .stat{border-bottom:1px solid var(--line-soft)}
+  .stat:nth-child(odd){border-right:1px solid var(--line-soft)}
 }
 @media(max-width:560px){
-  .wrap{padding:0 18px}
-  .section{padding:64px 0}
-  .price-card{padding:30px 24px}
-  .stats{flex-wrap:wrap}
-  .stat{flex:1 1 50%;border-bottom:1px solid var(--line)}
+  .wrap{padding:0 18px}.section{padding:66px 0}
+  .principle{grid-template-columns:1fr;row-gap:8px}
+  .price-card{padding:28px 24px}
+}
+
+/* ===== Доступность ===== */
+:focus-visible{outline:2px solid var(--gold);outline-offset:3px;border-radius:4px}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms!important;transition-duration:.001ms!important;scroll-behavior:auto!important}
+  html{scroll-behavior:auto}
+  .reveal{opacity:1!important;transform:none!important}
 }
 </style>
 </head>
 <body>
 
-<!-- ============ ШАПКА (sticky-навигация) ============ -->
+<!-- ============ ШАПКА ============ -->
 <header class="site-header">
   <div class="wrap topbar">
-    <div class="brandmark">М. Бахадов</div>
+    <div class="brandmark"><span class="glyph">∑</span> М. Бахадов</div>
     <button class="nav-toggle" aria-label="Открыть меню" aria-expanded="false" aria-controls="topnav">
       <span></span><span></span><span></span>
     </button>
     <nav class="topnav" id="topnav">
       <a href="#about">Обо мне</a>
       <a href="#pyramid">Подход</a>
-      <a href="#trainers">Тренажёры</a>
       <a href="#priorities">Приоритеты</a>
       <a href="#reviews">Отзывы</a>
       <a href="#price">Стоимость</a>
@@ -520,31 +327,27 @@ footer{background:var(--ink);color:rgba(246,241,232,.55);padding:40px 0;border-t
 <!-- ============ HERO ============ -->
 <section class="hero">
   <div class="wrap">
-
     <div class="hero-grid">
       <div>
-        <p class="role">Профессиональный репетитор по математике · <b>ЕГЭ · ОГЭ</b></p>
+        <p class="role">Профессиональный репетитор по математике</p>
         <h1>Михаил<br>Бахадов</h1>
-        <p class="hero-sub"><em>Люблю своё дело</em></p>
+        <div class="rule"></div>
+        <p class="hero-sub">«Предмет математики настолько серьёзен, что полезно не упускать случаев делать его немного занимательнее» — Блез Паскаль</p>
         <div class="btns">
-          <!-- ↓↓↓ ЗАМЕНИТЕ ссылки на свои Telegram и WhatsApp ↓↓↓ -->
-          <a class="btn btn-tg" href="https://t.me/Jedimath7" target="_blank" rel="noopener">
-            <svg viewBox="0 0 24 24" fill="#fff"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/></svg>
+          <a class="btn btn-gold" href="https://t.me/Jedimath7" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="#14181B"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/></svg>
             Написать в Telegram
           </a>
-          <a class="btn btn-wa" href="https://wa.me/79688677867" target="_blank" rel="noopener">
-            <svg viewBox="0 0 24 24" fill="#fff"><path d="M17.5 14.4c-.3-.15-1.77-.87-2.04-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.65.07-.3-.15-1.26-.46-2.4-1.48-.89-.79-1.49-1.77-1.66-2.07-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.67-1.62-.92-2.22-.24-.58-.49-.5-.67-.51l-.57-.01c-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.49 0 1.47 1.07 2.89 1.22 3.09.15.2 2.1 3.2 5.08 4.49.71.31 1.26.49 1.69.62.71.23 1.36.2 1.87.12.57-.08 1.77-.72 2.02-1.42.25-.7.25-1.3.17-1.42-.07-.13-.27-.2-.57-.35zM12.05 21.5h-.01a9.5 9.5 0 01-4.84-1.33l-.35-.2-3.6.94.96-3.51-.23-.36a9.45 9.45 0 01-1.45-5.05c0-5.24 4.27-9.5 9.52-9.5 2.54 0 4.93.99 6.73 2.79a9.43 9.43 0 012.79 6.72c0 5.24-4.27 9.5-9.52 9.5z"/></svg>
-            Написать в WhatsApp
-          </a>
+          <a class="btn btn-ghost" href="https://wa.me/79688677867" target="_blank" rel="noopener">WhatsApp</a>
         </div>
       </div>
 
-      <!-- Портрет: положите файл mikhail.jpg рядом с index.html, и фото появится -->
+      <!-- Портрет: положите mikhail.jpg рядом с файлом -->
       <div class="portrait">
-        <img src="mikhail.jpg" alt="Михаил Бахадов" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+        <img src="mikhail.jpg" alt="Михаил Бахадов" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
         <div class="ph" style="display:none">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.5-7 8-7s8 3 8 7"/></svg>
-          <small>Сюда добавится ваше фото.<br>Положите файл <b>mikhail.jpg</b> рядом с index.html</small>
+          <small>mikhail.jpg рядом с index</small>
         </div>
       </div>
     </div>
@@ -553,8 +356,8 @@ footer{background:var(--ink);color:rgba(246,241,232,.55);padding:40px 0;border-t
       <div class="stat"><b>17+</b><span>лет опыта</span></div>
       <div class="stat"><b>5–11</b><span>классы</span></div>
       <div class="stat"><b>1–2</b><span>курс вуза</span></div>
-      <div class="stat"><b style="font-size:23px;line-height:1.12">МГТУ им. Баумана</b><span>Высшая математика (ФН-1)</span></div>
-      <div class="stat"><b>Онлайн</b><span>занятия через Zoom</span></div>
+      <div class="stat"><b class="sm">МГТУ</b><span>им. Баумана</span></div>
+      <div class="stat"><b class="sm">Онлайн</b><span>через Zoom</span></div>
     </div>
   </div>
 </section>
@@ -563,181 +366,143 @@ footer{background:var(--ink);color:rgba(246,241,232,.55);padding:40px 0;border-t
 <section class="section sec-problems">
   <div class="wrap">
     <div class="section-head reveal">
+      <span class="eyebrow">с чего всё начинается</span>
       <h2>С какими проблемами в математике чаще всего сталкиваются школьники?</h2>
     </div>
     <div class="problems reveal">
-      <div class="problem"><span class="num">01</span><p>Не понимаешь текущие и старые темы.</p></div>
-      <div class="problem"><span class="num">02</span><p>Испытываешь неуверенность и страх ошибиться.</p></div>
-      <div class="problem"><span class="num">03</span><p>Тратишь много времени на домашку, а всё равно вылезают ошибки.</p></div>
-      <div class="problem"><span class="num">04</span><p>Потеряна мотивация и уже нет сил менять ситуацию.</p></div>
-      <div class="problem"><span class="num">05</span><p>Низкие оценки в школе и низкие баллы на пробниках и экзаменах.</p></div>
-      <div class="problem" style="background:var(--terracotta);color:#fff">
-        <span class="num" style="color:rgba(255,255,255,.5)">→</span>
-        <p style="color:#fff">С этим можно и нужно работать, и это реально изменить.</p>
-      </div>
+      <div class="problem"><span class="mk"></span><p>Не понимаешь текущие и старые темы.</p></div>
+      <div class="problem"><span class="mk"></span><p>Испытываешь неуверенность и страх ошибиться.</p></div>
+      <div class="problem"><span class="mk"></span><p>Тратишь много времени на домашку, а всё равно вылезают ошибки.</p></div>
+      <div class="problem"><span class="mk"></span><p>Потеряна мотивация и уже нет сил менять ситуацию.</p></div>
+      <div class="problem"><span class="mk"></span><p>Низкие оценки в школе и низкие баллы на пробниках и экзаменах.</p></div>
+      <div class="problem resolve"><span class="mk">→</span><p>С этим можно и нужно работать, и это реально изменить.</p></div>
     </div>
   </div>
 </section>
 
+<div class="section-divider"><span class="diamond"></span></div>
+
 <!-- ============ ЗНАКОМСТВО ============ -->
 <section class="section" id="about">
   <div class="wrap">
-    <div class="about-grid" style="grid-template-columns:1fr;max-width:780px">
-      <div class="about reveal">
-        <h2 style="font-size:clamp(34px,4.5vw,52px);margin-bottom:22px">Давайте знакомиться!</h2>
-        <p>Меня зовут Михаил Бахадов, я репетитор по математике с опытом работы <strong>больше 17 лет</strong>.</p>
-        <p>Выпускник <strong>МГТУ имени Баумана</strong> (магистратура кафедры ФН-1 «Высшая математика»).</p>
-        <!-- Видео временно убрано (будет записано новое):
-        <p>Подробнее обо мне и моём подходе к занятиям смотрите в видео.</p>
-        -->
-      </div>
-      <!-- Видео-визитка временно убрана. Чтобы вернуть: поставь у .about-grid выше grid-template-columns:1fr 1fr и раскомментируй блок ниже, подставив ссылку на видео.
-      <a class="video-frame reveal" href="ССЫЛКА_НА_ВИДЕО" rel="noopener" target="_blank">
-        <span class="play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span>
-        <span class="cap">Канал «Джедайская математика»</span>
-      </a>
-      -->
+    <div class="about reveal">
+      <span class="eyebrow">знакомство</span>
+      <h2 style="font-size:clamp(33px,4.6vw,52px);margin-bottom:22px">Давайте знакомиться!</h2>
+      <p>Меня зовут Михаил Бахадов, я репетитор по математике с опытом работы <strong>больше 17 лет</strong>.</p>
+      <p>Выпускник <strong>МГТУ имени Баумана</strong> (магистратура кафедры ФН-1 «Высшая математика»).</p>
+      <!-- ЛИЧНЫЕ ФАКТЫ: сюда позже впишешь 2–4 предложения о себе (почему математика, чем ещё живёшь) -->
     </div>
   </div>
 </section>
 
 <!-- ============ ПОМОГАЮ УЧЕНИКУ ============ -->
-<section class="section sec-help">
+<section class="section">
   <div class="wrap">
     <div class="section-head reveal">
       <h2>Помогаю каждому ученику</h2>
-      <p class="lead" style="margin-top:14px">Приглашаю школьников 5–11 классов и студентов 1–2 курса на групповые и индивидуальные занятия по математике.</p>
+      <p class="lead" style="margin-top:12px">Приглашаю школьников 5–11 классов и студентов 1–2 курса на групповые и индивидуальные занятия по математике.</p>
     </div>
     <div class="help-list">
       <div class="help-item reveal"><span class="chk"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg></span><p>Почувствовать в себе силы и интерес к предмету</p></div>
-      <div class="help-item reveal"><span class="chk"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg></span><p>Концентрировать внимание</p></div>
+      <div class="help-item reveal"><span class="chk"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg></span><p>Концентрировать внимание, обрести выносливость</p></div>
       <div class="help-item reveal"><span class="chk"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg></span><p>Обрести уверенность</p></div>
       <div class="help-item reveal"><span class="chk"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg></span><p>Учиться себя проверять</p></div>
       <div class="help-item reveal"><span class="chk"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg></span><p>Вспомнить всё, что слышал, знал, но забыл</p></div>
       <div class="help-item reveal"><span class="chk"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg></span><p>Научиться быстро считать</p></div>
       <div class="help-item reveal"><span class="chk"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg></span><p>Видеть смысл, а не просто решать по шаблону</p></div>
-      <div class="help-item reveal"><span class="chk"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg></span><p>Научиться выносливости в сложных задачах</p></div>
       <div class="help-item reveal"><span class="chk"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg></span><p>Подготовиться и сдать экзамен (ЕГЭ, ОГЭ и другие) на нужный, высокий балл</p></div>
     </div>
   </div>
 </section>
 
-<!-- ============ ПИРАМИДА МАТЕМАТИКИ ============ -->
+<div class="section-divider"><span class="diamond"></span></div>
+
+<!-- ============ ПИРАМИДА ============ -->
 <section class="section sec-pyramid" id="pyramid">
   <div class="wrap">
     <div class="pyramid-grid">
       <div class="reveal">
-        <h2 style="font-size:clamp(34px,4.5vw,56px);margin-bottom:24px">Пирамида математики</h2>
+        <span class="eyebrow">метод</span>
+        <h2 style="font-size:clamp(33px,4.6vw,56px);margin-bottom:22px">Пирамида математики</h2>
         <p>Школьная математика — это максимально навыковый предмет. Это пирамида, где нижние уровни 5–6 класс, средние 7–8, далее 9, а верхние 10–11. И любой пробел на уровне 5–6 класса будет давать малые или большие сбои вплоть до конца 11 класса. Всегда.</p>
         <p>Нет смысла заниматься заданиями текущего класса, если есть пробелы в прошлом. Хорошая новость: вернувшись назад, мы можем как следует разогнаться — пройти в быстром темпе предыдущую программу, например, 2–3 урока на учебник за прошлые классы и уже на нормальной скорости войти в программу своего класса и чувствовать себя спокойно, свободно и уверенно.</p>
         <p>В процессе наших уроков мы всегда именно так и делаем, не давая провалиться ни одному прошлому навыку.</p>
+        <!-- МОСТИК К ТРЕНАЖЁРАМ — текст-заглушка, перепиши под себя -->
+        <p>А чтобы отточить каждый навык до автоматизма, я сделал <a href="https://jedimath7.github.io/trainers" target="_blank" rel="noopener">авторские тренажёры</a> — отдельный под каждую тему.</p>
       </div>
-      <div class="pyramid reveal">
-        <div class="tier tier-1"><b>10–11</b><span>классы</span></div>
-        <div class="tier tier-2"><b>9</b><span>класс</span></div>
-        <div class="tier tier-3"><b>7–8</b><span>классы</span></div>
-        <div class="tier tier-4"><b>5–6</b><span>фундамент навыков</span></div>
+      <div class="reveal">
+        <div class="pyramid">
+          <div class="tier tier-1"><b>10–11</b><span>классы</span></div>
+          <div class="tier tier-2"><b>9</b><span>класс</span></div>
+          <div class="tier tier-3"><b>7–8</b><span>классы</span></div>
+          <div class="tier tier-4"><b>5–6</b><span>фундамент навыков</span></div>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ============ КАК Я РАБОТАЮ ============ -->
-<section class="section">
-  <div class="wrap">
-    <div class="section-head reveal">
-      <span class="eyebrow">Занятия онлайн</span>
-      <h2>Эффективны ли онлайн-уроки? Однозначно да!</h2>
-    </div>
-    <p class="work-intro reveal">И школьник, и преподаватель экономят силы на дорогу, не связаны географией, находятся в комфортной домашней обстановке. Более того, для меня лично в онлайне заниматься стало <b>удобнее и плодотворнее</b>, чем очно: можно быстрее, нагляднее и более структурировано разобрать большинство тем. А по присланным фото хорошо заранее смотреть домашку и знать, на что сделать акцент.</p>
-    <div class="tools">
-      <div class="tool reveal">
-        <span class="ic"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="14" rx="1.5"/><path d="M7 9h5M7 13h8"/></svg></span>
-        <h3>Онлайн-доска Miro</h3>
-        <p>Занимаемся на онлайн-доске Miro — общем пространстве, где можно писать, рисовать и разбирать задачи вместе в реальном времени.</p>
-      </div>
-      <div class="tool reveal">
-        <span class="ic"><svg viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 8-8"/><path d="M14 7h7v7"/></svg></span>
-        <h3>Графический планшет</h3>
-        <p>Графический планшет, на котором пишу как ручкой на бумаге, но видно гораздо лучше, писать быстрее и нагляднее, а разные цвета, особенно в геометрии, дают возможность лучше увидеть и разобраться.</p>
-      </div>
-      <div class="tool reveal">
-        <span class="ic"><svg viewBox="0 0 24 24"><path d="M4 4h12l4 4v12H4z"/><path d="M8 9h8M8 13h8M8 17h5"/></svg></span>
-        <h3>Материалы за все классы</h3>
-        <p>Подборка всех материалов, учебников, пособий за все классы в быстром доступе.</p>
-      </div>
-    </div>
-    <p class="reveal" style="margin-top:34px;color:var(--ink-soft);max-width:62ch">Конечно, ничто не заменит личного общения, поэтому стараюсь проводить по обоюдному желанию раз в месяц очные уроки для тех, кто в Москве.</p>
-  </div>
-</section>
-
-<!-- ============ ТРЕНАЖЁРЫ (АВТОРСКИЕ) ============ -->
-<section class="section sec-trainers" id="trainers">
-  <div class="wrap">
-    <div class="trainers-feature reveal">
-      <div class="tf-text">
-        <h2>Авторские тренажёры</h2>
-        <!-- ↓ Ссылка-заглушка: заработает после выкладки сайта тренажёров ↓ -->
-        <a class="btn btn-trainers" href="https://jedimath7.github.io/trainers" target="_blank" rel="noopener">Открыть тренажёры →</a>
-      </div>
-      <div class="tf-visual">
-        <span class="chip">Таблица умножения</span>
-        <span class="chip">Дроби</span>
-        <span class="chip">Квадратные уравнения</span>
-        <span class="chip">Теорема Виета</span>
-        <span class="chip">Логарифмы</span>
-        <span class="chip">Степени и корни</span>
-        <span class="chip">ФСУ</span>
-        <span class="chip">Проценты</span>
-        <span class="chip">sin · cos · tg</span>
-        <span class="chip">Формулы приведения</span>
-        <span class="chip">Теорема Пифагора</span>
-        <span class="chip more">+ ещё 20</span>
-      </div>
-    </div>
-  </div>
-</section>
+<div class="section-divider"><span class="diamond"></span></div>
 
 <!-- ============ ПРИНЦИПЫ ============ -->
-<section class="section" id="priorities">
+<section class="section sec-problems" id="priorities">
   <div class="wrap">
     <div class="section-head reveal">
+      <span class="eyebrow">что важно для меня</span>
       <h2>Наши приоритеты</h2>
-      <p class="lead" style="margin-top:14px">Каждый преподаватель по-разному расставляет акценты и приоритеты. Вот что важно для меня.</p>
+      <p class="lead" style="margin-top:12px">Каждый преподаватель по-разному расставляет акценты и приоритеты. Вот что важно для меня.</p>
     </div>
     <div class="principles">
       <div class="principle reveal">
-        <span class="q">“</span>
-        <h3>Вера в человека</h3>
-        <p>Непоколебимо уверен в том, что любому человеку, особенно юному, важно, чтобы в него верили. Но не простодушно: «у тебя всё получится само собой», а обоснованно.</p>
-        <p>Вера в человека всегда связана с видением, как он может раскрыться и реализовать свой потенциал наилучшим образом. И учитель, репетитор, тренер, могут быть очень полезны.</p>
-        <p>Показать то, что уже сейчас независимо от уровня знаний, его ученик — уже нормальный человек, достойный уважения, однако он может быть гораздо лучше. И в это «лучше» вместе устремляться.</p>
+        <span class="no">01</span>
+        <div>
+          <h3>Вера в человека</h3>
+          <p>Непоколебимо уверен в том, что любому человеку, особенно юному, важно, чтобы в него верили. Но не простодушно: «у тебя всё получится само собой», а обоснованно.</p>
+          <p>Вера в человека всегда связана с видением, как он может раскрыться и реализовать свой потенциал наилучшим образом. И учитель, репетитор, тренер, могут быть очень полезны.</p>
+          <p>Показать то, что уже сейчас независимо от уровня знаний, его ученик — уже нормальный человек, достойный уважения, однако он может быть гораздо лучше. И в это «лучше» вместе устремляться.</p>
+        </div>
       </div>
       <div class="principle reveal">
-        <span class="q">“</span>
-        <h3>Считать и становиться сильнее</h3>
-        <p>Человек — не обезьяна, не машина, не робот, не замена калькулятора. Да, в математике приходится много считать и вычислять. И это может быть тяжким трудом, так что с каждым действием и задачей ты устаешь всё больше, или это подобно сложной, но интересной игре, в которую вновь и вновь хочется сыграть и победить, открывать новые уровни и находить свои подходы, приёмы и хитрости.</p>
-        <p>Для этого нужно хорошо знать правила игры и чтобы рядом был тот, кто поддержит и направит, когда в игре ты ещё не так силён.</p>
-        <p>Это один из любимых моментов во всем процессе преподавания, когда из режима пахоты переключаемся в режим игры, интереса и включенности. И результаты не заставляют себя ждать.</p>
+        <span class="no">02</span>
+        <div>
+          <h3>Считать и становиться сильнее</h3>
+          <p>Человек — не обезьяна, не машина, не робот, не замена калькулятора. Да, в математике приходится много считать и вычислять. И это может быть тяжким трудом, так что с каждым действием и задачей ты устаешь всё больше, или это подобно сложной, но интересной игре, в которую вновь и вновь хочется сыграть и победить, открывать новые уровни и находить свои подходы, приёмы и хитрости.</p>
+          <p>Для этого нужно хорошо знать правила игры и чтобы рядом был тот, кто поддержит и направит, когда в игре ты ещё не так силён.</p>
+          <p>Это один из любимых моментов во всём процессе преподавания, когда из режима пахоты переключаемся в режим игры, интереса и включённости. И результаты не заставляют себя ждать.</p>
+        </div>
       </div>
       <div class="principle reveal">
-        <span class="q">“</span>
-        <h3>Обратная связь для родителей</h3>
-        <p>Она важна каждому человеку, но особенно важна родителям: что происходит с твоим ребенком? Нужна ли ему поддержка и помощь, строгая или ласковая? Какие сейчас успехи в математике? Нужно ли поднажать или все нормально и можно не переживать?</p>
-        <p>Стараюсь всегда, особенно в начале пути, давать родителям обратную связь, рассказывать о том, что делаем на уроках, как выполняется домашка, есть ли контакт и взаимопонимание на уроках.</p>
-        <p>Пишу родителям 1–2 раза в месяц, чтобы они всегда были в курсе происходящего, держали руку на пульсе и были спокойны.</p>
+        <span class="no">03</span>
+        <div>
+          <h3>Обратная связь для родителей</h3>
+          <p>Она важна каждому человеку, но особенно важна родителям: что происходит с твоим ребенком? Нужна ли ему поддержка и помощь, строгая или ласковая? Какие сейчас успехи в математике? Нужно ли поднажать или всё нормально и можно не переживать?</p>
+          <p>Стараюсь всегда, особенно в начале пути, давать родителям обратную связь, рассказывать о том, что делаем на уроках, как выполняется домашнее задание, есть ли контакт и взаимопонимание на уроках.</p>
+          <p>Пишу родителям 1–2 раза в месяц, чтобы они всегда были в курсе происходящего, держали руку на пульсе и были спокойны.</p>
+        </div>
       </div>
     </div>
   </div>
 </section>
+
+<div class="section-divider"><span class="diamond"></span></div>
 
 <!-- ============ ПРАВИЛА РАБОТЫ ============ -->
 <section class="section">
   <div class="wrap">
-    <div class="section-head reveal" style="text-align:center;margin-left:auto;margin-right:auto">
+    <div class="section-head reveal">
+      <span class="eyebrow">как это устроено</span>
       <h2>Как строится наша работа</h2>
     </div>
     <div class="accordion">
+      <div class="acc-item reveal">
+        <button class="acc-head"><span>Эффективная работа в онлайне</span><span class="ico"></span></button>
+        <div class="acc-body"><div class="acc-body-inner"><ul>
+          <li>Живой контакт с видео в Zoom.</li>
+          <li><strong>Онлайн-доска Miro</strong> — общее пространство, где можно писать, рисовать и разбирать задачи вместе в реальном времени. Куда можно вернуться позже.</li>
+          <li><strong>Графический планшет</strong>, на котором и ученики, и преподаватель пишут как ручкой на бумаге, что даже нагляднее, чем писать в тетради.</li>
+          <li><strong>Материалы за все классы</strong>, блоки теории, формулы, тренажёры.</li>
+        </ul></div></div>
+      </div>
       <div class="acc-item reveal">
         <button class="acc-head"><span>Организация занятий</span><span class="ico"></span></button>
         <div class="acc-body"><div class="acc-body-inner"><ul>
@@ -755,10 +520,10 @@ footer{background:var(--ink);color:rgba(246,241,232,.55);padding:40px 0;border-t
         <button class="acc-head"><span>За что я отвечаю</span><span class="ico"></span></button>
         <div class="acc-body"><div class="acc-body-inner"><ul>
           <li>Проводить уроки по договорённому расписанию.</li>
-          <li>Следить за качеством урока, выполнения домашки и рабочей атмосферой.</li>
-          <li>Помогать ученику понимать и применять знания — но не делать работу за него.</li>
+          <li>Следить за качеством урока, выполнения домашнего задания и хорошей рабочей атмосферой.</li>
+          <li>Помогать ученику понимать и применять знания, но не делать работу за него.</li>
           <li>К каждому уроку давать домашнее задание и проверять его.</li>
-          <li>Уведомлять родителей о трудных ситуациях и нужном участии.</li>
+          <li>Уведомлять родителей о трудных ситуациях и что нужно их участие.</li>
           <li>Сообщать об успехах и задачах не реже раза в месяц.</li>
           <li>Регулярно контролировать знания, чтобы прогресс был виден ученику и родителям.</li>
         </ul></div></div>
@@ -776,132 +541,82 @@ footer{background:var(--ink);color:rgba(246,241,232,.55);padding:40px 0;border-t
   </div>
 </section>
 
+<div class="section-divider"><span class="diamond"></span></div>
+
 <!-- ============ ОТЗЫВЫ ============ -->
 <section class="section sec-reviews" id="reviews">
   <div class="wrap">
     <div class="section-head reveal">
-      <span class="eyebrow">Отзывы</span>
+      <span class="eyebrow">отзывы</span>
       <h2>Что говорят ученики и родители</h2>
     </div>
 
-    <!-- Отзывы учеников (видео, VK) -->
     <h3 class="reviews-subhead reveal">Отзывы учеников</h3>
     <div class="embed-grid reveal">
-      <div>
-        <div class="vid-embed"><iframe src="https://vkvideo.ru/video_ext.php?oid=-234116020&id=456239021&hash=ae1e101887a0c833&hd=3" allow="autoplay; encrypted-media; fullscreen; picture-in-picture; screen-wake-lock;" frameborder="0" allowfullscreen></iframe></div>
-        <p class="vid-cap">Анжелика</p>
-      </div>
-      <div>
-        <div class="vid-embed"><iframe src="https://vkvideo.ru/video_ext.php?oid=-234116020&id=456239022&hash=4d6c77c562bd18d4&hd=3" allow="autoplay; encrypted-media; fullscreen; picture-in-picture; screen-wake-lock;" frameborder="0" allowfullscreen></iframe></div>
-        <p class="vid-cap">Полина</p>
-      </div>
-      <div>
-        <div class="vid-embed"><iframe src="https://vkvideo.ru/video_ext.php?oid=-234116020&id=456239023&hash=bb2fe3949d2e6e28&hd=3" allow="autoplay; encrypted-media; fullscreen; picture-in-picture; screen-wake-lock;" frameborder="0" allowfullscreen></iframe></div>
-        <p class="vid-cap">Фёдор</p>
-      </div>
-      <div>
-        <div class="vid-embed"><iframe src="https://vkvideo.ru/video_ext.php?oid=-234116020&id=456239017&hash=29ccb07731cb45d2&hd=3" allow="autoplay; encrypted-media; fullscreen; picture-in-picture; screen-wake-lock;" frameborder="0" allowfullscreen></iframe></div>
-        <p class="vid-cap">Алан</p>
-      </div>
+      <div><div class="vid-embed"><iframe src="https://vkvideo.ru/video_ext.php?oid=-234116020&id=456239021&hash=ae1e101887a0c833&hd=3" allow="autoplay; encrypted-media; fullscreen; picture-in-picture; screen-wake-lock;" frameborder="0" allowfullscreen loading="lazy"></iframe></div><p class="vid-cap">Анжелика</p></div>
+      <div><div class="vid-embed"><iframe src="https://vkvideo.ru/video_ext.php?oid=-234116020&id=456239022&hash=4d6c77c562bd18d4&hd=3" allow="autoplay; encrypted-media; fullscreen; picture-in-picture; screen-wake-lock;" frameborder="0" allowfullscreen loading="lazy"></iframe></div><p class="vid-cap">Полина</p></div>
+      <div><div class="vid-embed"><iframe src="https://vkvideo.ru/video_ext.php?oid=-234116020&id=456239023&hash=bb2fe3949d2e6e28&hd=3" allow="autoplay; encrypted-media; fullscreen; picture-in-picture; screen-wake-lock;" frameborder="0" allowfullscreen loading="lazy"></iframe></div><p class="vid-cap">Фёдор</p></div>
+      <div><div class="vid-embed"><iframe src="https://vkvideo.ru/video_ext.php?oid=-234116020&id=456239017&hash=29ccb07731cb45d2&hd=3" allow="autoplay; encrypted-media; fullscreen; picture-in-picture; screen-wake-lock;" frameborder="0" allowfullscreen loading="lazy"></iframe></div><p class="vid-cap">Алан</p></div>
     </div>
 
-    <!-- Отзывы родителей (видео, VK) -->
     <h3 class="reviews-subhead reveal">Отзывы родителей</h3>
     <div class="embed-grid reveal">
-      <div>
-        <div class="vid-embed"><iframe src="https://vkvideo.ru/video_ext.php?oid=-234116020&id=456239018&hash=d257fa00e3481e3a&hd=3" allow="autoplay; encrypted-media; fullscreen; picture-in-picture; screen-wake-lock;" frameborder="0" allowfullscreen></iframe></div>
-        <p class="vid-cap">Наталья Баева</p>
-      </div>
-      <div>
-        <div class="vid-embed"><iframe src="https://vkvideo.ru/video_ext.php?oid=-234116020&id=456239020&hash=1df37669fa46cfd2&hd=3" allow="autoplay; encrypted-media; fullscreen; picture-in-picture; screen-wake-lock;" frameborder="0" allowfullscreen></iframe></div>
-        <p class="vid-cap">Алла Штейникова</p>
-      </div>
+      <div><div class="vid-embed"><iframe src="https://vkvideo.ru/video_ext.php?oid=-234116020&id=456239018&hash=d257fa00e3481e3a&hd=3" allow="autoplay; encrypted-media; fullscreen; picture-in-picture; screen-wake-lock;" frameborder="0" allowfullscreen loading="lazy"></iframe></div><p class="vid-cap">Наталья Баева</p></div>
+      <div><div class="vid-embed"><iframe src="https://vkvideo.ru/video_ext.php?oid=-234116020&id=456239020&hash=1df37669fa46cfd2&hd=3" allow="autoplay; encrypted-media; fullscreen; picture-in-picture; screen-wake-lock;" frameborder="0" allowfullscreen loading="lazy"></iframe></div><p class="vid-cap">Алла Штейникова</p></div>
     </div>
 
-    <!-- Письменные отзывы учеников -->
     <h3 class="reviews-subhead reveal">Письменные отзывы учеников</h3>
     <div class="quotes reveal">
-      <div class="quote">
-        <p>«Занимался с Михаилом 2 года, очень доходчиво всё разъяснил и дал знания, необходимые для сдачи экзамена. Я выполнил свою цель на все 100%! Я очень благодарен за все усилия, которые Михаил вложил в моё обучение, и рекомендую его всем, кто мечтает успешно сдать ЕГЭ. Его профессионализм и преданность делу действительно вдохновляют. Спасибо, Михаил!»</p>
-        <span class="who">Илья Шалагин</span>
-      </div>
-      <div class="quote">
-        <p>«Спасибо вам ещё раз! Мне очень понравились наши занятия, удобный формат работы, понятные объяснения. Хорошая структура занятий, постепенно идём по разным типам задач. Много их нарешиваем, что набивает руку.»</p>
-        <span class="who">Ангелина Горчинская</span>
-      </div>
-      <div class="quote">
-        <p>«Занятия очень помогли справиться со многими вещами, например, со стрессом перед экзаменом и, конечно, с самим ЕГЭ. Вся информация подавалась очень понятно и приятно) Обстановка была совсем не тяжёлая, как в школе иногда, а наоборот можно было спокойно погрузиться в задания и информацию. Спасибо за подготовку, она дала очень хороший результат!»</p>
-        <span class="who">Дарья Королёва</span>
-      </div>
-      <div class="quote">
-        <p>«Всем привет! Если кто-нибудь ищет классного репетитора, то рекомендую Михаила. Он молодой и классный преподаватель, который делает уроки очень интересными. Михаил отлично и понятно объясняет, шутит и всегда помогает с домашкой.</p>
-        <p>С ним сможешь разобраться в сложных темах, подтянуть свои знания и подготовиться к экзаменам. Он объясняет, как правильно решать задачи и почему это важно, так что ты не просто будешь учить, а реально поймёшь математику. У меня была пара репетиторов по математике до него, но никто так хорошо не помогал мне с математикой, как Михаил.</p>
-        <p>Если хочешь улучшить свои навыки по математике — запишись к Михаилу!»</p>
-        <span class="who">Михаил Зыбин</span>
-      </div>
+      <div class="quote"><p>«Занимался с Михаилом 2 года, очень доходчиво всё разъяснил и дал знания, необходимые для сдачи экзамена. Я выполнил свою цель на все 100%! Я очень благодарен за все усилия, которые Михаил вложил в моё обучение, и рекомендую его всем, кто мечтает успешно сдать ЕГЭ. Его профессионализм и преданность делу действительно вдохновляют. Спасибо, Михаил!»</p><span class="who">Илья </span></div>
+      <div class="quote"><p>«Спасибо вам ещё раз! Мне очень понравились наши занятия, удобный формат работы, понятные объяснения. Хорошая структура занятий, постепенно идём по разным типам задач. Много их нарешиваем, что набивает руку.»</p><span class="who">Ангелина </span></div>
+      <div class="quote"><p>«Занятия очень помогли справиться со многими вещами, например, со стрессом перед экзаменом и, конечно, с самим ЕГЭ. Вся информация подавалась очень понятно и приятно) Обстановка была совсем не тяжёлая, как в школе иногда, а наоборот можно было спокойно погрузиться в задания и информацию. Спасибо за подготовку, она дала очень хороший результат!»</p><span class="who">Дарья </span></div>
+      <div class="quote"><p>«Всем привет! Если кто-нибудь ищет классного репетитора, то рекомендую Михаила. Он молодой и классный преподаватель, который делает уроки очень интересными. Михаил отлично и понятно объясняет, шутит и всегда помогает с домашкой.</p><p>С ним сможешь разобраться в сложных темах, подтянуть свои знания и подготовиться к экзаменам. Он объясняет, как правильно решать задачи и почему это важно, так что ты не просто будешь учить, а реально поймёшь математику. У меня была пара репетиторов по математике до него, но никто так хорошо не помогал мне с математикой, как Михаил.</p><p>Если хочешь улучшить свои навыки по математике — запишись к Михаилу!»</p><span class="who">Михаил </span></div>
     </div>
 
-    <!-- Письменные отзывы родителей -->
     <h3 class="reviews-subhead reveal">Письменные отзывы родителей</h3>
     <div class="quotes reveal">
-      <div class="quote">
-        <p>«Михаил, добрый день! Спасибо большое за проделанную работу! Отличный результат, мы очень рады и благодарны Вам! Обязательно будем рекомендовать!»</p>
-        <span class="who">Юлия Ковальчук</span>
-      </div>
-      <div class="quote">
-        <p>«Мы очень благодарны за Лизу) Она перестала бояться математики)) Спасибо!»</p>
-        <span class="who">Елена Щапова</span>
-      </div>
-      <div class="quote">
-        <p>«Дочка (12 лет, окончила пятый класс) занималась с Михаилом по математике для повышения уровня знаний и закрепления полученных в 5 классе знаний в период летних каникул.</p>
-        <p>Преподаватель очень ответственный, доброжелательный, любит детей и свой предмет, мотивирует хорошим отношением к последующим урокам. Дочка всегда с большим удовольствием выполняла домашнее задание, которое задавалось между занятиями. Больше всего ей понравился подход к обучению — Михаил учит именно понимать и строить логические связи между отдельными разделами математики. Дочка стала увереннее себя чувствовать!</p>
-        <p>Михаил, благодарим Вас за Ваш труд! Будем обязательно обращаться и в дальнейшем по мере необходимости.»</p>
-        <span class="who">Екатерина Рычагова</span>
-      </div>
-      <div class="quote">
-        <p>«Михаил, хотим выразить Вам свою благодарность за успешную подготовку Ильи к ЕГЭ. Илья занимался с Михаилом 1,5 года. С первых же занятий мы поняли, что это именно тот преподаватель, который нам нужен: профессиональный подход, подготовленность к занятию, ответственность, пунктуальность. Ни одного занятия не отменено, в течение учебного года было перенесено 2–3 занятия. Я уверена, что знания по математике, полученные благодаря Михаилу, помогли сыну набрать достаточно высокие баллы на ЕГЭ. Я с уверенностью могу порекомендовать Михаила как репетитора для подготовки к ЕГЭ по математике!!!»</p>
-        <span class="who">Ольга Шалагина</span>
-      </div>
-      <div class="quote">
-        <p>«Михаил, здравствуйте. Не смогла сразу написать, уезжала по работе. Я хочу выразить огромную благодарность за вашу работу. Выбранная Вами тактика в обучении, внимательное отношение к детям, неподдельный интерес к своему предмету всегда дадут результат. Мы очень рады, что жизнь свела именно с Вами. Вы профессионал в своём деле.</p>
-        <p>Вам хочется от всего сердца пожелать реализации во всём: семья, профессия, хобби и всё то, что хотелось бы в этой жизни попробовать. Пусть удача Вам всегда сопутствует.»</p>
-        <span class="who">Лариса Бронникова</span>
-      </div>
-      <div class="quote">
-        <p>«Здравствуйте, меня зовут Татьяна. Моему сыну предстоял ЕГЭ по математике, и договорились с ним, что подключим репетитора, как только ему потребуется помощь. Потребность у сына появилась уже на финишной прямой, за 1,5 месяца...</p>
-        <p>Знакомы мы с Михаилом уже не один год, и знаю его как ответственного, разностороннего и деликатного человека. Узнав, что ещё помогает ребятам с математикой, обратилась к нему с просьбой, предполагая отказ из-за горячей поры и сжатых сроков до экзамена. Тем не менее, Михаил взялся за непростую задачу.</p>
-        <p>Большая благодарность за истинную помощь! Можно было оперативно и всегда со взаимным уважением решить возникающие сложности по забывчивости ученика.</p>
-        <p>Сын с большой благодарностью за профессионализм учителя, приятное общество и лёгкое общение. Все уроки проходили в Zoom, это здорово экономило время на дорогу. Был увереннее и оптимистичнее после каждого урока и разрешаемых вопросов по математике. А ещё сын светящийся приехал после урока оффлайн, и ему многое дало личное живое общение с Михаилом на самые разные темы. Видя преображение привередливого подростка вот так за одну встречу, который благодарит тебя, а потом ещё и ещё за прекрасного человека на его пути, — это ли не счастье?! От сердца рекомендую друзьям Михаила как учителя и Человека с большой буквы!</p>
-        <p>PS: Спасибо, Миша!»</p>
-        <span class="who">Татьяна Целикова</span>
-      </div>
+      <div class="quote"><p>«Михаил, добрый день! Спасибо большое за проделанную работу! Отличный результат, мы очень рады и благодарны Вам! Обязательно будем рекомендовать!»</p><span class="who">Юлия </span></div>
+      <div class="quote"><p>«Мы очень благодарны за Лизу) Она перестала бояться математики)) Спасибо!»</p><span class="who">Елена </span></div>
+    </div>
+    <div class="quotes quotes-more">
+      <div class="quote"><p>«Дочка (12 лет, окончила пятый класс) занималась с Михаилом по математике для повышения уровня знаний и закрепления полученных в 5 классе знаний в период летних каникул.</p><p>Преподаватель очень ответственный, доброжелательный, любит детей и свой предмет, мотивирует хорошим отношением к последующим урокам. Дочка всегда с большим удовольствием выполняла домашнее задание, которое задавалось между занятиями. Больше всего ей понравился подход к обучению — Михаил учит именно понимать и строить логические связи между отдельными разделами математики. Дочка стала увереннее себя чувствовать!</p><p>Михаил, благодарим Вас за Ваш труд! Будем обязательно обращаться и в дальнейшем по мере необходимости.»</p><span class="who">Екатерина </span></div>
+      <div class="quote"><p>«Михаил, хотим выразить Вам свою благодарность за успешную подготовку Ильи к ЕГЭ. Илья занимался с Михаилом 1,5 года. С первых же занятий мы поняли, что это именно тот преподаватель, который нам нужен: профессиональный подход, подготовленность к занятию, ответственность, пунктуальность. Ни одного занятия не отменено, в течение учебного года было перенесено 2–3 занятия. Я уверена, что знания по математике, полученные благодаря Михаилу, помогли сыну набрать достаточно высокие баллы на ЕГЭ. Я с уверенностью могу порекомендовать Михаила как репетитора для подготовки к ЕГЭ по математике!!!»</p><span class="who">Ольга </span></div>
+      <div class="quote"><p>«Михаил, здравствуйте. Не смогла сразу написать, уезжала по работе. Я хочу выразить огромную благодарность за вашу работу. Выбранная Вами тактика в обучении, внимательное отношение к детям, неподдельный интерес к своему предмету всегда дадут результат. Мы очень рады, что жизнь свела именно с Вами. Вы профессионал в своём деле.</p><p>Вам хочется от всего сердца пожелать реализации во всём: семья, профессия, хобби и всё то, что хотелось бы в этой жизни попробовать. Пусть удача Вам всегда сопутствует.»</p><span class="who">Лариса </span></div>
+      <div class="quote"><p>«Здравствуйте, меня зовут Татьяна. Моему сыну предстоял ЕГЭ по математике, и договорились с ним, что подключим репетитора, как только ему потребуется помощь. Потребность у сына появилась уже на финишной прямой, за 1,5 месяца...</p><p>Знакомы мы с Михаилом уже не один год, и знаю его как ответственного, разностороннего и деликатного человека. Узнав, что ещё помогает ребятам с математикой, обратилась к нему с просьбой, предполагая отказ из-за горячей поры и сжатых сроков до экзамена. Тем не менее, Михаил взялся за непростую задачу.</p><p>Большая благодарность за истинную помощь! Можно было оперативно и всегда со взаимным уважением решить возникающие сложности по забывчивости ученика.</p><p>Сын с большой благодарностью за профессионализм учителя, приятное общество и лёгкое общение. Все уроки проходили в Zoom, это здорово экономило время на дорогу. Был увереннее и оптимистичнее после каждого урока и разрешаемых вопросов по математике. А ещё сын светящийся приехал после урока оффлайн, и ему многое дало личное живое общение с Михаилом на самые разные темы. Видя преображение привередливого подростка вот так за одну встречу, который благодарит тебя, а потом ещё и ещё за прекрасного человека на его пути, — это ли не счастье?! От сердца рекомендую друзьям Михаила как учителя и Человека с большой буквы!</p></p><span class="who">Татьяна</span></div>
+    </div>
+
+    <div class="more-reviews-wrap">
+      <button type="button" class="btn btn-ghost btn-more-reviews" aria-expanded="false">Показать больше отзывов родителей</button>
     </div>
 
     <div class="reviews-channel reveal">
-      <a class="btn btn-tg" href="https://t.me/mikhailspasibo" target="_blank" rel="noopener">
-        <svg viewBox="0 0 24 24" fill="#fff"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/></svg>
+      <a class="btn btn-gold" href="https://t.me/mikhailspasibo" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="#14181B"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/></svg>
         Все отзывы в Telegram
       </a>
     </div>
   </div>
 </section>
 
+<div class="section-divider"><span class="diamond"></span></div>
+
 <!-- ============ ЦЕНЫ ============ -->
-<section class="section sec-price" id="price">
+<section class="section sec-pyramid" id="price">
   <div class="wrap">
     <div class="section-head reveal">
+      <span class="eyebrow">стоимость</span>
       <h2>Стоимость занятий</h2>
     </div>
     <div class="price-cols">
       <div class="price-card feature reveal">
         <h3>Индивидуальные</h3>
+        <span class="ptag">один на один</span>
         <div class="price-row"><span class="desc"><b>4 занятия</b>по 60 минут</span><span class="val">28 000 ₽</span></div>
-        <div class="price-row"><span class="desc"><b>4 занятия</b>по 90 минут</span><span class="val">40 000 ₽</span></div>
-        <div class="price-row"><span class="desc"><b>8 занятий</b>по 60 минут</span><span class="val">56 000 ₽</span></div>
-        <div class="price-row"><span class="desc"><b>8 занятий</b>по 90 минут</span><span class="val">80 000 ₽</span></div>
+        <div class="price-row"><span class="desc"><b>4 занятия</b>по 90 минут</span><span class="val">42 000 ₽</span></div>
       </div>
       <div class="price-card reveal">
         <h3>Мини-группа</h3>
+        <span class="ptag">небольшой состав</span>
         <div class="price-row"><span class="desc"><b>4 занятия</b>по 60 минут</span><span class="val">12 000 ₽</span></div>
         <div class="price-row"><span class="desc"><b>4 занятия</b>по 90 минут</span><span class="val">18 000 ₽</span></div>
       </div>
@@ -909,83 +624,75 @@ footer{background:var(--ink);color:rgba(246,241,232,.55);padding:40px 0;border-t
   </div>
 </section>
 
+<div class="section-divider"><span class="diamond"></span></div>
+
 <!-- ============ ФИНАЛЬНЫЙ CTA ============ -->
 <section class="sec-cta" id="consult">
   <div class="wrap">
+    <span class="eyebrow" style="justify-content:center">первый шаг</span>
     <h2>Бесплатная <em>консультация</em></h2>
     <span class="free">40 минут</span>
     <p>Приглашаю на бесплатную консультацию 40 минут. Проведём диагностику, выявим основные пробелы и точки роста. Покажу главный подход к быстрым и точным вычислениям.</p>
     <p>Чтобы записаться, напишите мне в удобном для вас мессенджере.</p>
     <div class="btns">
-      <a class="btn btn-tg" href="https://t.me/Jedimath7" target="_blank" rel="noopener">
-        <svg viewBox="0 0 24 24" fill="#fff"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/></svg>
+      <a class="btn btn-gold" href="https://t.me/Jedimath7" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="#14181B"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/></svg>
         Telegram
       </a>
-      <a class="btn btn-wa" href="https://wa.me/79688677867" target="_blank" rel="noopener">
-        <svg viewBox="0 0 24 24" fill="#fff"><path d="M17.5 14.4c-.3-.15-1.77-.87-2.04-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.65.07-.3-.15-1.26-.46-2.4-1.48-.89-.79-1.49-1.77-1.66-2.07-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.67-1.62-.92-2.22-.24-.58-.49-.5-.67-.51l-.57-.01c-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.49 0 1.47 1.07 2.89 1.22 3.09.15.2 2.1 3.2 5.08 4.49.71.31 1.26.49 1.69.62.71.23 1.36.2 1.87.12.57-.08 1.77-.72 2.02-1.42.25-.7.25-1.3.17-1.42-.07-.13-.27-.2-.57-.35z"/></svg>
-        WhatsApp
-      </a>
+      <a class="btn btn-ghost" href="https://wa.me/79688677867" target="_blank" rel="noopener">WhatsApp</a>
     </div>
   </div>
 </section>
 
 <footer>
   <div class="wrap foot">
-    <div class="fb">Михаил Бахадов<span>.</span> Репетитор по математике</div>
-    <small>ЕГЭ · ОГЭ · 5–11 классы · студенты 1–2 курса · занятия онлайн</small>
+    <div class="fb">Михаил Бахадов — профессиональный репетитор по математике</div>
+    <small>ЕГЭ · ОГЭ · 5–11 классы · 1–2 курс · онлайн</small>
   </div>
 </footer>
 
 <script>
-// Аккордеон в разделе «Как строится наша работа»
+// Аккордеон
 document.querySelectorAll('.acc-head').forEach(function(head){
   head.addEventListener('click', function(){
-    var item = head.parentElement;
-    var body = head.nextElementSibling;
-    var open = item.classList.contains('open');
-    if(open){
-      item.classList.remove('open');
-      body.style.maxHeight = null;
-    } else {
-      item.classList.add('open');
-      body.style.maxHeight = body.scrollHeight + 'px';
-    }
+    var item = head.parentElement, body = head.nextElementSibling;
+    if(item.classList.contains('open')){ item.classList.remove('open'); body.style.maxHeight = null; }
+    else { item.classList.add('open'); body.style.maxHeight = body.scrollHeight + 'px'; }
   });
 });
-
-// Плавное появление блоков при прокрутке
-var io = new IntersectionObserver(function(entries){
-  entries.forEach(function(e){
-    if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
-  });
-}, { threshold:.14 });
-document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
-
-// Мобильное меню (бургер): открыть/закрыть
-var navToggle = document.querySelector('.nav-toggle');
-var topnav = document.getElementById('topnav');
+// Появление при прокрутке (с подстраховкой)
+if('IntersectionObserver' in window){
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, { threshold:.14 });
+  document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
+} else {
+  document.querySelectorAll('.reveal').forEach(function(el){ el.classList.add('in'); });
+}
+// Мобильное меню
+var navToggle = document.querySelector('.nav-toggle'), topnav = document.getElementById('topnav');
 if(navToggle && topnav){
   navToggle.addEventListener('click', function(){
     var open = topnav.classList.toggle('open');
     navToggle.classList.toggle('open', open);
     navToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
   });
-  // После клика по пункту меню — закрываем
   topnav.querySelectorAll('a').forEach(function(a){
-    a.addEventListener('click', function(){
-      topnav.classList.remove('open');
-      navToggle.classList.remove('open');
-      navToggle.setAttribute('aria-expanded','false');
-    });
+    a.addEventListener('click', function(){ topnav.classList.remove('open'); navToggle.classList.remove('open'); navToggle.setAttribute('aria-expanded','false'); });
   });
 }
-
-// Лёгкая тень у шапки, когда страница прокручена
+// Тень/линия шапки при прокрутке
 var siteHeader = document.querySelector('.site-header');
-window.addEventListener('scroll', function(){
-  if(siteHeader){ siteHeader.classList.toggle('scrolled', window.scrollY > 10); }
-}, { passive:true });
+window.addEventListener('scroll', function(){ if(siteHeader){ siteHeader.classList.toggle('scrolled', window.scrollY > 10); } }, { passive:true });
+// «Показать больше отзывов»
+var moreBtn = document.querySelector('.btn-more-reviews');
+if(moreBtn){
+  moreBtn.addEventListener('click', function(){
+    document.querySelectorAll('.quotes-more').forEach(function(el){ el.classList.add('show'); });
+    moreBtn.setAttribute('aria-expanded','true');
+    var wrap = moreBtn.closest('.more-reviews-wrap'); if(wrap){ wrap.style.display = 'none'; }
+  });
+}
 </script>
-
 </body>
 </html>
