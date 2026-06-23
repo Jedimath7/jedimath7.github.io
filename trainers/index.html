@@ -268,278 +268,250 @@
 
 <script>
     // ── Trainer data ──
+    // GEN:trainers:start — генерируется из trainer-generator/portal.js, вручную НЕ править
     const trainers = [
         {
-            id: 'kvadraty',
-            title: 'Квадраты чисел',
-            subtitle: '11²–29², от простого к сложному',
-            file: 'trainers/тренажер - квадраты 11-29.html',
-            classes: ['5-6', '7'],
+            title: "Квадраты чисел",
+            subtitle: "11²–29², от простого к сложному",
+            file: "trainers/тренажер - квадраты 11-29.html",
+            classes: ["5-6","7"],
             tasks: 19,
-            gradient: 'radial-gradient(circle at center, #b5b08a 0%, #8a8660 80%, #5c5835 100%)'
+            gradient: "radial-gradient(circle at center, #b5b08a 0%, #8a8660 80%, #5c5835 100%)"
         },
         {
-            id: 'stepeni',
-            title: 'Степени чисел',
-            subtitle: '2¹–2¹⁰, 3¹–3⁶, 4¹–4⁵, 5¹–5⁴, 6¹–6³, 7¹–7³, 8¹–8³, 9¹–9³',
-            file: 'trainers/тренажер - степени 2-9.html',
-            classes: ['5-6', '7'],
+            title: "Степени чисел",
+            subtitle: "2¹–2¹⁰, 3¹–3⁶, 4¹–4⁵, 5¹–5⁴, 6¹–6³, 7¹–7³, 8¹–8³, 9¹–9³",
+            file: "trainers/тренажер - степени 2-9.html",
+            classes: ["5-6","7"],
             tasks: 37,
-            gradient: 'radial-gradient(circle at center, #c9a890 0%, #a07858 80%, #704830 100%)'
+            gradient: "radial-gradient(circle at center, #c9a890 0%, #a07858 80%, #704830 100%)"
         },
         {
-            id: 'drobi-v-des',
-            title: 'Дроби → десятичные',
-            subtitle: 'Правильные дроби со знаменателями 2, 4, 5, 8, 20, 25, 40, 50',
-            file: 'trainers/тренажер - дроби в десятичные.html',
-            classes: ['5-6'],
-            tasks: 36,
-            gradient: 'radial-gradient(circle at center, #b0b5a5 0%, #858a78 80%, #585d48 100%)'
+            title: "Дроби → десятичные",
+            subtitle: "Правильные дроби со знаменателями 2, 4, 5, 8, 20, 25, 40, 50",
+            file: "trainers/тренажер - дроби в десятичные.html",
+            classes: ["5-6"],
+            tasks: 39,
+            gradient: "radial-gradient(circle at center, #b0b5a5 0%, #858a78 80%, #585d48 100%)"
         },
         {
-            id: 'korin',
-            title: 'Квадратные корни',
-            subtitle: '√1–√400, табличные значения',
-            file: 'trainers/тренажер - квадратные корни.html',
-            classes: ['7', '8'],
+            title: "Квадратные корни",
+            subtitle: "√1–√400, табличные значения",
+            file: "trainers/тренажер - квадратные корни.html",
+            classes: ["7","8"],
             tasks: 20,
-            gradient: 'radial-gradient(circle at center, #a8b0b8 0%, #788088 80%, #485058 100%)'
+            gradient: "radial-gradient(circle at center, #a8b0b8 0%, #788088 80%, #485058 100%)"
         },
         {
-            id: 'vynesenie-kornya',
-            title: 'Вынесение из-под корня',
-            subtitle: '√8–√147, вынесение множителя за знак корня',
-            file: 'trainers/тренажер - целая часть корня.html',
-            classes: ['7', '8'],
+            title: "Вынесение из-под корня",
+            subtitle: "√8–√147, вынесение множителя за знак корня",
+            file: "trainers/тренажер - целая часть корня.html",
+            classes: ["7","8"],
             tasks: 36,
-            gradient: 'radial-gradient(circle at center, #c9c0a8 0%, #a09878 80%, #706848 100%)'
+            gradient: "radial-gradient(circle at center, #c9c0a8 0%, #a09878 80%, #706848 100%)"
         },
         {
-            id: 'tablitsa-umnozheniya',
-            title: 'Таблица умножения',
-            subtitle: '2×2–9×9 и деление в рамках таблицы',
-            file: 'trainers/тренажер - таблица умножения.html',
-            classes: ['5-6'],
+            title: "Таблица умножения",
+            subtitle: "2×2–9×9 и деление в рамках таблицы",
+            file: "trainers/тренажер - таблица умножения.html",
+            classes: ["5-6"],
             tasks: 128,
-            gradient: 'radial-gradient(circle at center, #b8c0a8 0%, #809060 80%, #506030 100%)'
+            gradient: "radial-gradient(circle at center, #b8c0a8 0%, #809060 80%, #506030 100%)"
         },
         {
-            id: 'vychitanie-do-100',
-            title: 'Вычитание до 100',
-            subtitle: '85−27, 53−32 — двузначные без отрицательных',
-            file: 'trainers/тренажер - вычитание до 100.html',
-            classes: ['5-6'],
+            title: "Вычитание до 100",
+            subtitle: "85−27, 53−32 — двузначные без отрицательных",
+            file: "trainers/тренажер - вычитание до 100.html",
+            classes: ["5-6"],
             tasks: 52,
-            gradient: 'radial-gradient(circle at center, #b8a0a8 0%, #907080 80%, #604050 100%)'
+            gradient: "radial-gradient(circle at center, #b8a0a8 0%, #907080 80%, #604050 100%)"
         },
         {
-            id: 'raznye-znaki',
-            title: 'Сложение и вычитание с разными знаками',
-            subtitle: '7−15, −6+12, −8−9, 20−8 — ответы |…| ≤ 50',
-            file: 'trainers/тренажер - сложение и вычитание с разными знаками.html',
-            classes: ['5-6', '7'],
+            title: "Сложение и вычитание с разными знаками",
+            subtitle: "7−15, −6+12, −8−9, 20−8 — ответы |…| ≤ 50",
+            file: "trainers/тренажер - сложение и вычитание с разными знаками.html",
+            classes: ["5-6","7"],
             tasks: 50,
-            gradient: 'radial-gradient(circle at center, #c0b0a0 0%, #a08870 80%, #705840 100%)'
+            gradient: "radial-gradient(circle at center, #c0b0a0 0%, #a08870 80%, #705840 100%)"
         },
         {
-            id: 'logarifmy',
-            title: 'Логарифмы',
-            subtitle: 'Целые, дробные и десятичные — базовый уровень',
-            file: 'trainers/тренажер - логарифмы по одному.html',
-            classes: ['10-11'],
+            title: "Логарифмы",
+            subtitle: "Целые, дробные и десятичные — базовый уровень",
+            file: "trainers/тренажер - логарифмы по одному.html",
+            classes: ["10-11"],
             tasks: 24,
-            gradient: 'radial-gradient(circle at center, #c4a985 0%, #9c7b50 80%, #6d502b 100%)'
+            gradient: "radial-gradient(circle at center, #c4a985 0%, #9c7b50 80%, #6d502b 100%)"
         },
         {
-            id: 'logarifmy-polnye',
-            title: 'Логарифмы (полный)',
-            subtitle: 'Целые, отрицательные, дробные и десятичные — расширенный набор',
-            file: 'trainers/тренажер - логарифмы.html',
-            classes: ['10-11'],
+            title: "Логарифмы (полный)",
+            subtitle: "Целые, отрицательные, дробные и десятичные — расширенный набор",
+            file: "trainers/тренажер - логарифмы.html",
+            classes: ["10-11"],
             tasks: 24,
-            gradient: 'radial-gradient(circle at center, #c4a985 0%, #9c7b50 80%, #6d502b 100%)'
+            gradient: "radial-gradient(circle at center, #c4a985 0%, #9c7b50 80%, #6d502b 100%)"
         },
         {
-            id: 'sin-cos',
-            title: 'Табличные значения sin/cos',
-            subtitle: 'sin 0°–360°, cos 0°–360° — все табличные углы',
-            file: 'trainers/тренажер - sin cos.html',
-            classes: ['10-11'],
+            title: "Табличные значения sin/cos",
+            subtitle: "sin 0°–360°, cos 0°–360° — все табличные углы",
+            file: "trainers/тренажер - sin cos.html",
+            classes: ["10-11"],
             tasks: 34,
-            gradient: 'radial-gradient(circle at center, #b8c8d8 0%, #8898a8 80%, #586878 100%)'
+            gradient: "radial-gradient(circle at center, #b8c8d8 0%, #8898a8 80%, #586878 100%)"
         },
         {
-            id: 'tg-ctg',
-            title: 'Табличные значения tg/ctg',
-            subtitle: 'tg 0°–180°, ctg 30°–180° — все табличные углы',
-            file: 'trainers/тренажер - tg ctg.html',
-            classes: ['10-11'],
+            title: "Табличные значения tg/ctg",
+            subtitle: "tg 0°–180°, ctg 30°–180° — все табличные углы",
+            file: "trainers/тренажер - tg ctg.html",
+            classes: ["10-11"],
             tasks: 17,
-            gradient: 'radial-gradient(circle at center, #c8b8a8 0%, #988878 80%, #685848 100%)'
+            gradient: "radial-gradient(circle at center, #c8b8a8 0%, #988878 80%, #685848 100%)"
         },
         {
-            id: 'formuly-privedeniya',
-            title: 'Формулы приведения',
-            subtitle: 'sin, cos, tg, ctg — приведение к углу α',
-            file: 'trainers/тренажер - формулы приведения.html',
-            classes: ['10-11'],
+            title: "Формулы приведения",
+            subtitle: "sin, cos, tg, ctg — приведение к углу α",
+            file: "trainers/тренажер - формулы приведения.html",
+            classes: ["10-11"],
             tasks: 36,
-            gradient: 'radial-gradient(circle at center, #c0b8d0 0%, #9088a0 80%, #605870 100%)'
+            gradient: "radial-gradient(circle at center, #c0b8d0 0%, #9088a0 80%, #605870 100%)"
         },
         {
-            id: 'radiany-v-gradusy',
-            title: 'Радианы ↔ градусы',
-            subtitle: 'Перевод радиан в градусы и обратно',
-            file: 'trainers/тренажер - радианы в градусы.html',
-            classes: ['9', '10-11'],
-            tasks: 34,
-            gradient: 'radial-gradient(circle at center, #c0c0c8 0%, #909098 80%, #606068 100%)'
+            title: "Радианы ↔ градусы",
+            subtitle: "Перевод радиан в градусы и обратно",
+            file: "trainers/тренажер - радианы в градусы.html",
+            classes: ["9","10-11"],
+            tasks: 16,
+            gradient: "radial-gradient(circle at center, #c0c0c8 0%, #909098 80%, #606068 100%)"
         },
         {
-            id: 'fsu-raznost',
-            title: 'ФСУ: разность квадратов',
-            subtitle: 'a²−b² = (a−b)(a+b) — прямое и обратное применение',
-            file: 'trainers/тренажер - фсу разность квадратов.html',
-            classes: ['7', '8'],
+            title: "ФСУ: разность квадратов",
+            subtitle: "a²−b² = (a−b)(a+b) — прямое и обратное применение",
+            file: "trainers/тренажер - фсу разность квадратов.html",
+            classes: ["7","8"],
             tasks: 102,
-            gradient: 'radial-gradient(circle at center, #b8a9b8 0%, #908090 80%, #605560 100%)'
+            gradient: "radial-gradient(circle at center, #b8a9b8 0%, #908090 80%, #605560 100%)"
         },
         {
-            id: 'fsu-kvadrat',
-            title: 'ФСУ: квадрат суммы/разности',
-            subtitle: '(a±b)² = a²±2ab+b² — раскрытие и сворачивание',
-            file: 'trainers/тренажер - фсу квадрат суммы.html',
-            classes: ['7', '8'],
+            title: "ФСУ: квадрат суммы/разности",
+            subtitle: "(a±b)² = a²±2ab+b² — раскрытие и сворачивание",
+            file: "trainers/тренажер - фсу квадрат суммы.html",
+            classes: ["7","8"],
             tasks: 126,
-            gradient: 'radial-gradient(circle at center, #a8a8b8 0%, #808090 80%, #585868 100%)'
+            gradient: "radial-gradient(circle at center, #a8a8b8 0%, #808090 80%, #585868 100%)"
         },
         {
-            id: 'sokrashenie-drobey',
-            title: 'Сокращение дробей',
-            subtitle: 'Приведение обыкновенных дробей к несократимому виду',
-            file: 'trainers/тренажер - сокращение дробей.html',
-            classes: ['5-6'],
+            title: "Сокращение дробей",
+            subtitle: "Приведение обыкновенных дробей к несократимому виду",
+            file: "trainers/тренажер - сокращение дробей.html",
+            classes: ["5-6"],
             tasks: 59,
-            gradient: 'radial-gradient(circle at center, #9aad80 0%, #6a7d50 80%, #4a5d30 100%)'
+            gradient: "radial-gradient(circle at center, #9aad80 0%, #6a7d50 80%, #4a5d30 100%)"
         },
         {
-            id: 'slozhenie-drobey',
-            title: 'Сложение и вычитание дробей',
-            subtitle: 'Приведение к общему знаменателю, сумма и разность',
-            file: 'trainers/тренажер - сложение и вычитание дробей.html',
-            classes: ['5-6', '7'],
+            title: "Сложение и вычитание дробей",
+            subtitle: "Приведение к общему знаменателю, сумма и разность",
+            file: "trainers/тренажер - сложение и вычитание дробей.html",
+            classes: ["5-6","7"],
             tasks: 55,
-            gradient: 'radial-gradient(circle at center, #c98a72 0%, #a06040 80%, #704028 100%)'
+            gradient: "radial-gradient(circle at center, #c98a72 0%, #a06040 80%, #704028 100%)"
         },
         {
-            id: 'umnozhenie-drobey',
-            title: 'Умножение и деление дробей',
-            subtitle: 'Умножение, деление, сокращение перед умножением',
-            file: 'trainers/тренажер - умножение и деление дробей.html',
-            classes: ['5-6', '7'],
+            title: "Умножение и деление дробей",
+            subtitle: "Умножение, деление, сокращение перед умножением",
+            file: "trainers/тренажер - умножение и деление дробей.html",
+            classes: ["5-6","7"],
             tasks: 56,
-            gradient: 'radial-gradient(circle at center, #d4a85a 0%, #b88840 80%, #986828 100%)'
+            gradient: "radial-gradient(circle at center, #d4a85a 0%, #b88840 80%, #986828 100%)"
         },
         {
-            id: 'lineynye-uravneniya',
-            title: 'Линейные уравнения',
-            subtitle: 'Решение уравнений вида ax+b=cx+d',
-            file: 'trainers/тренажер - линейные уравнения.html',
-            classes: ['7', '8'],
+            title: "Линейные уравнения",
+            subtitle: "Решение уравнений вида ax+b=cx+d",
+            file: "trainers/тренажер - линейные уравнения.html",
+            classes: ["7","8"],
             tasks: 64,
-            gradient: 'radial-gradient(circle at center, #98b0c0 0%, #7088a0 80%, #486078 100%)'
+            gradient: "radial-gradient(circle at center, #98b0c0 0%, #7088a0 80%, #486078 100%)"
         },
         {
-            id: 'raskrytie-skobok',
-            title: 'Раскрытие скобок',
-            subtitle: 'Раскрытие скобок, умножение одночлена на многочлен и многочлена на многочлен',
-            file: 'trainers/тренажер - раскрытие скобок.html',
-            classes: ['7'],
+            title: "Раскрытие скобок",
+            subtitle: "Раскрытие скобок, умножение одночлена на многочлен и многочлена на многочлен",
+            file: "trainers/тренажер - раскрытие скобок.html",
+            classes: ["7"],
             tasks: 55,
-            gradient: 'radial-gradient(circle at center, #6a5580 0%, #4a3570 80%, #2a1540 100%)'
+            gradient: "radial-gradient(circle at center, #6a5580 0%, #4a3570 80%, #2a1540 100%)"
         },
         {
-            id: 'vynesenie-mnozhitelya',
-            title: 'Вынесение общего множителя',
-            subtitle: 'Вынесение числового и буквенного множителя за скобки',
-            file: 'trainers/тренажер - вынесение общего множителя.html',
-            classes: ['7'],
+            title: "Вынесение общего множителя",
+            subtitle: "Вынесение числового и буквенного множителя за скобки",
+            file: "trainers/тренажер - вынесение общего множителя.html",
+            classes: ["7"],
             tasks: 45,
-            gradient: 'radial-gradient(circle at center, #5a8870 0%, #3a6848 80%, #1a4028 100%)'
+            gradient: "radial-gradient(circle at center, #5a8870 0%, #3a6848 80%, #1a4028 100%)"
         },
         {
-            id: 'kvadratnye-uravneniya',
-            title: 'Квадратные уравнения',
-            subtitle: 'Решение через дискриминант: два корня, один корень, нет корней',
-            file: 'trainers/тренажер - квадратные уравнения.html',
-            classes: ['8', '9'],
+            title: "Квадратные уравнения",
+            subtitle: "Решение через дискриминант: два корня, один корень, нет корней",
+            file: "trainers/тренажер - квадратные уравнения.html",
+            classes: ["8","9"],
             tasks: 53,
-            gradient: 'radial-gradient(circle at center, #8898b8 0%, #6070a0 80%, #405080 100%)'
+            gradient: "radial-gradient(circle at center, #8898b8 0%, #6070a0 80%, #405080 100%)"
         },
         {
-            id: 'teorema-vieta',
-            title: 'Теорема Виета',
-            subtitle: 'Сумма и произведение корней, подбор корней, составление уравнений',
-            file: 'trainers/тренажер - теорема виета.html',
-            classes: ['8', '9'],
+            title: "Теорема Виета",
+            subtitle: "Сумма и произведение корней, подбор корней, составление уравнений",
+            file: "trainers/тренажер - теорема виета.html",
+            classes: ["8","9"],
             tasks: 40,
-            gradient: 'radial-gradient(circle at center, #e8c86a 0%, #c49438 80%, #8a6520 100%)'
+            gradient: "radial-gradient(circle at center, #e8c86a 0%, #c49438 80%, #8a6520 100%)"
         },
         {
-            id: 'pifagorovy-troyki',
-            title: 'Пифагоровы тройки',
-            subtitle: 'Нахождение недостающей стороны прямоугольного треугольника',
-            file: 'trainers/тренажер - пифагоровы тройки.html',
-            classes: ['8'],
+            title: "Пифагоровы тройки",
+            subtitle: "Нахождение недостающей стороны прямоугольного треугольника",
+            file: "trainers/тренажер - пифагоровы тройки.html",
+            classes: ["8"],
             tasks: 55,
-            gradient: 'radial-gradient(circle at center, #d49478 0%, #b06848 80%, #804028 100%)'
+            gradient: "radial-gradient(circle at center, #d49478 0%, #b06848 80%, #804028 100%)"
         },
         {
-            id: 'procenty-ot-chisla',
-            title: 'Проценты от числа',
-            subtitle: '10%, 25%, 50%, 75%, малые проценты — ответы целые числа',
-            file: 'trainers/тренажер - проценты от числа.html',
-            classes: ['5-6', '7'],
+            title: "Проценты от числа",
+            subtitle: "10%, 25%, 50%, 75%, малые проценты — ответы целые числа",
+            file: "trainers/тренажер - проценты от числа.html",
+            classes: ["5-6","7"],
             tasks: 96,
-            gradient: 'radial-gradient(circle at center, #80adad 0%, #509090 80%, #307070 100%)'
+            gradient: "radial-gradient(circle at center, #80adad 0%, #509090 80%, #307070 100%)"
         },
         {
-            id: 'umnozhenie-delenie-01',
-            title: 'Умножение и деление на 0,1; 0,01; 0,001',
-            subtitle: 'Перенос запятой при умножении и делении на десятичные доли',
-            file: 'trainers/тренажер - умножение-деление на 0.1 0.01 0.001.html',
-            classes: ['5-6', '7'],
+            title: "Умножение и деление на 0,1; 0,01; 0,001",
+            subtitle: "Перенос запятой при умножении и делении на десятичные доли",
+            file: "trainers/тренажер - умножение-деление на 0.1 0.01 0.001.html",
+            classes: ["5-6","7"],
             tasks: 59,
-            gradient: 'radial-gradient(circle at center, #90a0c0 0%, #6070a0 80%, #304080 100%)'
+            gradient: "radial-gradient(circle at center, #90a0c0 0%, #6070a0 80%, #304080 100%)"
         },
         {
-            id: 'otricatelnyy-pokazatel',
-            title: 'Отрицательный и нулевой показатель',
-            subtitle: 'a⁰=1, a⁻ⁿ=1/aⁿ, дроби в отрицательной степени',
-            file: 'trainers/тренажер - отрицательный и нулевой показатель.html',
-            classes: ['7', '8'],
+            title: "Отрицательный и нулевой показатель",
+            subtitle: "a⁰=1, a⁻ⁿ=1/aⁿ, дроби в отрицательной степени",
+            file: "trainers/тренажер - отрицательный и нулевой показатель.html",
+            classes: ["7","8"],
             tasks: 55,
-            gradient: 'radial-gradient(circle at center, #b090a0 0%, #806070 80%, #503040 100%)'
+            gradient: "radial-gradient(circle at center, #b090a0 0%, #806070 80%, #503040 100%)"
         },
         {
-            id: 'svoystva-logarifmov',
-            title: 'Свойства логарифмов',
-            subtitle: 'Сумма, разность, умножение, смена основания, a^(logₐx)=x',
-            file: 'trainers/тренажер - свойства логарифмов.html',
-            classes: ['10-11'],
+            title: "Свойства логарифмов",
+            subtitle: "Сумма, разность, умножение, смена основания, a^(logₐx)=x",
+            file: "trainers/тренажер - свойства логарифмов.html",
+            classes: ["10-11"],
             tasks: 50,
-            gradient: 'radial-gradient(circle at center, #c9b896 0%, #9b8a68 80%, #6d5c3a 100%)'
+            gradient: "radial-gradient(circle at center, #c9b896 0%, #9b8a68 80%, #6d5c3a 100%)"
         },
         {
-            id: 'svoystva-stepeney',
-            title: 'Свойства степеней',
-            subtitle: 'aᵐ·aⁿ=aᵐ⁺ⁿ, aᵐ/aⁿ, (aᵐ)ⁿ, aᵐ·bᵐ',
-            file: 'trainers/тренажер - свойства степеней.html',
-            classes: ['7', '8'],
+            title: "Свойства степеней",
+            subtitle: "aᵐ·aⁿ=aᵐ⁺ⁿ, aᵐ/aⁿ, (aᵐ)ⁿ, aᵐ·bᵐ",
+            file: "trainers/тренажер - свойства степеней.html",
+            classes: ["7","8"],
             tasks: 37,
-            gradient: 'radial-gradient(circle at center, #d0b880 0%, #a08850 80%, #705830 100%)'
+            gradient: "radial-gradient(circle at center, #d0b880 0%, #a08850 80%, #705830 100%)"
         }
     ];
+    // GEN:trainers:end
 
     // ── Testing data ──
     const testing = [
