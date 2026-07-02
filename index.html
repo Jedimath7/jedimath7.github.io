@@ -185,6 +185,24 @@ section[id]{scroll-margin-top:78px}
 .about p{margin-bottom:16px;color:var(--ink-soft)}
 .about p strong{color:var(--ink);font-weight:600}
 
+/* ===== Калькулятор Пасхи ===== */
+.pascha{margin:22px 0 8px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:24px 26px;max-width:560px}
+.pascha .pascha-label{display:block;font-size:12px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:14px}
+.pascha .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.pascha input{width:110px;background:var(--bg-deep);border:1px solid var(--line-soft);border-radius:8px;
+  color:var(--ink);font-family:var(--body);font-size:17px;padding:11px 14px;text-align:center}
+.pascha input:focus{border-color:var(--gold);outline:none}
+.pascha .btn{padding:11px 22px;font-size:14.5px}
+.pascha .res{margin-top:16px;font-family:var(--display);font-size:clamp(18px,2.3vw,23px);color:var(--gold-bright);min-height:1.5em}
+.pascha .res small{display:block;font-family:var(--body);font-size:14px;color:var(--ink-soft);margin-top:4px}
+.pascha details{margin-top:16px;border-top:1px solid var(--line-soft);padding-top:14px}
+.pascha summary{cursor:pointer;color:var(--gold);font-size:14.5px;font-weight:600;font-family:var(--body)}
+.pascha details p{font-size:14.5px;color:var(--ink-soft);margin-top:10px;line-height:1.6}
+.pascha details p strong{color:var(--ink);font-weight:600}
+.pascha details ol{margin:8px 0 0 22px}
+.pascha details li{font-size:14.5px;color:var(--ink-soft);line-height:1.6;margin-bottom:8px}
+.pascha details li strong{color:var(--gold-bright);font-weight:600}
+
 /* ===== Помогаю ученику ===== */
 .help-list{display:grid;grid-template-columns:repeat(2,1fr);gap:2px 40px;margin-top:8px}
 .help-item{display:flex;gap:15px;align-items:center;padding:17px 0;border-bottom:1px solid var(--line-soft)}
@@ -436,6 +454,28 @@ footer{background:#0C1115;color:var(--ink-soft);padding:40px 0;border-top:1px so
       <p>Играю на гитаре, пою, читаю книги.</p>
       <p>Люблю общаться и путешествовать по Москве, России и миру.</p>
       <p>Православный христианин, смогу вычислить дату Пасхи на любой год.</p>
+
+      <!-- Калькулятор Пасхи: живое подтверждение строки выше (алгоритм Гаусса) -->
+      <div class="pascha">
+        <label class="pascha-label" for="pascha-year">Не верите? Введите год</label>
+        <div class="row">
+          <input type="number" id="pascha-year" min="1583" max="9999" inputmode="numeric" aria-label="Год">
+          <button type="button" class="btn btn-gold" id="pascha-btn">Вычислить</button>
+        </div>
+        <p class="res" id="pascha-res" aria-live="polite"></p>
+        <details>
+          <summary>Как это устроено</summary>
+          <p><strong>Правило:</strong> Пасха — первое воскресенье после первого весеннего полнолуния (наступившего после 21 марта по юлианскому календарю).</p>
+          <p><strong>Хитрость Гаусса:</strong> фазы Луны почти точно повторяются каждые 19 лет, а дни недели — с циклами в 4 и 7 лет. Поэтому весь расчёт держится на трёх остатках от деления номера года: на 19, на 4 и на 7. Запись «mod» ниже — это и есть остаток от деления: например, 243 mod 30 = 3, потому что 243 = 8·30 + 3.</p>
+          <p><strong>Пример — 2026 год:</strong></p>
+          <ol>
+            <li>2026 mod 19 = <strong>12</strong> — «номер» года в 19-летнем лунном цикле.</li>
+            <li>d = (19·12 + 15) mod 30 = 243 mod 30 = <strong>3</strong> — пасхальное полнолуние наступает через 3 дня после 21 марта, то есть 24 марта по старому стилю.</li>
+            <li>2026 mod 4 = <strong>2</strong> и 2026 mod 7 = <strong>3</strong>; тогда e = (2·2 + 4·3 + 6·3 + 6) mod 7 = 47 mod 7 = <strong>5</strong> — «добор» дней от полнолуния до ближайшего воскресенья.</li>
+            <li>Итог: 22 марта + 3 + 5 = <strong>30 марта</strong> по старому стилю. Прибавляем 13 дней разницы календарей — <strong>12 апреля 2026 года</strong>.</li>
+          </ol>
+        </details>
+      </div>
 
       <div style="text-align:center;margin-top:48px">
         <p style="font-family:var(--display);font-size:clamp(20px,2.4vw,26px);color:var(--ink);margin-bottom:14px">Чем же я занимаюсь?</p>
@@ -774,6 +814,42 @@ if(moreBtn){
     moreBtn.setAttribute('aria-expanded','true');
     var wrap = moreBtn.closest('.more-reviews-wrap'); if(wrap){ wrap.style.display = 'none'; }
   });
+}
+// Калькулятор даты православной Пасхи — алгоритм Гаусса.
+// Три остатка (mod 19, 4, 7) задают положение года в лунном и недельном циклах:
+// d = дни от 21 марта (ст. ст.) до пасхального полнолуния, e = добор до воскресенья.
+function paschaDate(y){
+  var a = y % 4, b = y % 7, c = y % 19;
+  var d = (19*c + 15) % 30;
+  var e = (2*a + 4*b + 6*d + 6) % 7;
+  // Разница юлианского и григорианского календарей для данного века
+  var shift = Math.floor(y/100) - Math.floor(y/400) - 2;
+  return {
+    julian:    new Date(y, 2, 22 + d + e),          // 22 марта + d + e, старый стиль
+    gregorian: new Date(y, 2, 22 + d + e + shift)   // + сдвиг календарей, новый стиль
+  };
+}
+var paschaMonths = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+var paschaIn = document.getElementById('pascha-year'),
+    paschaBtn = document.getElementById('pascha-btn'),
+    paschaRes = document.getElementById('pascha-res');
+if(paschaIn && paschaBtn && paschaRes){
+  var showPascha = function(){
+    var y = parseInt(paschaIn.value, 10);
+    if(!y || y < 1583 || y > 9999){
+      paschaRes.innerHTML = '<small>Введите год от 1583 до 9999</small>';
+      return;
+    }
+    var p = paschaDate(y);
+    var g = p.gregorian, j = p.julian;
+    paschaRes.innerHTML = g.getDate() + ' ' + paschaMonths[g.getMonth()] + ' ' + g.getFullYear() + ' года' +
+      '<small>' + j.getDate() + ' ' + paschaMonths[j.getMonth()] + ' по старому стилю</small>';
+  };
+  paschaBtn.addEventListener('click', showPascha);
+  paschaIn.addEventListener('keydown', function(ev){ if(ev.key === 'Enter'){ ev.preventDefault(); showPascha(); } });
+  // При загрузке сразу показываем Пасху текущего года
+  paschaIn.value = new Date().getFullYear();
+  showPascha();
 }
 </script>
 </body>
