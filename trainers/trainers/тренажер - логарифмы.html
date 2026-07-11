@@ -30,12 +30,12 @@ body {
   text-align: center;
 }
 
-/* === Ссылка «← Все тренажёры» (возврат на портал) === */
+/* === Ссылки «← Все тренажёры» (на портал) и «следующий тренажёр →» === */
 
-a.portal-link {
+a.portal-link,
+a.next-link {
   position: absolute;
   top: 12px;
-  left: 16px;
   font-size: 0.95em;
   color: var(--card-muted);
   text-decoration: none;
@@ -43,9 +43,18 @@ a.portal-link {
   transition: opacity 0.2s ease;
 }
 
-a.portal-link:hover {
+a.portal-link { left: 16px; }
+a.next-link { right: 16px; }
+
+a.portal-link:hover,
+a.next-link:hover {
   opacity: 1;
   text-decoration: underline;
+}
+
+/* На узких экранах слово «тренажёр» прячем, чтобы ссылки в углах не наезжали друг на друга */
+@media (max-width: 480px) {
+  a.next-link .nl-word { display: none; }
 }
 
 h2 {
@@ -724,6 +733,7 @@ svg.fig {
 </head>
 <body>
     <a class="portal-link" href="../index.html">← Все тренажёры</a>
+    <a class="next-link" href="тренажер - sin cos.html" title="Табличные значения sin/cos">следующий<span class="nl-word"> тренажёр</span> →</a>
     <div id="progress-row">
         <div id="progress-bar-wrap"><div id="progress-bar"></div></div>
         <div id="progress-text">0 / 24</div>
@@ -1243,6 +1253,9 @@ function canonicalizeFactorInner(inner) {
   let usedFactIndices = new Set();
   let locked = false;
   let allPerfect = true;
+  // №41: таймер автопроверки — сбрасывается при каждом новом символе (~350 мс)
+  let autoTimer = null;
+  const AUTO_ADVANCE_MS = 350;
 
   const $quoteKicker = document.getElementById('quote-kicker');
   // Массив FACTS может отсутствовать в старых сборках — подстраховка
@@ -1258,10 +1271,12 @@ function canonicalizeFactorInner(inner) {
     else { $input.style.display = d; }
   }
 
+  // Поля блокируем через readOnly, а не disabled: disabled сбрасывает фокус
+  // и схлопывает клавиатуру на телефоне (№1). Кнопки выбора остаются disabled.
   function lockAnswerUI() {
     if (CHOICE) { choiceBtns.forEach(function(b) { b.disabled = true; }); }
-    else if (DUAL) { $coefInput.disabled = true; $radInput.disabled = true; }
-    else { $input.disabled = true; }
+    else if (DUAL) { $coefInput.readOnly = true; $radInput.readOnly = true; }
+    else { $input.readOnly = true; }
   }
 
   function sprintRemaining() {
@@ -1314,12 +1329,12 @@ function canonicalizeFactorInner(inner) {
     } else if (DUAL) {
       $coefInput.value = '';
       $radInput.value = '';
-      $coefInput.disabled = false;
-      $radInput.disabled = false;
+      $coefInput.readOnly = false;
+      $radInput.readOnly = false;
       $coefInput.focus();
     } else {
       $input.value = '';
-      $input.disabled = false;
+      $input.readOnly = false;
       $input.focus();
     }
     updateProgress();
@@ -1338,6 +1353,7 @@ function canonicalizeFactorInner(inner) {
   // --- Handle answer ---
   function handleAnswer(forcedVal) {
     if (locked) return;
+    clearTimeout(autoTimer); // ответ уже отправлен — отложенная автопроверка не нужна
     const val = CHOICE ? forcedVal : getAnswer();
     if (!DUAL && val === '') return;
     if (DUAL && val.coef === '' && val.rad === '') return;
@@ -1409,10 +1425,10 @@ function canonicalizeFactorInner(inner) {
     if (CHOICE) {
       errorChoiceBtns.forEach(function(b) { b.disabled = false; b.classList.remove('chosen'); });
     } else if (DUAL) {
-      ecoef.value = ''; ecoef.disabled = false;
-      erad.value = ''; erad.disabled = false;
+      ecoef.value = ''; ecoef.readOnly = false;
+      erad.value = ''; erad.readOnly = false;
     } else {
-      einput.value = ''; einput.disabled = false;
+      einput.value = ''; einput.readOnly = false;
     }
     efeedback.className = ''; efeedback.style.opacity = '0'; efeedback.style.transform = '';
     ecorrect.className = ''; ecorrect.textContent = '';
@@ -1423,38 +1439,38 @@ function canonicalizeFactorInner(inner) {
     // Проверка ответа в работе над ошибками — вызывается и по Enter, и кнопкой «✓»
     function submitError() {
       if (DUAL) {
-        if (ecoef.disabled) return;
+        if (ecoef.readOnly) return;
         const valCoef = norm(ecoef.value);
         const valRad = norm(erad.value);
         if (valCoef === '' && valRad === '') return;
         if (valCoef === task.a_coef && valRad === task.a_rad) {
           efeedback.textContent = '✓'; efeedback.className = 'correct';
           efeedback.style.opacity = '1'; efeedback.style.transform = 'scale(1.1)';
-          ecoef.disabled = true; erad.disabled = true;
+          ecoef.readOnly = true; erad.readOnly = true;
           setTimeout(function() { efeedback.style.opacity = '0'; efeedback.style.transform = ''; showErrorTask(errIdx + 1); }, FEEDBACK_DELAY);
         } else {
           efeedback.textContent = '✗'; efeedback.className = 'incorrect';
           efeedback.style.opacity = '1'; efeedback.style.transform = 'scale(1.1)';
           ecorrect.textContent = getCorrectDisplay(task); ecorrect.className = 'show';
           ecoef.value = ''; erad.value = '';
-          ecoef.disabled = true; erad.disabled = true;
+          ecoef.readOnly = true; erad.readOnly = true;
           buzz();
           setTimeout(function() { efeedback.style.opacity = '0'; efeedback.style.transform = ''; ecorrect.className = ''; showErrorTask(errIdx + 1); }, FEEDBACK_DELAY + 600);
         }
       } else {
-        if (einput.disabled) return;
+        if (einput.readOnly) return;
         const val = norm(einput.value);
         if (val === '') return;
         if (val === task.a) {
           efeedback.textContent = '✓'; efeedback.className = 'correct';
           efeedback.style.opacity = '1'; efeedback.style.transform = 'scale(1.1)';
-          einput.disabled = true;
+          einput.readOnly = true;
           setTimeout(function() { efeedback.style.opacity = '0'; efeedback.style.transform = ''; showErrorTask(errIdx + 1); }, FEEDBACK_DELAY);
         } else {
           efeedback.textContent = '✗'; efeedback.className = 'incorrect';
           efeedback.style.opacity = '1'; efeedback.style.transform = 'scale(1.1)';
           ecorrect.textContent = task.a; ecorrect.className = 'show';
-          einput.value = ''; einput.disabled = true;
+          einput.value = ''; einput.readOnly = true;
           buzz();
           setTimeout(function() { efeedback.style.opacity = '0'; efeedback.style.transform = ''; ecorrect.className = ''; showErrorTask(errIdx + 1); }, FEEDBACK_DELAY + 600);
         }
@@ -1463,6 +1479,20 @@ function canonicalizeFactorInner(inner) {
 
     function onErrorKeydown(e) {
       if (e.key === 'Enter') submitError();
+    }
+
+    // №41: автопереход и в работе над ошибками — та же задержка, тот же таймер
+    function onErrorTyping() {
+      clearTimeout(autoTimer);
+      autoTimer = setTimeout(function() {
+        if (DUAL) {
+          if (ecoef.readOnly) return;
+          if (norm(ecoef.value) === task.a_coef && norm(erad.value) === task.a_rad) submitError();
+        } else {
+          if (einput.readOnly) return;
+          if (norm(einput.value) === task.a) submitError();
+        }
+      }, AUTO_ADVANCE_MS);
     }
 
     if (CHOICE) {
@@ -1487,8 +1517,11 @@ function canonicalizeFactorInner(inner) {
     } else if (DUAL) {
       ecoef.onkeydown = onErrorKeydown;
       erad.onkeydown = onErrorKeydown;
+      ecoef.oninput = onErrorTyping;
+      erad.oninput = onErrorTyping;
     } else {
       einput.onkeydown = onErrorKeydown;
+      einput.oninput = onErrorTyping;
     }
     if ($errSubmitBtn) { $errSubmitBtn.onclick = submitError; }
   }
@@ -1603,8 +1636,35 @@ function canonicalizeFactorInner(inner) {
   } else {
     $input.addEventListener('keydown', function(e) { if (e.key === 'Enter') handleAnswer(); });
   }
-  // Кнопка «✓» — отправка ответа касанием (дублирует Enter)
-  if ($submit) { $submit.addEventListener('click', function() { handleAnswer(); }); }
+
+  // №41: автопереход при верном ответе — проверка после каждого символа
+  // с задержкой AUTO_ADVANCE_MS (новый символ сбрасывает таймер). Совпало —
+  // как будто нажат Enter. Enter и «✓» продолжают работать как раньше.
+  function onTyping() {
+    clearTimeout(autoTimer);
+    autoTimer = setTimeout(function() {
+      if (locked) return;
+      const idx = taskIndex();
+      if (idx >= tasks.length) return;
+      if (isCorrect(getAnswer(), tasks[idx])) handleAnswer();
+    }, AUTO_ADVANCE_MS);
+  }
+  if (DUAL) {
+    $coefInput.addEventListener('input', onTyping);
+    $radInput.addEventListener('input', onTyping);
+  } else if (!CHOICE) {
+    $input.addEventListener('input', onTyping);
+  }
+
+  // Кнопка «✓» — отправка ответа касанием (дублирует Enter).
+  // mousedown гасим, чтобы кнопка не забирала фокус у поля (клавиатура бы закрылась).
+  if ($submit) {
+    $submit.addEventListener('mousedown', function(e) { e.preventDefault(); });
+    $submit.addEventListener('click', function() { handleAnswer(); });
+  }
+  if ($errSubmitBtn) {
+    $errSubmitBtn.addEventListener('mousedown', function(e) { e.preventDefault(); });
+  }
 
   // --- Start ---
   newRound();

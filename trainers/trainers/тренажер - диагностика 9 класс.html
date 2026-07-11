@@ -30,12 +30,12 @@ body {
   text-align: center;
 }
 
-/* === Ссылка «← Все тренажёры» (возврат на портал) === */
+/* === Ссылки «← Все тренажёры» (на портал) и «следующий тренажёр →» === */
 
-a.portal-link {
+a.portal-link,
+a.next-link {
   position: absolute;
   top: 12px;
-  left: 16px;
   font-size: 0.95em;
   color: var(--card-muted);
   text-decoration: none;
@@ -43,9 +43,18 @@ a.portal-link {
   transition: opacity 0.2s ease;
 }
 
-a.portal-link:hover {
+a.portal-link { left: 16px; }
+a.next-link { right: 16px; }
+
+a.portal-link:hover,
+a.next-link:hover {
   opacity: 1;
   text-decoration: underline;
+}
+
+/* На узких экранах слово «тренажёр» прячем, чтобы ссылки в углах не наезжали друг на друга */
+@media (max-width: 480px) {
+  a.next-link .nl-word { display: none; }
 }
 
 h2 {
@@ -1448,8 +1457,13 @@ function canonicalizeFactorInner(inner) {
   });
 
   var $submitBtn = document.getElementById('submit-btn');
-  if ($submitBtn) { $submitBtn.addEventListener('click', submitAnswer); }
+  if ($submitBtn) {
+    // mousedown гасим, чтобы кнопка не забирала фокус у поля (клавиатура бы закрылась)
+    $submitBtn.addEventListener('mousedown', function(e) { e.preventDefault(); });
+    $submitBtn.addEventListener('click', submitAnswer);
+  }
 
+  $dunnoBtn.addEventListener('mousedown', function(e) { e.preventDefault(); });
   $dunnoBtn.addEventListener('click', function() {
     handleAnswer('', true);
   });
