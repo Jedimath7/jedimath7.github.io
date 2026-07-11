@@ -30,6 +30,24 @@ body {
   text-align: center;
 }
 
+/* === Ссылка «← Все тренажёры» (возврат на портал) === */
+
+a.portal-link {
+  position: absolute;
+  top: 12px;
+  left: 16px;
+  font-size: 0.95em;
+  color: var(--card-muted);
+  text-decoration: none;
+  opacity: 0.75;
+  transition: opacity 0.2s ease;
+}
+
+a.portal-link:hover {
+  opacity: 1;
+  text-decoration: underline;
+}
+
 h2 {
   font-family: 'Cinzel', serif;
   font-weight: 600;
@@ -182,6 +200,35 @@ input.small-input {
   font-size: 1.4em;
 }
 
+/* === Кнопка отправки ответа «✓» (для касания; на клавиатуре — Enter) === */
+
+button.submit-btn {
+  width: 44px;              /* минимальный удобный размер цели для пальца */
+  height: 44px;
+  flex-shrink: 0;
+  margin-left: 6px;
+  border: 2px solid var(--accent);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--accent);
+  font-size: 1.25em;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: all 0.2s ease;
+}
+
+button.submit-btn:hover {
+  opacity: 1;
+  background: rgba(0, 0, 0, 0.06);
+}
+
+button.submit-btn:active {
+  opacity: 1;
+  background: var(--accent);
+  color: #e8dcc0;
+}
+
 input[type="text"]:disabled {
   border-bottom-color: transparent;
   color: #1a330e;
@@ -237,7 +284,7 @@ input[type="text"]:disabled {
   justify-content: center;
 }
 
-#quote-overlay.show { display: flex; }
+#quote-overlay.show { display: flex; cursor: pointer; }
 
 #quote-text {
   font-size: 1.4em;
@@ -658,6 +705,7 @@ svg.fig {
     </style>
 </head>
 <body class="diagnostic-mode">
+    <a class="portal-link" href="../index.html">← Все тренажёры</a>
     <div id="progress-row">
         <div id="progress-bar-wrap"><div id="progress-bar"></div></div>
         <div id="progress-text">0 / 40</div>
@@ -674,6 +722,7 @@ svg.fig {
             <div id="math-row">
                 <div id="math-expr"></div>
                 <input type="text" id="answer-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Ваш ответ">
+                <button type="button" id="submit-btn" class="submit-btn" aria-label="Ответить">✓</button>
             </div>
             <div id="dunno-row">
                 <button id="dunno-btn" type="button">Не знаю</button>
@@ -942,6 +991,7 @@ window.TRAINER_CONFIG = {
     }
   ],
   "normMode": "basic",
+  "_inputmode": null,
   "_totalTasks": 40
 };
     </script>
@@ -1352,6 +1402,8 @@ function canonicalizeFactorInner(inner) {
       $feedback.className = 'wrong';
       $correct.textContent = 'Правильный ответ: ' + t.a;
       $correct.style.display = '';
+      // Короткая вибрация при ошибке (только телефоны)
+      if (navigator.vibrate) { try { navigator.vibrate(80); } catch (err) {} }
     }
 
     $input.className = isCorrect ? 'correct' : (isSkipped ? 'skipped' : 'wrong');
@@ -1363,14 +1415,22 @@ function canonicalizeFactorInner(inner) {
   }
 
   // --- Event handlers ---
+  // Отправка ответа: Enter или кнопка «✓» (для телефона)
+  function submitAnswer() {
+    var val = $input.value;
+    if (val.trim() === '') return;
+    handleAnswer(val, false);
+  }
+
   $input.addEventListener('keydown', function(e) {
     if (e.key === 'Enter') {
       e.preventDefault();
-      var val = $input.value;
-      if (val.trim() === '') return;
-      handleAnswer(val, false);
+      submitAnswer();
     }
   });
+
+  var $submitBtn = document.getElementById('submit-btn');
+  if ($submitBtn) { $submitBtn.addEventListener('click', submitAnswer); }
 
   $dunnoBtn.addEventListener('click', function() {
     handleAnswer('', true);

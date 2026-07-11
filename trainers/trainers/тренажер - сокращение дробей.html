@@ -30,6 +30,24 @@ body {
   text-align: center;
 }
 
+/* === Ссылка «← Все тренажёры» (возврат на портал) === */
+
+a.portal-link {
+  position: absolute;
+  top: 12px;
+  left: 16px;
+  font-size: 0.95em;
+  color: var(--card-muted);
+  text-decoration: none;
+  opacity: 0.75;
+  transition: opacity 0.2s ease;
+}
+
+a.portal-link:hover {
+  opacity: 1;
+  text-decoration: underline;
+}
+
 h2 {
   font-family: 'Cinzel', serif;
   font-weight: 600;
@@ -182,6 +200,35 @@ input.small-input {
   font-size: 1.4em;
 }
 
+/* === Кнопка отправки ответа «✓» (для касания; на клавиатуре — Enter) === */
+
+button.submit-btn {
+  width: 44px;              /* минимальный удобный размер цели для пальца */
+  height: 44px;
+  flex-shrink: 0;
+  margin-left: 6px;
+  border: 2px solid var(--accent);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--accent);
+  font-size: 1.25em;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: all 0.2s ease;
+}
+
+button.submit-btn:hover {
+  opacity: 1;
+  background: rgba(0, 0, 0, 0.06);
+}
+
+button.submit-btn:active {
+  opacity: 1;
+  background: var(--accent);
+  color: #e8dcc0;
+}
+
 input[type="text"]:disabled {
   border-bottom-color: transparent;
   color: #1a330e;
@@ -237,7 +284,7 @@ input[type="text"]:disabled {
   justify-content: center;
 }
 
-#quote-overlay.show { display: flex; }
+#quote-overlay.show { display: flex; cursor: pointer; }
 
 #quote-text {
   font-size: 1.4em;
@@ -658,6 +705,7 @@ svg.fig {
     </style>
 </head>
 <body>
+    <a class="portal-link" href="../index.html">← Все тренажёры</a>
     <div id="progress-row">
         <div id="progress-bar-wrap"><div id="progress-bar"></div></div>
         <div id="progress-text">0 / 59</div>
@@ -670,7 +718,8 @@ svg.fig {
         <div id="round-badge"></div>
         <div id="math-row" class="">
             <div id="math-expr"></div>
-            <input type="text" id="answer-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="например: 3/4"></div>
+            <input type="text" id="answer-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="например: 3/4">
+            <button type="button" id="submit-btn" class="submit-btn" aria-label="Ответить">✓</button></div>
     </div>
 
     <div id="big-feedback"></div>
@@ -679,7 +728,7 @@ svg.fig {
     <div id="quote-overlay">
         <div id="quote-text"></div>
         <div id="quote-author"></div>
-        <div id="quote-continue">Нажмите Enter, чтобы продолжить</div>
+        <div id="quote-continue">Нажмите Enter или коснитесь экрана</div>
     </div>
 
     <div id="done-message">Все задания решены без ошибок</div>
@@ -692,7 +741,8 @@ svg.fig {
             <div id="task-counter-error"></div>
             <div class="error-math-row">
                 <div id="math-expr-error"></div>
-                <input type="text" id="error-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="например: 3/4"></div>
+                <input type="text" id="error-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="например: 3/4">
+                <button type="button" id="submit-btn-error" class="submit-btn" aria-label="Ответить">✓</button></div>
         </div>
         <div id="big-feedback-error"></div>
         <div id="correct-answer-error"></div>
@@ -955,7 +1005,8 @@ window.TRAINER_CONFIG = {
   ],
   "placeholder": "например: 3/4",
   "sprintSize": 5,
-  "normMode": "basic"
+  "normMode": "basic",
+  "_inputmode": null
 };
     </script>
     <script>
@@ -1256,6 +1307,13 @@ function canonicalizeFactorInner(inner) {
   const $card = document.getElementById('card');
   const $streakFlash = document.getElementById('streak-flash');
   const $roundBadge = document.getElementById('round-badge');
+  const $submit = CHOICE ? null : document.getElementById('submit-btn');
+  const $errSubmitBtn = CHOICE ? null : document.getElementById('submit-btn-error');
+
+  // Короткая вибрация при ошибке (работает только на телефонах)
+  function buzz() {
+    if (navigator.vibrate) { try { navigator.vibrate(80); } catch (e) {} }
+  }
 
   // --- State ---
   let tasks = [];
@@ -1380,6 +1438,7 @@ function canonicalizeFactorInner(inner) {
       $correct.textContent = getCorrectDisplay(task);
       $correct.className = 'show';
       lockAnswerUI();
+      buzz();
       streakCount = 0;
       allPerfect = false;
       if (!sprintErrors.some(function(e) { return e.q === task.q; })) { sprintErrors.push(task); }
@@ -1440,8 +1499,8 @@ function canonicalizeFactorInner(inner) {
 
     if (window.MathJax) { MathJax.typesetPromise([document.getElementById('math-expr-error')]); }
 
-    function onErrorKeydown(e) {
-      if (e.key !== 'Enter') return;
+    // Проверка ответа в работе над ошибками — вызывается и по Enter, и кнопкой «✓»
+    function submitError() {
       if (DUAL) {
         if (ecoef.disabled) return;
         const valCoef = norm(ecoef.value);
@@ -1458,6 +1517,7 @@ function canonicalizeFactorInner(inner) {
           ecorrect.textContent = getCorrectDisplay(task); ecorrect.className = 'show';
           ecoef.value = ''; erad.value = '';
           ecoef.disabled = true; erad.disabled = true;
+          buzz();
           setTimeout(function() { efeedback.style.opacity = '0'; efeedback.style.transform = ''; ecorrect.className = ''; showErrorTask(errIdx + 1); }, FEEDBACK_DELAY + 600);
         }
       } else {
@@ -1474,9 +1534,14 @@ function canonicalizeFactorInner(inner) {
           efeedback.style.opacity = '1'; efeedback.style.transform = 'scale(1.1)';
           ecorrect.textContent = task.a; ecorrect.className = 'show';
           einput.value = ''; einput.disabled = true;
+          buzz();
           setTimeout(function() { efeedback.style.opacity = '0'; efeedback.style.transform = ''; ecorrect.className = ''; showErrorTask(errIdx + 1); }, FEEDBACK_DELAY + 600);
         }
       }
+    }
+
+    function onErrorKeydown(e) {
+      if (e.key === 'Enter') submitError();
     }
 
     if (CHOICE) {
@@ -1504,6 +1569,7 @@ function canonicalizeFactorInner(inner) {
     } else {
       einput.onkeydown = onErrorKeydown;
     }
+    if ($errSubmitBtn) { $errSubmitBtn.onclick = submitError; }
   }
 
   // --- Quote between sprints ---
@@ -1520,9 +1586,10 @@ function canonicalizeFactorInner(inner) {
     $quoteText.textContent = '«' + QUOTES[qi].text + '»';
     $quoteAuthor.textContent = '— ' + QUOTES[qi].author;
 
-    function onQuoteContinue(e) {
-      if (e.key !== 'Enter') return;
+    // Продолжить можно клавишей Enter или касанием/кликом по цитате
+    function proceedAfterQuote() {
       document.removeEventListener('keydown', onQuoteContinue);
+      $quoteOverlay.removeEventListener('click', proceedAfterQuote);
       $quoteOverlay.classList.remove('show');
       $card.style.display = '';
       setMainInputVisible(true);
@@ -1531,7 +1598,13 @@ function canonicalizeFactorInner(inner) {
       if (sprintStartIndex >= tasks.length) { finishRound(); }
       else { startSprint(); }
     }
-    setTimeout(function() { document.addEventListener('keydown', onQuoteContinue); }, 100);
+    function onQuoteContinue(e) {
+      if (e.key === 'Enter') proceedAfterQuote();
+    }
+    setTimeout(function() {
+      document.addEventListener('keydown', onQuoteContinue);
+      $quoteOverlay.addEventListener('click', proceedAfterQuote);
+    }, 100);
   }
 
   // --- Round lifecycle ---
@@ -1593,6 +1666,8 @@ function canonicalizeFactorInner(inner) {
   } else {
     $input.addEventListener('keydown', function(e) { if (e.key === 'Enter') handleAnswer(); });
   }
+  // Кнопка «✓» — отправка ответа касанием (дублирует Enter)
+  if ($submit) { $submit.addEventListener('click', function() { handleAnswer(); }); }
 
   // --- Start ---
   newRound();
