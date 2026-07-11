@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Системная отработка навыков — математические тренажёры</title>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&family=EB+Garamond:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <!-- PWA: манифест приложения, цвет системной панели, иконки -->
+    <link rel="manifest" href="/trainers/manifest.webmanifest">
+    <meta name="theme-color" content="#131A1F">
+    <link rel="icon" href="/trainers/icons/icon-192.png">
+    <link rel="apple-touch-icon" href="/trainers/icons/apple-touch-icon.png">
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -375,6 +380,14 @@
             gradient: "radial-gradient(circle at center, #c0b8d0 0%, #9088a0 80%, #605870 100%)"
         },
         {
+            title: "Основное тригонометрическое тождество",
+            subtitle: "sin²x + cos²x = 1 — поиск sin, cos, tg по четвертям",
+            file: "trainers/тренажер - основное тригонометрическое тождество.html",
+            classes: ["10-11"],
+            tasks: 39,
+            gradient: "radial-gradient(circle at center, #b0a8cc 0%, #8078a4 80%, #504874 100%)"
+        },
+        {
             title: "Радианы ↔ градусы",
             subtitle: "Перевод радиан в градусы и обратно",
             file: "trainers/тренажер - радианы в градусы.html",
@@ -471,6 +484,14 @@
             gradient: "radial-gradient(circle at center, #d49478 0%, #b06848 80%, #804028 100%)"
         },
         {
+            title: "Площади фигур",
+            subtitle: "Квадрат, треугольник, параллелограмм, ромб, трапеция, круг",
+            file: "trainers/тренажер - площади фигур.html",
+            classes: ["8","9"],
+            tasks: 48,
+            gradient: "radial-gradient(circle at center, #d0a890 0%, #a87860 80%, #784830 100%)"
+        },
+        {
             title: "Проценты от числа",
             subtitle: "10%, 25%, 50%, 75%, малые проценты — ответы целые числа",
             file: "trainers/тренажер - проценты от числа.html",
@@ -485,6 +506,22 @@
             classes: ["5-6","7"],
             tasks: 59,
             gradient: "radial-gradient(circle at center, #90a0c0 0%, #6070a0 80%, #304080 100%)"
+        },
+        {
+            title: "Умножение и деление на 10, 100, 1000",
+            subtitle: "Перенос запятой при умножении и делении на 10, 100, 1000",
+            file: "trainers/тренажер - умножение-деление на 10 100 1000.html",
+            classes: ["5-6"],
+            tasks: 57,
+            gradient: "radial-gradient(circle at center, #9cc4b4 0%, #6c9c84 80%, #3c6c54 100%)"
+        },
+        {
+            title: "Признаки делимости",
+            subtitle: "Делимость на 2, 3, 5, 9, 10 — ответ «да» или «нет»",
+            file: "trainers/тренажер - признаки делимости.html",
+            classes: ["5-6"],
+            tasks: 52,
+            gradient: "radial-gradient(circle at center, #d4c090 0%, #ac9460 80%, #7c6430 100%)"
         },
         {
             title: "Отрицательный и нулевой показатель",
@@ -595,6 +632,11 @@
             }
         });
     });
+</script>
+
+<script>
+// PWA: регистрация service worker — включает офлайн-режим и установку на телефон
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('/trainers/sw.js');
 </script>
 
 </body>

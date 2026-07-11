@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Тренажер: Вычитание до 100</title>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&family=EB+Garamond:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <!-- PWA: манифест приложения, цвет системной панели, иконки -->
+    <link rel="manifest" href="/trainers/manifest.webmanifest">
+    <meta name="theme-color" content="#131A1F">
+    <link rel="icon" href="/trainers/icons/icon-192.png">
+    <link rel="apple-touch-icon" href="/trainers/icons/apple-touch-icon.png">
     <script>
 MathJax = { tex: { macros: { tg: "\\operatorname{tg}", ctg: "\\operatorname{ctg}" } } };
     </script>
@@ -574,6 +579,69 @@ input[type="text"].skipped {
   h2::after { width: 80%; }
 }
 
+/* === Режим кнопок-вариантов (inputMode: choice) === */
+
+.choice-row {
+  display: flex;
+  justify-content: center;
+  gap: 28px;
+  margin-top: 20px;
+}
+
+button.choice-btn {
+  font-family: 'EB Garamond', serif;
+  font-size: 1.5em;
+  padding: 8px 44px;
+  border: 2px solid var(--accent);
+  border-radius: 30px;
+  background: transparent;
+  color: var(--accent);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+button.choice-btn:hover:not(:disabled) {
+  background: rgba(0, 0, 0, 0.07);
+}
+
+button.choice-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+button.choice-btn.chosen {
+  background: var(--accent);
+  color: #e8dcc0;
+  opacity: 1;
+}
+
+/* === Вертикальная компоновка карточки (stackedLayout) === */
+
+#math-row.stacked,
+.error-math-row.stacked {
+  flex-direction: column;
+  gap: 16px;
+}
+
+#math-row.stacked #math-expr,
+.error-math-row.stacked #math-expr-error {
+  max-width: 100%;
+}
+
+/* === Чертежи в заданиях (инлайн-SVG) === */
+
+svg.fig {
+  display: block;
+  margin: 0 auto;
+  max-width: 100%;
+  height: auto;
+}
+
+@media (max-width: 480px) {
+  button.choice-btn { font-size: 1.2em; padding: 6px 30px; }
+  .choice-row { gap: 16px; }
+}
+
 
       :root {
         --bg-start: #c9c0a8;
@@ -1125,6 +1193,7 @@ function canonicalizeFactorInner(inner) {
   const SPRINT_SIZE = C.sprintSize || 5;
   const FEEDBACK_DELAY = 700;
   const DUAL = C.inputMode === 'dual';
+  const CHOICE = C.inputMode === 'choice';
 
   const norm = buildNorm(C.normMode || 'basic');
 
@@ -1143,6 +1212,10 @@ function canonicalizeFactorInner(inner) {
   const $input = document.getElementById('answer-input');
   const $coefInput = DUAL ? document.getElementById('coef-input') : null;
   const $radInput = DUAL ? document.getElementById('rad-input') : null;
+  const $choiceRow = CHOICE ? document.getElementById('choice-row') : null;
+  const choiceBtns = CHOICE ? Array.prototype.slice.call($choiceRow.querySelectorAll('.choice-btn')) : [];
+  const $choiceRowError = CHOICE ? document.getElementById('choice-row-error') : null;
+  const errorChoiceBtns = CHOICE ? Array.prototype.slice.call($choiceRowError.querySelectorAll('.choice-btn')) : [];
   const $feedback = document.getElementById('big-feedback');
   const $correct = document.getElementById('correct-answer');
   const $progressBar = document.getElementById('progress-bar');
@@ -1169,6 +1242,20 @@ function canonicalizeFactorInner(inner) {
   let allPerfect = true;
 
   function taskIndex() { return sprintStartIndex + sprintPos; }
+
+  // --- Показ/скрытие и блокировка зоны ответа (input / dual / choice) ---
+  function setMainInputVisible(v) {
+    const d = v ? '' : 'none';
+    if (CHOICE) { $choiceRow.style.display = d; }
+    else if (DUAL) { $coefInput.style.display = d; $radInput.style.display = d; }
+    else { $input.style.display = d; }
+  }
+
+  function lockAnswerUI() {
+    if (CHOICE) { choiceBtns.forEach(function(b) { b.disabled = true; }); }
+    else if (DUAL) { $coefInput.disabled = true; $radInput.disabled = true; }
+    else { $input.disabled = true; }
+  }
 
   function sprintRemaining() {
     return Math.min(SPRINT_SIZE, tasks.length - sprintStartIndex);
@@ -1215,7 +1302,9 @@ function canonicalizeFactorInner(inner) {
     $feedback.textContent = '';
     $correct.className = '';
     $correct.textContent = '';
-    if (DUAL) {
+    if (CHOICE) {
+      choiceBtns.forEach(function(b) { b.disabled = false; b.classList.remove('chosen'); });
+    } else if (DUAL) {
       $coefInput.value = '';
       $radInput.value = '';
       $coefInput.disabled = false;
@@ -1240,9 +1329,9 @@ function canonicalizeFactorInner(inner) {
   }
 
   // --- Handle answer ---
-  function handleAnswer() {
+  function handleAnswer(forcedVal) {
     if (locked) return;
-    const val = getAnswer();
+    const val = CHOICE ? forcedVal : getAnswer();
     if (!DUAL && val === '') return;
     if (DUAL && val.coef === '' && val.rad === '') return;
     locked = true;
@@ -1255,16 +1344,14 @@ function canonicalizeFactorInner(inner) {
       streakCount++;
       if (streakCount === 5) { streakCount = 0; fireStreakEffect(); }
       updateProgress();
-      if (!DUAL) $input.disabled = true;
-      else { $coefInput.disabled = true; $radInput.disabled = true; }
+      lockAnswerUI();
       setTimeout(function() { $feedback.className = ''; locked = false; advanceTask(); }, FEEDBACK_DELAY);
     } else {
       $feedback.textContent = '✗';
       $feedback.className = 'incorrect show';
       $correct.textContent = getCorrectDisplay(task);
       $correct.className = 'show';
-      if (!DUAL) $input.disabled = true;
-      else { $coefInput.disabled = true; $radInput.disabled = true; }
+      lockAnswerUI();
       streakCount = 0;
       allPerfect = false;
       if (!sprintErrors.some(function(e) { return e.q === task.q; })) { sprintErrors.push(task); }
@@ -1286,8 +1373,7 @@ function canonicalizeFactorInner(inner) {
   // --- Error work ---
   function startErrorWork() {
     $errorSection.style.display = 'block';
-    if (!DUAL) $input.style.display = 'none';
-    else { $coefInput.style.display = 'none'; $radInput.style.display = 'none'; }
+    setMainInputVisible(false);
     $card.style.display = 'none';
     $quoteOverlay.classList.remove('show');
     if ($roundBadge) $roundBadge.classList.remove('visible');
@@ -1297,8 +1383,7 @@ function canonicalizeFactorInner(inner) {
   function showErrorTask(errIdx) {
     if (errIdx >= sprintErrors.length) {
       $errorSection.style.display = 'none';
-      if (!DUAL) $input.style.display = '';
-      else { $coefInput.style.display = ''; $radInput.style.display = ''; }
+      setMainInputVisible(true);
       sprintErrors = [];
       showQuote();
       return;
@@ -1313,7 +1398,9 @@ function canonicalizeFactorInner(inner) {
     const efeedback = document.getElementById('big-feedback-error');
     const ecorrect = document.getElementById('correct-answer-error');
 
-    if (DUAL) {
+    if (CHOICE) {
+      errorChoiceBtns.forEach(function(b) { b.disabled = false; b.classList.remove('chosen'); });
+    } else if (DUAL) {
       ecoef.value = ''; ecoef.disabled = false;
       erad.value = ''; erad.disabled = false;
     } else {
@@ -1321,7 +1408,7 @@ function canonicalizeFactorInner(inner) {
     }
     efeedback.className = ''; efeedback.style.opacity = '0'; efeedback.style.transform = '';
     ecorrect.className = ''; ecorrect.textContent = '';
-    if (DUAL) ecoef.focus(); else einput.focus();
+    if (DUAL) ecoef.focus(); else if (!CHOICE) einput.focus();
 
     if (window.MathJax) { MathJax.typesetPromise([document.getElementById('math-expr-error')]); }
 
@@ -1364,7 +1451,26 @@ function canonicalizeFactorInner(inner) {
       }
     }
 
-    if (DUAL) {
+    if (CHOICE) {
+      errorChoiceBtns.forEach(function(btn) {
+        btn.onclick = function() {
+          if (btn.disabled) return;
+          btn.classList.add('chosen');
+          errorChoiceBtns.forEach(function(b) { b.disabled = true; });
+          const val = norm(btn.dataset.val);
+          if (val === task.a) {
+            efeedback.textContent = '✓'; efeedback.className = 'correct';
+            efeedback.style.opacity = '1'; efeedback.style.transform = 'scale(1.1)';
+            setTimeout(function() { efeedback.style.opacity = '0'; efeedback.style.transform = ''; showErrorTask(errIdx + 1); }, FEEDBACK_DELAY);
+          } else {
+            efeedback.textContent = '✗'; efeedback.className = 'incorrect';
+            efeedback.style.opacity = '1'; efeedback.style.transform = 'scale(1.1)';
+            ecorrect.textContent = task.a; ecorrect.className = 'show';
+            setTimeout(function() { efeedback.style.opacity = '0'; efeedback.style.transform = ''; ecorrect.className = ''; showErrorTask(errIdx + 1); }, FEEDBACK_DELAY + 600);
+          }
+        };
+      });
+    } else if (DUAL) {
       ecoef.onkeydown = onErrorKeydown;
       erad.onkeydown = onErrorKeydown;
     } else {
@@ -1375,8 +1481,7 @@ function canonicalizeFactorInner(inner) {
   // --- Quote between sprints ---
   function showQuote() {
     $card.style.display = 'none';
-    if (!DUAL) $input.style.display = 'none';
-    else { $coefInput.style.display = 'none'; $radInput.style.display = 'none'; }
+    setMainInputVisible(false);
     if ($roundBadge) $roundBadge.classList.remove('visible');
     $quoteOverlay.classList.add('show');
 
@@ -1392,8 +1497,7 @@ function canonicalizeFactorInner(inner) {
       document.removeEventListener('keydown', onQuoteContinue);
       $quoteOverlay.classList.remove('show');
       $card.style.display = '';
-      if (!DUAL) $input.style.display = '';
-      else { $coefInput.style.display = ''; $radInput.style.display = ''; }
+      setMainInputVisible(true);
       sprintStartIndex += sprintRemaining();
       sprintPos = 0; sprintNumber++;
       if (sprintStartIndex >= tasks.length) { finishRound(); }
@@ -1412,10 +1516,9 @@ function canonicalizeFactorInner(inner) {
     $done.style.display = 'block';
     $expr.innerHTML = '';
     $taskCounter.textContent = '';
-    if (!DUAL) $input.style.display = 'none';
-    else { $coefInput.style.display = 'none'; $radInput.style.display = 'none'; }
+    setMainInputVisible(false);
     if ($roundBadge) $roundBadge.classList.remove('visible');
-    setTimeout(function() { $done.style.display = 'none'; if (!DUAL) $input.style.display = ''; else { $coefInput.style.display = ''; $radInput.style.display = ''; } newRound(); }, 2000);
+    setTimeout(function() { $done.style.display = 'none'; setMainInputVisible(true); newRound(); }, 2000);
   }
 
   function startSprint() {
@@ -1432,7 +1535,31 @@ function canonicalizeFactorInner(inner) {
   }
 
   // --- Event binding ---
-  if (DUAL) {
+  if (CHOICE) {
+    choiceBtns.forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        if (locked || btn.disabled) return;
+        btn.classList.add('chosen');
+        handleAnswer(norm(btn.dataset.val));
+      });
+    });
+    // Клавиатура: цифры 1/2/... или первая буква варианта («д»/«н»)
+    document.addEventListener('keydown', function(e) {
+      const errVisible = $errorSection.style.display === 'block';
+      const btns = errVisible ? errorChoiceBtns : choiceBtns;
+      let idx = -1;
+      const num = parseInt(e.key, 10);
+      if (num >= 1 && num <= btns.length) { idx = num - 1; }
+      else {
+        const k = e.key.toLowerCase();
+        idx = btns.findIndex(function(b) { return b.dataset.val.charAt(0).toLowerCase() === k; });
+      }
+      if (idx < 0) return;
+      const btn = btns[idx];
+      if (btn.disabled || btn.offsetParent === null) return;
+      btn.click();
+    });
+  } else if (DUAL) {
     $coefInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') { e.preventDefault(); $radInput.focus(); } });
     $radInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') handleAnswer(); });
   } else {
@@ -1443,6 +1570,10 @@ function canonicalizeFactorInner(inner) {
   newRound();
 })();
 
+    </script>
+    <script>
+// PWA: регистрация service worker (страница тренажёра входит в scope /trainers/)
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('/trainers/sw.js');
     </script>
 </body>
 </html>

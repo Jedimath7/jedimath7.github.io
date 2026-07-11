@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Тренажер: Входное тестирование — 9 класс</title>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&family=EB+Garamond:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <!-- PWA: манифест приложения, цвет системной панели, иконки -->
+    <link rel="manifest" href="/trainers/manifest.webmanifest">
+    <meta name="theme-color" content="#131A1F">
+    <link rel="icon" href="/trainers/icons/icon-192.png">
+    <link rel="apple-touch-icon" href="/trainers/icons/apple-touch-icon.png">
     <script>
 MathJax = { tex: { macros: { tg: "\\operatorname{tg}", ctg: "\\operatorname{ctg}" } } };
     </script>
@@ -572,6 +577,69 @@ input[type="text"].skipped {
   #card { padding: 40px 10px 20px; }
   input[type="text"] { width: 80px; font-size: 1.3em; }
   h2::after { width: 80%; }
+}
+
+/* === Режим кнопок-вариантов (inputMode: choice) === */
+
+.choice-row {
+  display: flex;
+  justify-content: center;
+  gap: 28px;
+  margin-top: 20px;
+}
+
+button.choice-btn {
+  font-family: 'EB Garamond', serif;
+  font-size: 1.5em;
+  padding: 8px 44px;
+  border: 2px solid var(--accent);
+  border-radius: 30px;
+  background: transparent;
+  color: var(--accent);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+button.choice-btn:hover:not(:disabled) {
+  background: rgba(0, 0, 0, 0.07);
+}
+
+button.choice-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+button.choice-btn.chosen {
+  background: var(--accent);
+  color: #e8dcc0;
+  opacity: 1;
+}
+
+/* === Вертикальная компоновка карточки (stackedLayout) === */
+
+#math-row.stacked,
+.error-math-row.stacked {
+  flex-direction: column;
+  gap: 16px;
+}
+
+#math-row.stacked #math-expr,
+.error-math-row.stacked #math-expr-error {
+  max-width: 100%;
+}
+
+/* === Чертежи в заданиях (инлайн-SVG) === */
+
+svg.fig {
+  display: block;
+  margin: 0 auto;
+  max-width: 100%;
+  height: auto;
+}
+
+@media (max-width: 480px) {
+  button.choice-btn { font-size: 1.2em; padding: 6px 30px; }
+  .choice-row { gap: 16px; }
 }
 
 
@@ -1324,6 +1392,10 @@ function canonicalizeFactorInner(inner) {
   showTask();
 })();
 
+    </script>
+    <script>
+// PWA: регистрация service worker (страница тренажёра входит в scope /trainers/)
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('/trainers/sw.js');
     </script>
 </body>
 </html>
