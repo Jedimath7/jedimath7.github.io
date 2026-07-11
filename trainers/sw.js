@@ -2,7 +2,7 @@
 // ЭТОТ ФАЙЛ — ШАБЛОН: publish.js подставляет версию кэша и список файлов
 // и кладёт готовый sw.js в deploy-site/trainers/sw.js. Руками sw.js не править!
 
-const CACHE_VERSION = 'd74e9245e000';
+const CACHE_VERSION = 'b8ee6eede36c';
 const PRECACHE = 'trainers-' + CACHE_VERSION;   // кэш своих файлов (портал, тренажёры, иконки)
 const RUNTIME = 'trainers-cdn-v1';              // кэш внешних ресурсов (шрифты, MathJax)
 
