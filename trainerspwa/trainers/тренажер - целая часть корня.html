@@ -1,0 +1,1596 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тренажер: Вынесение из-под корня</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&family=EB+Garamond:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <!-- PWA: манифест приложения, цвет системной панели, иконки -->
+    <link rel="manifest" href="/trainerspwa/manifest.webmanifest">
+    <meta name="theme-color" content="#131A1F">
+    <link rel="icon" href="/trainerspwa/icons/icon-192.png">
+    <link rel="apple-touch-icon" href="/trainerspwa/icons/apple-touch-icon.png">
+    <script>
+MathJax = { tex: { macros: { tg: "\\operatorname{tg}", ctg: "\\operatorname{ctg}" } } };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+/* === CORE.CSS — общие стили тренажёров === */
+/* Тема задаётся через CSS custom properties (вставляется build.js после этого файла) */
+
+body {
+  font-family: 'EB Garamond', serif;
+  background: radial-gradient(circle at center, var(--bg-start) 0%, var(--bg-mid) 80%, var(--bg-end) 100%);
+  color: #1a0f09;
+  max-width: var(--body-max-width);
+  margin: 0 auto;
+  padding: 40px 20px;
+  line-height: 1.6;
+  min-height: 100vh;
+  text-align: center;
+}
+
+h2 {
+  font-family: 'Cinzel', serif;
+  font-weight: 600;
+  color: #1a0f09;
+  text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.15);
+  margin-bottom: 30px;
+  position: relative;
+}
+
+h2::after {
+  content: '';
+  display: block;
+  width: 50%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  margin: 15px auto 0;
+}
+
+h3 {
+  font-family: 'Cinzel', serif;
+  font-weight: 600;
+  color: #1a0f09;
+  margin-bottom: 30px;
+}
+
+/* === Прогресс-бар === */
+
+#progress-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+#progress-bar-wrap {
+  flex: 1;
+  height: 5px;
+  background-color: rgba(42, 23, 16, 0.15);
+  border-radius: 3px;
+  overflow: hidden;
+  box-shadow: inset 0 1px 4px rgba(0,0,0,0.3);
+}
+
+#progress-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--accent), var(--accent-light));
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 0 5px rgba(48, 30, 21, 0.6);
+}
+
+#progress-text {
+  font-size: 0.95em;
+  color: var(--progress-text);
+  white-space: nowrap;
+  min-width: 60px;
+  text-align: right;
+}
+
+/* === Карточка задания === */
+
+#card {
+  margin: 30px 0 20px;
+  padding: 50px 20px 30px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.08);
+  position: relative;
+  min-height: 160px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.15s ease;
+}
+
+#task-counter {
+  position: absolute;
+  top: 12px;
+  left: 20px;
+  font-size: 1em;
+  color: var(--card-muted);
+}
+
+#round-badge {
+  position: absolute;
+  top: 12px;
+  right: 20px;
+  font-size: 0.85em;
+  color: #8b6b4f;
+  display: none;
+}
+
+#round-badge.visible {
+  display: block;
+}
+
+#math-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+#math-row.dual {
+  gap: 6px;
+}
+
+.eq-sign {
+  font-size: var(--math-font-size);
+  color: #1a0f09;
+  margin: 0 4px;
+}
+
+.sqrt-sign {
+  font-size: 1.8em;
+  color: #1a0f09;
+  margin: 0 2px;
+}
+
+#math-expr {
+  font-size: var(--math-font-size);
+  text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+/* === Поля ввода === */
+
+input[type="text"] {
+  width: var(--input-width);
+  padding: 8px 14px;
+  font-size: 1.6em;
+  text-align: center;
+  background-color: transparent;
+  border: none;
+  border-bottom: 2px solid var(--accent);
+  color: #1a0f09;
+  font-family: 'EB Garamond', serif;
+  transition: all 0.3s ease;
+}
+
+input[type="text"]:focus {
+  outline: none;
+  border-bottom-color: #1a0f09;
+  background-color: rgba(0, 0, 0, 0.06);
+  border-radius: 4px 4px 0 0;
+}
+
+input.small-input {
+  width: 60px;
+  padding: 8px 6px;
+  font-size: 1.4em;
+}
+
+input[type="text"]:disabled {
+  border-bottom-color: transparent;
+  color: #1a330e;
+  font-weight: bold;
+  text-shadow: 0 0 8px rgba(119, 148, 77, 0.3);
+}
+
+/* === Обратная связь === */
+
+#big-feedback {
+  font-size: 3em;
+  height: 1.2em;
+  line-height: 1.2;
+  opacity: 0;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+#big-feedback.show { opacity: 1; transform: scale(1.1); }
+#big-feedback.correct { color: #1a330e; }
+#big-feedback.incorrect { color: #5c0000; }
+
+#correct-answer {
+  font-size: 1.1em;
+  color: var(--card-muted);
+  min-height: 1.5em;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+#correct-answer.show { opacity: 1; }
+
+/* === Сообщение о завершении === */
+
+#done-message {
+  display: none;
+  margin-top: 40px;
+  padding: 20px;
+  font-family: 'Cinzel', serif;
+  font-size: 1.3em;
+  color: #1a330e;
+}
+
+/* === Цитата между спринтами === */
+
+#quote-overlay {
+  display: none;
+  margin: 30px 0 20px;
+  padding: 50px 20px 30px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.08);
+  min-height: 160px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+#quote-overlay.show { display: flex; }
+
+#quote-text {
+  font-size: 1.4em;
+  font-style: italic;
+  color: #1a0f09;
+  margin-bottom: 12px;
+  line-height: 1.5;
+}
+
+#quote-author {
+  font-family: 'Cinzel', serif;
+  font-size: 1em;
+  color: #5c5240;
+}
+
+#quote-continue {
+  margin-top: 20px;
+  font-size: 0.9em;
+  color: #8a8070;
+}
+
+/* === Эффекты streak === */
+
+#streak-flash {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.5);
+  pointer-events: none;
+  z-index: 200;
+  opacity: 0;
+  font-family: 'Cinzel', serif;
+  font-size: 2.2em;
+  color: #1a0f09;
+  text-shadow: 0 0 20px rgba(200, 170, 80, 0.6);
+  transition: none;
+}
+
+#streak-flash.fire {
+  animation: streakPopup 1.2s ease-out forwards;
+}
+
+@keyframes streakPopup {
+  0%   { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+  25%  { opacity: 1; transform: translate(-50%, -50%) scale(1.15); }
+  40%  { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  80%  { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
+}
+
+/* === Секция ошибок === */
+
+#error-section {
+  display: none;
+  margin-top: 40px;
+}
+
+#card-error {
+  padding: 30px 20px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.08);
+  position: relative;
+}
+
+#task-counter-error {
+  font-size: 1em;
+  color: var(--card-muted);
+  margin-bottom: 15px;
+}
+
+.error-math-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.error-math-row.dual {
+  gap: 4px;
+}
+
+#math-expr-error {
+  font-size: 2em;
+  text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+#big-feedback-error {
+  font-size: 3em;
+  height: 1.2em;
+  opacity: 0;
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+#correct-answer-error {
+  font-size: 1.1em;
+  color: var(--card-muted);
+  min-height: 1.5em;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+/* === LIST ENGINE (образец) === */
+
+body.list-mode {
+  text-align: left;
+}
+
+.list-mode h2 {
+  text-align: center;
+}
+
+.list-mode #progress-container {
+  width: 100%;
+  height: 6px;
+  background-color: rgba(42, 23, 16, 0.15);
+  border-radius: 3px;
+  margin-bottom: 40px;
+  overflow: hidden;
+  box-shadow: inset 0 1px 4px rgba(0,0,0,0.3);
+}
+
+.list-mode #progress-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--accent), var(--accent-light));
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 0 5px rgba(48, 30, 21, 0.6);
+}
+
+.task-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 25px;
+  padding: 10px;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+}
+
+.task-container:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.math-expr {
+  width: 50%;
+  text-align: right;
+  margin-right: 25px;
+  font-size: 1.5em;
+  text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.list-mode input[type="text"] {
+  width: 70px;
+  padding: 5px 10px;
+  font-size: 1.4em;
+}
+
+.feedback {
+  width: 40px;
+  margin-left: 20px;
+  font-size: 1.2em;
+  text-align: left;
+  opacity: 0;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.feedback.show { opacity: 1; transform: scale(1.2); }
+.feedback.correct { color: #1a330e; }
+.feedback.incorrect { color: #5c0000; }
+
+#error-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 10%;
+  right: 10%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #5c0000, transparent);
+  opacity: 0.5;
+}
+
+/* === Адаптивность === */
+
+@media (max-width: 600px) {
+  .task-container {
+    flex-direction: column;
+    background-color: rgba(0, 0, 0, 0.04);
+    border-radius: 12px;
+    padding: 20px 10px;
+  }
+  .math-expr {
+    width: 100%;
+    text-align: center;
+    margin-right: 0;
+    margin-bottom: 15px;
+  }
+  .list-mode input[type="text"] { width: 100px; }
+  .feedback {
+    margin-left: 0;
+    margin-top: 15px;
+    text-align: center;
+  }
+  h2::after { width: 80%; }
+}
+
+/* === Diagnostic engine === */
+#section-title {
+  font-family: 'Cinzel', serif;
+  font-size: 1.4em;
+  color: var(--accent);
+  margin-bottom: 4px;
+}
+#overall-counter {
+  font-size: 0.9em;
+  color: var(--card-muted);
+  margin-bottom: 10px;
+}
+#dunno-row {
+  margin-top: 14px;
+}
+#dunno-btn {
+  font-family: 'EB Garamond', serif;
+  font-size: 1em;
+  padding: 6px 24px;
+  border: 2px solid var(--accent);
+  border-radius: 20px;
+  background: transparent;
+  color: var(--accent);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  opacity: 0.7;
+}
+#dunno-btn:hover {
+  opacity: 1;
+  background: rgba(0,0,0,0.06);
+}
+#big-feedback.skipped {
+  color: #8b7a60;
+  font-size: 1.2em;
+  font-style: italic;
+}
+input[type="text"].skipped {
+  border-color: #8b7a60;
+  color: #8b7a60;
+}
+
+/* Report */
+#report-area {
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: left;
+}
+#report-area h2 {
+  text-align: center;
+  margin-bottom: 30px;
+}
+.report-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 24px;
+  font-size: 0.95em;
+}
+.report-table th {
+  background: rgba(0,0,0,0.08);
+  padding: 10px 12px;
+  text-align: left;
+  border-bottom: 2px solid rgba(0,0,0,0.15);
+  font-weight: 700;
+}
+.report-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(0,0,0,0.08);
+  vertical-align: top;
+}
+.sec-name { font-weight: 700; }
+.pct-good { color: #2a6a2a; font-weight: 700; }
+.pct-ok { color: #8a6a00; font-weight: 700; }
+.pct-bad { color: #8a2a2a; font-weight: 700; }
+.trainer-link {
+  color: var(--accent);
+  text-decoration: underline;
+  font-size: 0.9em;
+}
+.trainer-link:hover { opacity: 0.7; }
+.error-detail-row td { padding: 0 12px 16px; }
+.error-detail {
+  background: rgba(0,0,0,0.03);
+  border-radius: 6px;
+  padding: 12px 16px;
+  font-size: 0.9em;
+}
+.error-detail-title {
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: var(--accent);
+}
+.error-item {
+  margin-bottom: 4px;
+  padding: 4px 0;
+}
+.error-q { opacity: 0.8; }
+.report-total {
+  font-size: 1.2em;
+  text-align: center;
+  padding: 16px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  background: rgba(0,0,0,0.04);
+}
+.report-advice {
+  font-size: 0.95em;
+  color: var(--card-muted);
+  margin-bottom: 24px;
+  line-height: 1.6;
+}
+.report-restart {
+  text-align: center;
+  margin-top: 24px;
+}
+#restart-btn {
+  font-family: 'EB Garamond', serif;
+  font-size: 1.05em;
+  padding: 10px 32px;
+  border: 2px solid var(--accent);
+  border-radius: 24px;
+  background: transparent;
+  color: var(--accent);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+#restart-btn:hover {
+  background: var(--accent);
+  color: #fff;
+}
+
+@media (max-width: 500px) {
+  #math-expr { font-size: 1.6em; }
+  #card { padding: 40px 10px 20px; }
+  input[type="text"] { width: 80px; font-size: 1.3em; }
+  h2::after { width: 80%; }
+}
+
+/* === Режим кнопок-вариантов (inputMode: choice) === */
+
+.choice-row {
+  display: flex;
+  justify-content: center;
+  gap: 28px;
+  margin-top: 20px;
+}
+
+button.choice-btn {
+  font-family: 'EB Garamond', serif;
+  font-size: 1.5em;
+  padding: 8px 44px;
+  border: 2px solid var(--accent);
+  border-radius: 30px;
+  background: transparent;
+  color: var(--accent);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+button.choice-btn:hover:not(:disabled) {
+  background: rgba(0, 0, 0, 0.07);
+}
+
+button.choice-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+button.choice-btn.chosen {
+  background: var(--accent);
+  color: #e8dcc0;
+  opacity: 1;
+}
+
+/* === Вертикальная компоновка карточки (stackedLayout) === */
+
+#math-row.stacked,
+.error-math-row.stacked {
+  flex-direction: column;
+  gap: 16px;
+}
+
+#math-row.stacked #math-expr,
+.error-math-row.stacked #math-expr-error {
+  max-width: 100%;
+}
+
+/* === Чертежи в заданиях (инлайн-SVG) === */
+
+svg.fig {
+  display: block;
+  margin: 0 auto;
+  max-width: 100%;
+  height: auto;
+}
+
+@media (max-width: 480px) {
+  button.choice-btn { font-size: 1.2em; padding: 6px 30px; }
+  .choice-row { gap: 16px; }
+}
+
+
+      :root {
+        --bg-start: #c9c0a8;
+        --bg-mid: #a09878;
+        --bg-end: #706848;
+        --accent: #4a4530;
+        --accent-light: #585038;
+        --progress-text: #3a3028;
+        --card-muted: #5c5240;
+        --input-width: 60px;
+        --math-font-size: 2.2em;
+        --body-max-width: 650px;
+      }
+    </style>
+</head>
+<body>
+    <div id="progress-row">
+        <div id="progress-bar-wrap"><div id="progress-bar"></div></div>
+        <div id="progress-text">0 / 36</div>
+    </div>
+
+    <h2>Вынесение из-под корня</h2>
+
+    <div id="card">
+        <div id="task-counter"></div>
+        
+        <div id="math-row" class=" dual">
+            <div id="math-expr"></div>
+            <span class="eq-sign">=</span>
+            <input type="text" id="coef-input" class="small-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="4">
+            <span class="sqrt-sign">√</span>
+            <input type="text" id="rad-input" class="small-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="3"></div>
+    </div>
+
+    <div id="big-feedback"></div>
+    <div id="correct-answer"></div>
+
+    <div id="quote-overlay">
+        <div id="quote-text"></div>
+        <div id="quote-author"></div>
+        <div id="quote-continue">Нажмите Enter, чтобы продолжить</div>
+    </div>
+
+    <div id="done-message">Все задания решены без ошибок</div>
+
+    <div id="streak-flash"></div>
+
+    <div id="error-section">
+        <h3>Работа над ошибками</h3>
+        <div id="card-error">
+            <div id="task-counter-error"></div>
+            <div class="error-math-row dual">
+                <div id="math-expr-error"></div>
+                <span class="eq-sign">=</span>
+                <input type="text" id="error-coef-input" class="small-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="4">
+                <span class="sqrt-sign">√</span>
+                <input type="text" id="error-rad-input" class="small-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="3"></div>
+        </div>
+        <div id="big-feedback-error"></div>
+        <div id="correct-answer-error"></div>
+    </div>
+    <script>
+window.TRAINER_CONFIG = {
+  "id": "целая часть корня",
+  "title": "Вынесение из-под корня",
+  "engine": "card",
+  "theme": {
+    "bg": [
+      "#c9c0a8",
+      "#a09878",
+      "#706848"
+    ],
+    "accent": "#4a4530",
+    "accentLight": "#585038",
+    "progressText": "#3a3028",
+    "cardMuted": "#5c5240",
+    "inputWidth": "60px",
+    "mathFontSize": "2.2em"
+  },
+  "tasks": [
+    {
+      "q": "\\(\\sqrt{8}\\)",
+      "a_coef": "2",
+      "a_rad": "2",
+      "a_display": "\\(2\\sqrt{2}\\)"
+    },
+    {
+      "q": "\\(\\sqrt{12}\\)",
+      "a_coef": "2",
+      "a_rad": "3",
+      "a_display": "\\(2\\sqrt{3}\\)"
+    },
+    {
+      "q": "\\(\\sqrt{18}\\)",
+      "a_coef": "3",
+      "a_rad": "2",
+      "a_display": "\\(3\\sqrt{2}\\)"
+    },
+    {
+      "q": "\\(\\sqrt{20}\\)",
+      "a_coef": "2",
+      "a_rad": "5",
+      "a_display": "\\(2\\sqrt{5}\\)"
+    },
+    {
+      "q": "\\(\\sqrt{24}\\)",
+      "a_coef": "2",
+      "a_rad": "6",
+      "a_display": "\\(2\\sqrt{6}\\)"
+    },
+    {
+      "q": "\\(\\sqrt{27}\\)",
+      "a_coef": "3",
+      "a_rad": "3",
+      "a_display": "\\(3\\sqrt{3}\\)"
+    },
+    {
+      "q": "\\(\\sqrt{28}\\)",
+      "a_coef": "2",
+      "a_rad": "7",
+      "a_display": "\\(2\\sqrt{7}\\)"
+    },
+    {
+      "q": "\\(\\sqrt{32}\\)",
+      "a_coef": "4",
+      "a_rad": "2",
+      "a_display": "\\(4\\sqrt{2}\\)"
+    },
+    {
+      "q": "\\(\\sqrt{40}\\)",
+      "a_coef": "2",
+      "a_rad": "10",
+      "a_display": "\\(2\\sqrt{10}\\)"
+    },
+    {
+      "q": "\\(\\sqrt{44}\\)",
+      "a_coef": "2",
+      "a_rad": "11",
+      "a_display": "\\(2\\sqrt{11}\\)"
+    },
+    {
+      "q": "\\(\\sqrt{45}\\)",
+      "a_coef": "3",
+      "a_rad": "5",
+      "a_display": "\\(3\\sqrt{5}\\)"
+    },
+    {
+      "q": "\\(\\sqrt{48}\\)",
+      "a_coef": "4",
+      "a_rad": "3",
+      "a_display": "\\(4\\sqrt{3}\\)"
+    },
+    {
+      "q": "\\(\\sqrt{50}\\)",
+      "a_coef": "5",
+      "a_rad": "2",
+      "a_display": "\\(5\\sqrt{2}\\)"
+    },
+    {
+      "q": "\\(\\sqrt{52}\\)",
+      "a_coef": "2",
+      "a_rad": "13",
+      "a_display": "\\(2\\sqrt{13}\\)"
+    },
+    {
+      "q": "\\(\\sqrt{54}\\)",
+      "a_coef": "3",
+      "a_rad": "6",
+      "a_display": "\\(3\\sqrt{6}\\)"
+    },
+    {
+      "q": "\\(\\sqrt{56}\\)",
+      "a_coef": "2",
+      "a_rad": "14",
+      "a_display": "\\(2\\sqrt{14}\\)"
+    },
+    {
+      "q": "\\(\\sqrt{60}\\)",
+      "a_coef": "2",
+      "a_rad": "15",
+      "a_display": "\\(2\\sqrt{15}\\)"
+    },
+    {
+      "q": "\\(\\sqrt{63}\\)",
+      "a_coef": "3",
+      "a_rad": "7",
+      "a_display": "\\(3\\sqrt{7}\\)"
+    },
+    {
+      "q": "\\(\\sqrt{68}\\)",
+      "a_coef": "2",
+      "a_rad": "17",
+      "a_display": "\\(2\\sqrt{17}\\)"
+    },
+    {
+      "q": "\\(\\sqrt{72}\\)",
+      "a_coef": "6",
+      "a_rad": "2",
+      "a_display": "\\(6\\sqrt{2}\\)"
+    },
+    {
+      "q": "\\(\\sqrt{75}\\)",
+      "a_coef": "5",
+      "a_rad": "3",
+      "a_display": "\\(5\\sqrt{3}\\)"
+    },
+    {
+      "q": "\\(\\sqrt{76}\\)",
+      "a_coef": "2",
+      "a_rad": "19",
+      "a_display": "\\(2\\sqrt{19}\\)"
+    },
+    {
+      "q": "\\(\\sqrt{80}\\)",
+      "a_coef": "4",
+      "a_rad": "5",
+      "a_display": "\\(4\\sqrt{5}\\)"
+    },
+    {
+      "q": "\\(\\sqrt{84}\\)",
+      "a_coef": "2",
+      "a_rad": "21",
+      "a_display": "\\(2\\sqrt{21}\\)"
+    },
+    {
+      "q": "\\(\\sqrt{88}\\)",
+      "a_coef": "2",
+      "a_rad": "22",
+      "a_display": "\\(2\\sqrt{22}\\)"
+    },
+    {
+      "q": "\\(\\sqrt{90}\\)",
+      "a_coef": "3",
+      "a_rad": "10",
+      "a_display": "\\(3\\sqrt{10}\\)"
+    },
+    {
+      "q": "\\(\\sqrt{92}\\)",
+      "a_coef": "2",
+      "a_rad": "23",
+      "a_display": "\\(2\\sqrt{23}\\)"
+    },
+    {
+      "q": "\\(\\sqrt{96}\\)",
+      "a_coef": "4",
+      "a_rad": "6",
+      "a_display": "\\(4\\sqrt{6}\\)"
+    },
+    {
+      "q": "\\(\\sqrt{98}\\)",
+      "a_coef": "7",
+      "a_rad": "2",
+      "a_display": "\\(7\\sqrt{2}\\)"
+    },
+    {
+      "q": "\\(\\sqrt{99}\\)",
+      "a_coef": "3",
+      "a_rad": "11",
+      "a_display": "\\(3\\sqrt{11}\\)"
+    },
+    {
+      "q": "\\(\\sqrt{108}\\)",
+      "a_coef": "6",
+      "a_rad": "3",
+      "a_display": "\\(6\\sqrt{3}\\)"
+    },
+    {
+      "q": "\\(\\sqrt{112}\\)",
+      "a_coef": "4",
+      "a_rad": "7",
+      "a_display": "\\(4\\sqrt{7}\\)"
+    },
+    {
+      "q": "\\(\\sqrt{120}\\)",
+      "a_coef": "2",
+      "a_rad": "30",
+      "a_display": "\\(2\\sqrt{30}\\)"
+    },
+    {
+      "q": "\\(\\sqrt{125}\\)",
+      "a_coef": "5",
+      "a_rad": "5",
+      "a_display": "\\(5\\sqrt{5}\\)"
+    },
+    {
+      "q": "\\(\\sqrt{128}\\)",
+      "a_coef": "8",
+      "a_rad": "2",
+      "a_display": "\\(8\\sqrt{2}\\)"
+    },
+    {
+      "q": "\\(\\sqrt{147}\\)",
+      "a_coef": "7",
+      "a_rad": "3",
+      "a_display": "\\(7\\sqrt{3}\\)"
+    }
+  ],
+  "sprintSize": 5,
+  "normMode": "basic",
+  "inputMode": "dual",
+  "coefPlaceholder": "4",
+  "radPlaceholder": "3",
+  "showRoundBadge": false
+};
+    </script>
+    <script>
+// Общий массив цитат для всех card-тренажёров
+const QUOTES = [
+  { text: "Мало обладать выдающимися качествами, надо ещё уметь ими пользоваться.", author: "Ларошфуко" },
+  { text: "Никогда не бывает больших дел без больших трудностей.", author: "Вольтер" },
+  { text: "Людей делят на праведников, которые считают себя грешниками, и грешников, которые считают себя праведниками", author: "Паскаль" },
+  { text: "Ложная скромность так же гнусна, как и тщеславие", author: "Гольдони" },
+  { text: "Любить — это находить в счастье другого своё собственное счастье.", author: "Лейбниц" },
+  { text: "Нет ничего труднее, чем перевоспитать человека, плохо воспитанного.", author: "Ян Амос Коменский" },
+  { text: "Жизнь на десять процентов состоит из того, что вы в ней делаете, а на девяносто из того, как вы её понимаете", author: "Ян Амос Коменский" },
+  { text: "Самые выдающиеся дарования губятся праздностью.", author: "Монтень" },
+  { text: "Крепкие слова не могут быть сильным доказательством", author: "В. Ключевский" },
+  { text: "Ум, не имеющий никакой определённой цели, теряется; быть везде — значит быть нигде.", author: "Монтень" },
+  { text: "Плох тот ученик, который не превзошёл учителя.", author: "Леонардо да Винчи" },
+  { text: "Больше всего оживляет беседы не ум, а взаимное доверие.", author: "Ларошфуко" },
+  { text: "Приятно встретить взгляд человека, которому только что помог", author: "Жан де Лабрюйер" },
+  { text: "Истинное величие состоит в том, чтобы владеть собою.", author: "Лафонтен" },
+  { text: "Куда полезней изучать не книги, а людей.", author: "Ларошфуко" },
+  { text: "Искусство заключается в том, чтобы найти необыкновенное в обыкновенном и обыкновенное в необыкновенном.", author: "Дидро" },
+  { text: "У нас не хватает силы характера, чтобы покорно следовать всем велениям рассудка.", author: "Ларошфуко" },
+  { text: "Благодаря твоим сомнениям совершенствуется мир.", author: "Шри Ауробиндо" },
+  { text: "Шутка никогда не бывает похожа на истину, а истина бывает похожа на самую злую шутку.", author: "Б. Паскаль" },
+  { text: "Величайшая победа — победа над самим собой.", author: "Кальдерон Де Ла Барка" },
+  { text: "Можно дать другому разумный совет, но нельзя научить его разумному поведению.", author: "Ларошфуко" },
+  { text: "Счастье не в счастье, а лишь в его достижении.", author: "Ф. М. Достоевский" },
+  { text: "Где умирает надежда, там возникает пустота.", author: "Леонардо да Винчи" },
+  { text: "Легче встретить людей, обладающих умом, нежели способностью употреблять его в дело, ценить ум в других и находить ему полезное применение.", author: "Лабрюйер" },
+  { text: "Великие люди ничего не делают наполовину.", author: "Виланд" },
+  { text: "Истинно благородный человек не рождается с великой душой, но сам себя делает таковым великолепными своими делами.", author: "Петрарка" },
+  { text: "Ум человека можно определить по тщательности, с которой он учитывает будущее или исход дела.", author: "Лихтенберг" },
+  { text: "Раз уж человек делает глупость, нужно делать её красиво.", author: "В. Скотт" },
+  { text: "Не теряйте голову! А вдруг жизнь захочет вас ещё по ней погладить?", author: "Ежи Лец" },
+  { text: "Как ни редко встречается настоящая любовь, настоящая дружба встречается ещё реже.", author: "Ларошфуко" },
+  { text: "Люди недалёкие обычно осуждают всё, что выходит за пределы их понимания.", author: "Лафонтен" },
+  { text: "Существует три разновидности людей: те, кто видит; те, кто видит, когда им показывают; и те, кто не видит", author: "Леонардо да Винчи" },
+  { text: "Жизнь — это то, что люди больше всего стремятся сохранить и меньше всего берегут.", author: "Лабрюйер" },
+  { text: "Человек чувствует, как тщетны доступные ему удовольствия, но не понимает, как суетны чаемые.", author: "Паскаль" },
+  { text: "Верь, чтобы понимать", author: "Античный афоризм" },
+  { text: "Восклицательный знак, который раскис и сник, становится вопросительным.", author: "Ежи Лец" },
+  { text: "Никто не должен покидать своего ближнего, когда тот в беде. Каждый обязан помочь и поддержать своего ближнего, если хочет, чтобы ему самому помогли в несчастье.", author: "Мартин Лютер" },
+  { text: "Не может управлять другими тот, кто не в состоянии справиться с самим собой.", author: "Английская пословица" },
+  { text: "Нужно быть действительно великим человеком, чтобы суметь устоять даже против здравого смысла.", author: "Ф. Достоевский" },
+  { text: "Прежде чем осудить, всегда надо подумать, нельзя ли найти извинение.", author: "Лихтенберг" },
+  { text: "Свободен тот, кто может не лгать.", author: "Камю" },
+  { text: "Человеку нередко кажется, что он владеет собой, тогда как на самом деле что-то владеет им; пока разумом он стремится к одной цели, сердце незаметно увлекает его к другой.", author: "Ларошфуко" },
+  { text: "Всё, что перестаёт удаваться, перестаёт и привлекать.", author: "Ларошфуко" },
+  { text: "К старости люди становятся безрассуднее и мудрее.", author: "Ларошфуко" },
+  { text: "Снисходительное отношение к глупости присуще каждому умному человеку.", author: "Абу-ль-Фарадж" },
+  { text: "Время укрепляет дружбу, но ослабляет любовь.", author: "Лабрюйер" },
+  { text: "Иногда нужно нахальство, чтобы доказать свою деликатность.", author: "Ежи Лец" },
+  { text: "Чтение делает человека знающим, беседа — находчивым, а привычка записывать — точным", author: "Бэкон" },
+  { text: "Не следует обижаться на людей, утаивших от нас правду: мы и сами постоянно утаиваем её от себя.", author: "Ларошфуко" },
+  { text: "Надо уметь переносить то, чего нельзя избежать.", author: "Монтень" }
+];
+
+    </script>
+    <script>
+// norm.js — нормализаторы ответов (общий для всех движков, вставляется build.js перед engine)
+
+function buildNorm(mode) {
+  switch (mode) {
+    case 'lowercase':
+      return function(s) {
+        return s.trim().replace(/\s+/g, '').replace(/,/g, '.').replace(/[−–]/g, '-').replace(/°/g, '').toLowerCase();
+      };
+    case 'lowercase+pi':
+      return function(s) {
+        return s.trim().replace(/\s+/g, '').replace(/,/g, '.').replace(/[−–]/g, '-').replace(/°/g, '').toLowerCase().replace(/pi/g, 'π');
+      };
+    case 'sqrt':
+      return function(s) {
+        return s.trim().replace(/\s+/g, '').replace(/,/g, '.').replace(/[−–]/g, '-').replace(/°/g, '').toLowerCase()
+          .replace(/sqrt\(?(\d+)\)?/g, '√$1').replace(/г/g, '√').replace(/r/g, '√');
+      };
+    case 'sqrt+undef':
+      return function(s) {
+        s = s.trim().replace(/\s+/g, '').replace(/,/g, '.').replace(/[−–]/g, '-').replace(/°/g, '').toLowerCase()
+          .replace(/sqrt\(?(\d+)\)?/g, '√$1').replace(/г/g, '√').replace(/r/g, '√');
+        if (s === '—' || s === '-' || s === 'undef' || s === 'undefined') return '—';
+        return s;
+      };
+    case 'algebraic':
+      return canonicalizeAlgebraic;
+    default: // 'basic'
+      return function(s) {
+        return s.trim().replace(/\s+/g, '').replace(/,/g, '.').replace(/[−–]/g, '-').replace(/°/g, '');
+      };
+  }
+}
+
+function canonicalizeAlgebraic(s) {
+  s = s.trim()
+    .replace(/\s+/g, '')
+    .replace(/\^2/g, '²').replace(/\^3/g, '³').replace(/\^4/g, '⁴')
+    .replace(/\*/g, '')
+    .replace(/[−–]/g, '-')
+    .replace(/,/g, '.')
+    .replace(/°/g, '');
+
+  if (s.includes('(')) {
+    return canonicalizeFactored(s);
+  }
+  return canonicalizePolynomial(s);
+}
+
+function canonicalizePolynomial(s) {
+  if (s[0] !== '-' && s[0] !== '+') s = '+' + s;
+
+  var terms = [];
+  var parts = s.match(/[+-][^+-]+/g) || [];
+  for (var i = 0; i < parts.length; i++) {
+    var part = parts[i];
+    var sign = part[0] === '-' ? -1 : 1;
+    var body = part.substring(1);
+
+    var varMatch = body.match(/^(\d*\.?\d*)([a-z])([²³⁴]*)$/i);
+    if (varMatch) {
+      var coeffStr = varMatch[1];
+      var variable = varMatch[2];
+      var sup = varMatch[3];
+      var exp = sup === '²' ? 2 : sup === '³' ? 3 : sup === '⁴' ? 4 : 1;
+      var coeff = (coeffStr === '' || coeffStr === '.') ? 1 : parseFloat(coeffStr);
+      terms.push({ coeff: coeff * sign, variable: variable, exp: exp });
+    } else {
+      var singleVar = body.match(/^([a-z])([²³⁴]*)$/i);
+      if (singleVar) {
+        var v = singleVar[1];
+        var s2 = singleVar[2];
+        var e2 = s2 === '²' ? 2 : s2 === '³' ? 3 : s2 === '⁴' ? 4 : 1;
+        terms.push({ coeff: sign, variable: v, exp: e2 });
+      } else {
+        var num = parseFloat(body);
+        if (!isNaN(num)) {
+          terms.push({ coeff: num * sign, variable: null, exp: 0 });
+        } else {
+          var revMatch = body.match(/^([a-z])(\d+)$/i);
+          if (revMatch) {
+            terms.push({ coeff: parseInt(revMatch[2]) * sign, variable: revMatch[1], exp: 1 });
+          }
+        }
+      }
+    }
+  }
+
+  var combined = {};
+  for (var j = 0; j < terms.length; j++) {
+    var t = terms[j];
+    var key = (t.variable || '_') + '^' + t.exp;
+    if (!combined[key]) combined[key] = { coeff: 0, variable: t.variable, exp: t.exp };
+    combined[key].coeff += t.coeff;
+  }
+
+  var filtered = [];
+  var keys = Object.keys(combined);
+  for (var k = 0; k < keys.length; k++) {
+    var ct = combined[keys[k]];
+    if (ct.coeff !== 0) filtered.push(ct);
+  }
+
+  if (filtered.length === 0) return '0';
+
+  filtered.sort(function(a, b) {
+    if (b.exp !== a.exp) return b.exp - a.exp;
+    if ((a.variable || '') < (b.variable || '')) return -1;
+    if ((a.variable || '') > (b.variable || '')) return 1;
+    return Math.abs(b.coeff) - Math.abs(a.coeff);
+  });
+
+  var result = '';
+  for (var m = 0; m < filtered.length; m++) {
+    var ct2 = filtered[m];
+    var absCoeff = Math.abs(ct2.coeff);
+    if (m === 0) {
+      result += ct2.coeff < 0 ? '-' : '';
+    } else {
+      result += ct2.coeff < 0 ? '-' : '+';
+    }
+    if (ct2.variable) {
+      if (absCoeff !== 1) result += absCoeff;
+      result += ct2.variable;
+      if (ct2.exp === 2) result += '²';
+      else if (ct2.exp === 3) result += '³';
+      else if (ct2.exp === 4) result += '⁴';
+    } else {
+      result += absCoeff;
+    }
+  }
+  return result;
+}
+
+function canonicalizeFactored(s) {
+  var factors = [];
+  var regex = /\(([^)]+)\)([²³]*)/g;
+  var match;
+  while ((match = regex.exec(s)) !== null) {
+    var inner = canonicalizeFactorInner(match[1]);
+    var exp = match[2] === '²' ? 2 : match[2] === '³' ? 3 : 1;
+    factors.push({ inner: inner, exp: exp });
+  }
+  if (factors.length === 0) return s;
+
+  for (var i = 0; i < factors.length; i++) {
+    var f = factors[i];
+    var innerForCheck = f.inner;
+    f.variant = innerForCheck.match(/-/) ? 'minus' : 'plus';
+    var constMatch = innerForCheck.match(/([+-]?\d+)$/) || innerForCheck.match(/^(-?\d+)/);
+    f.constVal = constMatch ? parseInt(constMatch[1]) : 0;
+  }
+
+  factors.sort(function(a, b) {
+    if (a.variant === 'minus' && b.variant !== 'minus') return -1;
+    if (a.variant !== 'minus' && b.variant === 'minus') return 1;
+    var absA = Math.abs(a.constVal);
+    var absB = Math.abs(b.constVal);
+    if (absA !== absB) return absA - absB;
+    if (a.inner < b.inner) return -1;
+    if (a.inner > b.inner) return 1;
+    return 0;
+  });
+
+  var merged = [];
+  for (var j = 0; j < factors.length; j++) {
+    var cf = factors[j];
+    var last = merged[merged.length - 1];
+    if (last && last.inner === cf.inner) {
+      last.exp += cf.exp;
+    } else {
+      merged.push({ inner: cf.inner, exp: cf.exp });
+    }
+  }
+
+  var result = '';
+  for (var m = 0; m < merged.length; m++) {
+    var mf = merged[m];
+    result += '(' + mf.inner + ')';
+    if (mf.exp === 2) result += '²';
+    else if (mf.exp === 3) result += '³';
+  }
+  return result;
+}
+
+function canonicalizeFactorInner(inner) {
+  var poly = canonicalizePolynomial(inner);
+  var terms = poly.match(/[+-]?[^+-]+/g) || [];
+  if (terms.length === 2) {
+    var firstTerm = terms[0];
+    var varMatch = firstTerm.match(/^(-?)(\d*\.?\d*)([a-z])([²³⁴]*)$/i);
+    if (varMatch && varMatch[1] === '-') {
+      return terms[1].replace(/^\+/, '') + (firstTerm[0] === '-' ? firstTerm : '+' + firstTerm.substring(1));
+    }
+  }
+  return poly.replace(/^\+/, '');
+}
+
+// engine-card.js — движок «карточка» (одно задание за раз, спринты, цитаты, streak)
+// Работает с window.TRAINER_CONFIG, установленным перед подключением этого скрипта.
+// buildNorm() поступает из norm.js, который build.js вставляет в тот же <script>-блок.
+
+(function() {
+  const C = window.TRAINER_CONFIG;
+  const SPRINT_SIZE = C.sprintSize || 5;
+  const FEEDBACK_DELAY = 700;
+  const DUAL = C.inputMode === 'dual';
+  const CHOICE = C.inputMode === 'choice';
+
+  const norm = buildNorm(C.normMode || 'basic');
+
+  // --- shuffle ---
+  function shuffle(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+
+  // --- DOM refs ---
+  const $expr = document.getElementById('math-expr');
+  const $taskCounter = document.getElementById('task-counter');
+  const $input = document.getElementById('answer-input');
+  const $coefInput = DUAL ? document.getElementById('coef-input') : null;
+  const $radInput = DUAL ? document.getElementById('rad-input') : null;
+  const $choiceRow = CHOICE ? document.getElementById('choice-row') : null;
+  const choiceBtns = CHOICE ? Array.prototype.slice.call($choiceRow.querySelectorAll('.choice-btn')) : [];
+  const $choiceRowError = CHOICE ? document.getElementById('choice-row-error') : null;
+  const errorChoiceBtns = CHOICE ? Array.prototype.slice.call($choiceRowError.querySelectorAll('.choice-btn')) : [];
+  const $feedback = document.getElementById('big-feedback');
+  const $correct = document.getElementById('correct-answer');
+  const $progressBar = document.getElementById('progress-bar');
+  const $progressText = document.getElementById('progress-text');
+  const $done = document.getElementById('done-message');
+  const $errorSection = document.getElementById('error-section');
+  const $quoteOverlay = document.getElementById('quote-overlay');
+  const $quoteText = document.getElementById('quote-text');
+  const $quoteAuthor = document.getElementById('quote-author');
+  const $card = document.getElementById('card');
+  const $streakFlash = document.getElementById('streak-flash');
+  const $roundBadge = document.getElementById('round-badge');
+
+  // --- State ---
+  let tasks = [];
+  let sprintStartIndex = 0;
+  let sprintPos = 0;
+  let sprintNumber = 0;
+  let totalSolved = 0;
+  let streakCount = 0;
+  let sprintErrors = [];
+  let usedQuoteIndices = new Set();
+  let locked = false;
+  let allPerfect = true;
+
+  function taskIndex() { return sprintStartIndex + sprintPos; }
+
+  // --- Показ/скрытие и блокировка зоны ответа (input / dual / choice) ---
+  function setMainInputVisible(v) {
+    const d = v ? '' : 'none';
+    if (CHOICE) { $choiceRow.style.display = d; }
+    else if (DUAL) { $coefInput.style.display = d; $radInput.style.display = d; }
+    else { $input.style.display = d; }
+  }
+
+  function lockAnswerUI() {
+    if (CHOICE) { choiceBtns.forEach(function(b) { b.disabled = true; }); }
+    else if (DUAL) { $coefInput.disabled = true; $radInput.disabled = true; }
+    else { $input.disabled = true; }
+  }
+
+  function sprintRemaining() {
+    return Math.min(SPRINT_SIZE, tasks.length - sprintStartIndex);
+  }
+
+  function updateProgress() {
+    const pct = (totalSolved / tasks.length) * 100;
+    $progressBar.style.width = pct + '%';
+    $progressText.textContent = totalSolved + ' / ' + tasks.length;
+  }
+
+  // --- Get answer (single or dual) ---
+  function getAnswer() {
+    if (DUAL) {
+      return { coef: norm($coefInput.value), rad: norm($radInput.value) };
+    }
+    return norm($input.value);
+  }
+
+  function isCorrect(val, task) {
+    if (DUAL) {
+      return val.coef === task.a_coef && val.rad === task.a_rad;
+    }
+    return val === task.a;
+  }
+
+  function getCorrectDisplay(task) {
+    if (DUAL) return task.a_display || (task.a_coef + '√' + task.a_rad);
+    return task.a;
+  }
+
+  // --- Show task ---
+  function showCurrentTask() {
+    const idx = taskIndex();
+    if (idx >= tasks.length) { finishRound(); return; }
+    const task = tasks[idx];
+    $expr.innerHTML = task.q;
+    $taskCounter.textContent = (sprintPos + 1) + ' / ' + sprintRemaining();
+    if ($roundBadge) {
+      $roundBadge.textContent = 'Спринт ' + sprintNumber;
+      $roundBadge.classList.add('visible');
+    }
+    $feedback.className = '';
+    $feedback.textContent = '';
+    $correct.className = '';
+    $correct.textContent = '';
+    if (CHOICE) {
+      choiceBtns.forEach(function(b) { b.disabled = false; b.classList.remove('chosen'); });
+    } else if (DUAL) {
+      $coefInput.value = '';
+      $radInput.value = '';
+      $coefInput.disabled = false;
+      $radInput.disabled = false;
+      $coefInput.focus();
+    } else {
+      $input.value = '';
+      $input.disabled = false;
+      $input.focus();
+    }
+    updateProgress();
+    if (window.MathJax) { MathJax.typesetPromise([$expr]); }
+  }
+
+  // --- Streak effect ---
+  function fireStreakEffect() {
+    $streakFlash.textContent = 'Ты супер!';
+    $streakFlash.classList.remove('fire');
+    void $streakFlash.offsetWidth;
+    $streakFlash.classList.add('fire');
+    setTimeout(function() { $streakFlash.classList.remove('fire'); }, 1200);
+  }
+
+  // --- Handle answer ---
+  function handleAnswer(forcedVal) {
+    if (locked) return;
+    const val = CHOICE ? forcedVal : getAnswer();
+    if (!DUAL && val === '') return;
+    if (DUAL && val.coef === '' && val.rad === '') return;
+    locked = true;
+    const task = tasks[taskIndex()];
+
+    if (isCorrect(val, task)) {
+      $feedback.textContent = '✓';
+      $feedback.className = 'correct show';
+      totalSolved++;
+      streakCount++;
+      if (streakCount === 5) { streakCount = 0; fireStreakEffect(); }
+      updateProgress();
+      lockAnswerUI();
+      setTimeout(function() { $feedback.className = ''; locked = false; advanceTask(); }, FEEDBACK_DELAY);
+    } else {
+      $feedback.textContent = '✗';
+      $feedback.className = 'incorrect show';
+      $correct.textContent = getCorrectDisplay(task);
+      $correct.className = 'show';
+      lockAnswerUI();
+      streakCount = 0;
+      allPerfect = false;
+      if (!sprintErrors.some(function(e) { return e.q === task.q; })) { sprintErrors.push(task); }
+      setTimeout(function() { $feedback.className = ''; $correct.className = ''; locked = false; advanceTask(); }, FEEDBACK_DELAY + 600);
+    }
+  }
+
+  function advanceTask() {
+    sprintPos++;
+    if (sprintPos >= sprintRemaining()) { finishSprint(); }
+    else { showCurrentTask(); }
+  }
+
+  function finishSprint() {
+    if (sprintErrors.length > 0) { startErrorWork(); }
+    else { showQuote(); }
+  }
+
+  // --- Error work ---
+  function startErrorWork() {
+    $errorSection.style.display = 'block';
+    setMainInputVisible(false);
+    $card.style.display = 'none';
+    $quoteOverlay.classList.remove('show');
+    if ($roundBadge) $roundBadge.classList.remove('visible');
+    showErrorTask(0);
+  }
+
+  function showErrorTask(errIdx) {
+    if (errIdx >= sprintErrors.length) {
+      $errorSection.style.display = 'none';
+      setMainInputVisible(true);
+      sprintErrors = [];
+      showQuote();
+      return;
+    }
+    const task = sprintErrors[errIdx];
+    document.getElementById('math-expr-error').innerHTML = task.q;
+    document.getElementById('task-counter-error').textContent = 'Ошибка ' + (errIdx + 1) + ' / ' + sprintErrors.length;
+
+    const einput = document.getElementById('error-input');
+    const ecoef = DUAL ? document.getElementById('error-coef-input') : null;
+    const erad = DUAL ? document.getElementById('error-rad-input') : null;
+    const efeedback = document.getElementById('big-feedback-error');
+    const ecorrect = document.getElementById('correct-answer-error');
+
+    if (CHOICE) {
+      errorChoiceBtns.forEach(function(b) { b.disabled = false; b.classList.remove('chosen'); });
+    } else if (DUAL) {
+      ecoef.value = ''; ecoef.disabled = false;
+      erad.value = ''; erad.disabled = false;
+    } else {
+      einput.value = ''; einput.disabled = false;
+    }
+    efeedback.className = ''; efeedback.style.opacity = '0'; efeedback.style.transform = '';
+    ecorrect.className = ''; ecorrect.textContent = '';
+    if (DUAL) ecoef.focus(); else if (!CHOICE) einput.focus();
+
+    if (window.MathJax) { MathJax.typesetPromise([document.getElementById('math-expr-error')]); }
+
+    function onErrorKeydown(e) {
+      if (e.key !== 'Enter') return;
+      if (DUAL) {
+        if (ecoef.disabled) return;
+        const valCoef = norm(ecoef.value);
+        const valRad = norm(erad.value);
+        if (valCoef === '' && valRad === '') return;
+        if (valCoef === task.a_coef && valRad === task.a_rad) {
+          efeedback.textContent = '✓'; efeedback.className = 'correct';
+          efeedback.style.opacity = '1'; efeedback.style.transform = 'scale(1.1)';
+          ecoef.disabled = true; erad.disabled = true;
+          setTimeout(function() { efeedback.style.opacity = '0'; efeedback.style.transform = ''; showErrorTask(errIdx + 1); }, FEEDBACK_DELAY);
+        } else {
+          efeedback.textContent = '✗'; efeedback.className = 'incorrect';
+          efeedback.style.opacity = '1'; efeedback.style.transform = 'scale(1.1)';
+          ecorrect.textContent = getCorrectDisplay(task); ecorrect.className = 'show';
+          ecoef.value = ''; erad.value = '';
+          ecoef.disabled = true; erad.disabled = true;
+          setTimeout(function() { efeedback.style.opacity = '0'; efeedback.style.transform = ''; ecorrect.className = ''; showErrorTask(errIdx + 1); }, FEEDBACK_DELAY + 600);
+        }
+      } else {
+        if (einput.disabled) return;
+        const val = norm(einput.value);
+        if (val === '') return;
+        if (val === task.a) {
+          efeedback.textContent = '✓'; efeedback.className = 'correct';
+          efeedback.style.opacity = '1'; efeedback.style.transform = 'scale(1.1)';
+          einput.disabled = true;
+          setTimeout(function() { efeedback.style.opacity = '0'; efeedback.style.transform = ''; showErrorTask(errIdx + 1); }, FEEDBACK_DELAY);
+        } else {
+          efeedback.textContent = '✗'; efeedback.className = 'incorrect';
+          efeedback.style.opacity = '1'; efeedback.style.transform = 'scale(1.1)';
+          ecorrect.textContent = task.a; ecorrect.className = 'show';
+          einput.value = ''; einput.disabled = true;
+          setTimeout(function() { efeedback.style.opacity = '0'; efeedback.style.transform = ''; ecorrect.className = ''; showErrorTask(errIdx + 1); }, FEEDBACK_DELAY + 600);
+        }
+      }
+    }
+
+    if (CHOICE) {
+      errorChoiceBtns.forEach(function(btn) {
+        btn.onclick = function() {
+          if (btn.disabled) return;
+          btn.classList.add('chosen');
+          errorChoiceBtns.forEach(function(b) { b.disabled = true; });
+          const val = norm(btn.dataset.val);
+          if (val === task.a) {
+            efeedback.textContent = '✓'; efeedback.className = 'correct';
+            efeedback.style.opacity = '1'; efeedback.style.transform = 'scale(1.1)';
+            setTimeout(function() { efeedback.style.opacity = '0'; efeedback.style.transform = ''; showErrorTask(errIdx + 1); }, FEEDBACK_DELAY);
+          } else {
+            efeedback.textContent = '✗'; efeedback.className = 'incorrect';
+            efeedback.style.opacity = '1'; efeedback.style.transform = 'scale(1.1)';
+            ecorrect.textContent = task.a; ecorrect.className = 'show';
+            setTimeout(function() { efeedback.style.opacity = '0'; efeedback.style.transform = ''; ecorrect.className = ''; showErrorTask(errIdx + 1); }, FEEDBACK_DELAY + 600);
+          }
+        };
+      });
+    } else if (DUAL) {
+      ecoef.onkeydown = onErrorKeydown;
+      erad.onkeydown = onErrorKeydown;
+    } else {
+      einput.onkeydown = onErrorKeydown;
+    }
+  }
+
+  // --- Quote between sprints ---
+  function showQuote() {
+    $card.style.display = 'none';
+    setMainInputVisible(false);
+    if ($roundBadge) $roundBadge.classList.remove('visible');
+    $quoteOverlay.classList.add('show');
+
+    if (usedQuoteIndices.size >= QUOTES.length) { usedQuoteIndices = new Set(); }
+    let qi;
+    do { qi = Math.floor(Math.random() * QUOTES.length); } while (usedQuoteIndices.has(qi));
+    usedQuoteIndices.add(qi);
+    $quoteText.textContent = '«' + QUOTES[qi].text + '»';
+    $quoteAuthor.textContent = '— ' + QUOTES[qi].author;
+
+    function onQuoteContinue(e) {
+      if (e.key !== 'Enter') return;
+      document.removeEventListener('keydown', onQuoteContinue);
+      $quoteOverlay.classList.remove('show');
+      $card.style.display = '';
+      setMainInputVisible(true);
+      sprintStartIndex += sprintRemaining();
+      sprintPos = 0; sprintNumber++;
+      if (sprintStartIndex >= tasks.length) { finishRound(); }
+      else { startSprint(); }
+    }
+    setTimeout(function() { document.addEventListener('keydown', onQuoteContinue); }, 100);
+  }
+
+  // --- Round lifecycle ---
+  function finishRound() {
+    updateProgress();
+    $quoteOverlay.classList.remove('show');
+    $card.style.display = '';
+    if (!allPerfect) { $done.textContent = 'Круг завершён! Ошибки исправлены в спринтах.'; }
+    else { $done.textContent = 'Все задания решены без ошибок'; }
+    $done.style.display = 'block';
+    $expr.innerHTML = '';
+    $taskCounter.textContent = '';
+    setMainInputVisible(false);
+    if ($roundBadge) $roundBadge.classList.remove('visible');
+    setTimeout(function() { $done.style.display = 'none'; setMainInputVisible(true); newRound(); }, 2000);
+  }
+
+  function startSprint() {
+    sprintPos = 0; sprintErrors = []; streakCount = 0;
+    showCurrentTask();
+  }
+
+  function newRound() {
+    sprintStartIndex = 0; sprintPos = 0; sprintNumber = 1;
+    totalSolved = 0; streakCount = 0; sprintErrors = [];
+    usedQuoteIndices = new Set(); locked = false; allPerfect = true;
+    tasks = shuffle(C.tasks.slice());
+    startSprint();
+  }
+
+  // --- Event binding ---
+  if (CHOICE) {
+    choiceBtns.forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        if (locked || btn.disabled) return;
+        btn.classList.add('chosen');
+        handleAnswer(norm(btn.dataset.val));
+      });
+    });
+    // Клавиатура: цифры 1/2/... или первая буква варианта («д»/«н»)
+    document.addEventListener('keydown', function(e) {
+      const errVisible = $errorSection.style.display === 'block';
+      const btns = errVisible ? errorChoiceBtns : choiceBtns;
+      let idx = -1;
+      const num = parseInt(e.key, 10);
+      if (num >= 1 && num <= btns.length) { idx = num - 1; }
+      else {
+        const k = e.key.toLowerCase();
+        idx = btns.findIndex(function(b) { return b.dataset.val.charAt(0).toLowerCase() === k; });
+      }
+      if (idx < 0) return;
+      const btn = btns[idx];
+      if (btn.disabled || btn.offsetParent === null) return;
+      btn.click();
+    });
+  } else if (DUAL) {
+    $coefInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') { e.preventDefault(); $radInput.focus(); } });
+    $radInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') handleAnswer(); });
+  } else {
+    $input.addEventListener('keydown', function(e) { if (e.key === 'Enter') handleAnswer(); });
+  }
+
+  // --- Start ---
+  newRound();
+})();
+
+    </script>
+    <script>
+// PWA: регистрация service worker (страница тренажёра входит в scope /trainerspwa/)
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('/trainerspwa/sw.js');
+    </script>
+</body>
+</html>
