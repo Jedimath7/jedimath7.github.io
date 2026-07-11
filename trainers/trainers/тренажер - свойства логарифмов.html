@@ -286,12 +286,30 @@ input[type="text"]:disabled {
 
 #quote-overlay.show { display: flex; cursor: pointer; }
 
+/* Шапка для фактов-«изюминок» (скрыта, когда показывается цитата) */
+#quote-kicker {
+  display: none;
+  font-family: 'Cinzel', serif;
+  font-size: 0.85em;
+  letter-spacing: 0.12em;
+  color: var(--accent);
+  margin-bottom: 14px;
+}
+
+#quote-kicker.show { display: block; }
+
 #quote-text {
   font-size: 1.4em;
   font-style: italic;
   color: #1a0f09;
   margin-bottom: 12px;
   line-height: 1.5;
+}
+
+/* Факт — не курсивом, чуть мельче цитаты: это справка, а не изречение */
+#quote-text.fact {
+  font-style: normal;
+  font-size: 1.2em;
 }
 
 #quote-author {
@@ -726,6 +744,7 @@ svg.fig {
     <div id="correct-answer"></div>
 
     <div id="quote-overlay">
+        <div id="quote-kicker">Знаете ли вы?</div>
         <div id="quote-text"></div>
         <div id="quote-author"></div>
         <div id="quote-continue">Нажмите Enter или коснитесь экрана</div>
@@ -1027,6 +1046,43 @@ const QUOTES = [
   { text: "Надо уметь переносить то, чего нельзя избежать.", author: "Монтень" }
 ];
 
+// Короткие «изюминки» — факты о математике, показываются вперемешку с цитатами
+// (шапка «Знаете ли вы?»). Список курирует Михаил: править и вычёркивать смело.
+const FACTS = [
+  { text: "Знак равенства «=» придумал в 1557 году валлийский врач и математик Роберт Рекорд: «нет двух вещей более равных, чем две параллельные линии»." },
+  { text: "Слово «алгебра» происходит от арабского «аль-джабр» — «восстановление». Так назывался трактат аль-Хорезми IX века." },
+  { text: "Слово «алгоритм» — это искажённое имя того же аль-Хорезми." },
+  { text: "Слово «цифра» происходит от арабского «сифр» — «пустота, ноль». От этого же слова произошёл «шифр»." },
+  { text: "Ноль как полноценное число впервые описали в Индии: Брахмагупта в VII веке сформулировал правила действий с ним." },
+  { text: "Знаки «+» и «−» впервые появились в печатной книге в 1489 году — у немецкого математика Иоганна Видмана." },
+  { text: "Знак умножения «×» ввёл англичанин Уильям Отред в 1631 году." },
+  { text: "Знак корня «√» появился в 1525 году в книге Кристофа Рудольфа — вероятно, из стилизованной буквы r, от латинского radix, «корень»." },
+  { text: "Символ бесконечности «∞» ввёл Джон Валлис в 1655 году." },
+  { text: "Обозначение π предложил Уильям Джонс в 1706 году, а популярным его сделал Эйлер. Это первая буква греческого слова «периферия» — окружность." },
+  { text: "Знаки «<» и «>» придумал Томас Хэрриот — они впервые напечатаны в 1631 году." },
+  { text: "Знак процента «%» родился из небрежного сокращения итальянского «per cento» — «на сотню»." },
+  { text: "«Минута» — от латинского pars minuta prima, «первая малая часть», а «секунда» — pars minuta secunda, «вторая малая часть». Так делили градус." },
+  { text: "Наши 60 секунд, 60 минут и 360 градусов — наследство шестидесятеричной системы счисления древнего Вавилона." },
+  { text: "«Геометрия» по-гречески — «землемерие»: наука выросла из разметки полей после разливов Нила." },
+  { text: "«Катет» по-гречески означает «отвес», а «гипотенуза» — «натянутая», как тетива лука." },
+  { text: "«Трапеция» по-гречески — «столик». От того же корня — слово «трапеза»." },
+  { text: "«Радиус» по-латыни — «спица колеса»." },
+  { text: "«Синус» по-латыни — «пазуха, изгиб». Так европейцы перевели арабский термин, спутав слова «джиба» (хорда) и «джайб» (пазуха)." },
+  { text: "Слово «логарифм» составил Джон Непер из греческих logos («отношение») и arithmos («число»)." },
+  { text: "Пифагорову теорему знали вавилоняне — за тысячу лет до Пифагора. Сохранилась глиняная табличка с пифагоровыми тройками." },
+  { text: "То, что простых чисел бесконечно много, доказал Евклид около 300 года до нашей эры — доказательство занимает несколько строк." },
+  { text: "Эратосфен ещё в III веке до н.э. измерил окружность Земли — по тени в колодцах двух городов — и ошибся всего на несколько процентов." },
+  { text: "Ферма записал свою Великую теорему на полях книги около 1637 года. Доказали её только в 1995-м — на это ушло 358 лет." },
+  { text: "Число «гугол» — единица со ста нулями — назвал так девятилетний племянник математика Эдварда Казнера. В честь гугола (с опечаткой) назван Google." },
+  { text: "По легенде, изобретатель шахмат попросил у царя зёрен: на каждую клетку вдвое больше, чем на предыдущую. Получилось 2⁶⁴−1 — больше, чем все урожаи мира за тысячи лет." },
+  { text: "По легенде, юный Гаусс мгновенно сложил числа от 1 до 100: он заметил 50 пар, каждая из которых даёт 101." },
+  { text: "Отрицательные числа в Европе долго называли «ложными» — им не доверяли ещё в XVII веке." },
+  { text: "«Декартовы координаты» названы в честь Рене Декарта — по его латинизированному имени Cartesius." },
+  { text: "Дробь по-латыни — fractio, «ломание». Отсюда английское fraction. Русская «дробь» — от «дробить»." },
+  { text: "Теорема о четырёх красках (любую карту можно раскрасить четырьмя цветами) — первая великая теорема, доказанная с помощью компьютера, в 1976 году." },
+  { text: "Совершенное число равно сумме своих делителей: 6 = 1 + 2 + 3. Следующее — 28. Их знали ещё древние греки." }
+];
+
     </script>
     <script>
 // norm.js — нормализаторы ответов (общий для всех движков, вставляется build.js перед engine)
@@ -1287,8 +1343,13 @@ function canonicalizeFactorInner(inner) {
   let streakCount = 0;
   let sprintErrors = [];
   let usedQuoteIndices = new Set();
+  let usedFactIndices = new Set();
   let locked = false;
   let allPerfect = true;
+
+  const $quoteKicker = document.getElementById('quote-kicker');
+  // Массив FACTS может отсутствовать в старых сборках — подстраховка
+  const FACTS_ARR = (typeof FACTS !== 'undefined') ? FACTS : [];
 
   function taskIndex() { return sprintStartIndex + sprintPos; }
 
@@ -1542,12 +1603,28 @@ function canonicalizeFactorInner(inner) {
     if ($roundBadge) $roundBadge.classList.remove('visible');
     $quoteOverlay.classList.add('show');
 
-    if (usedQuoteIndices.size >= QUOTES.length) { usedQuoteIndices = new Set(); }
-    let qi;
-    do { qi = Math.floor(Math.random() * QUOTES.length); } while (usedQuoteIndices.has(qi));
-    usedQuoteIndices.add(qi);
-    $quoteText.textContent = '«' + QUOTES[qi].text + '»';
-    $quoteAuthor.textContent = '— ' + QUOTES[qi].author;
+    // Пауза-передышка: показываем факты-«изюминки». Цитаты в архиве до пересмотра
+    // списка (решение Михаила 12.07.2026) — чтобы вернуть смесь, поставить < 0.5.
+    const showFact = FACTS_ARR.length > 0;
+    if (showFact) {
+      if (usedFactIndices.size >= FACTS_ARR.length) { usedFactIndices = new Set(); }
+      let fi;
+      do { fi = Math.floor(Math.random() * FACTS_ARR.length); } while (usedFactIndices.has(fi));
+      usedFactIndices.add(fi);
+      if ($quoteKicker) $quoteKicker.className = 'show';
+      $quoteText.className = 'fact';
+      $quoteText.textContent = FACTS_ARR[fi].text;
+      $quoteAuthor.textContent = '';
+    } else {
+      if (usedQuoteIndices.size >= QUOTES.length) { usedQuoteIndices = new Set(); }
+      let qi;
+      do { qi = Math.floor(Math.random() * QUOTES.length); } while (usedQuoteIndices.has(qi));
+      usedQuoteIndices.add(qi);
+      if ($quoteKicker) $quoteKicker.className = '';
+      $quoteText.className = '';
+      $quoteText.textContent = '«' + QUOTES[qi].text + '»';
+      $quoteAuthor.textContent = '— ' + QUOTES[qi].author;
+    }
 
     // Продолжить можно клавишей Enter или касанием/кликом по цитате
     function proceedAfterQuote() {

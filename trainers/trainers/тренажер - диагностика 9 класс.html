@@ -286,12 +286,30 @@ input[type="text"]:disabled {
 
 #quote-overlay.show { display: flex; cursor: pointer; }
 
+/* Шапка для фактов-«изюминок» (скрыта, когда показывается цитата) */
+#quote-kicker {
+  display: none;
+  font-family: 'Cinzel', serif;
+  font-size: 0.85em;
+  letter-spacing: 0.12em;
+  color: var(--accent);
+  margin-bottom: 14px;
+}
+
+#quote-kicker.show { display: block; }
+
 #quote-text {
   font-size: 1.4em;
   font-style: italic;
   color: #1a0f09;
   margin-bottom: 12px;
   line-height: 1.5;
+}
+
+/* Факт — не курсивом, чуть мельче цитаты: это справка, а не изречение */
+#quote-text.fact {
+  font-style: normal;
+  font-size: 1.2em;
 }
 
 #quote-author {
