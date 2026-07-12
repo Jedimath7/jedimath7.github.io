@@ -1877,6 +1877,19 @@ function canonicalizeFactorInner(inner) {
     <script>
 // PWA: регистрация service worker (страница тренажёра входит в scope /trainers/)
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('/trainers/sw.js');
+
+// PWA: системная кнопка «назад» на телефоне не выходит из приложения,
+// а ведёт на портал. Только в standalone-режиме — в обычном браузере
+// «назад» и так возвращает на предыдущую страницу.
+(function() {
+  var standalone = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches)
+    || window.navigator.standalone === true;
+  if (!standalone || !window.history || !history.pushState) return;
+  history.pushState({ backToPortal: 1 }, '');
+  window.addEventListener('popstate', function() {
+    location.replace('../index.html');
+  });
+})();
     </script>
 </body>
 </html>
