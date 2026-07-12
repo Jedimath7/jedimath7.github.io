@@ -646,11 +646,18 @@ input[type="text"].skipped {
   color: #fff;
 }
 
+/* №7: на телефоне математика — главное (крупнее, чем было), служебные
+   элементы (заголовок, счётчики, ссылки в углах) — мельче и бледнее */
 @media (max-width: 500px) {
-  #math-expr { font-size: 1.6em; }
+  #math-expr { font-size: 2em; }
+  #math-expr-error { font-size: 1.8em; }
   #card { padding: 40px 10px 20px; }
-  input[type="text"] { width: 80px; font-size: 1.3em; }
+  input[type="text"] { width: 90px; font-size: 1.5em; }
+  h2 { font-size: 1.25em; margin-bottom: 20px; }
   h2::after { width: 80%; }
+  #task-counter, #round-badge { font-size: 0.8em; opacity: 0.65; }
+  #progress-text { font-size: 0.8em; opacity: 0.75; min-width: 48px; }
+  a.portal-link, a.next-link { font-size: 0.85em; opacity: 0.55; }
 }
 
 /* === Режим кнопок-вариантов (inputMode: choice) === */
@@ -1025,7 +1032,20 @@ window.TRAINER_CONFIG = {
     <script>
 // norm.js — нормализаторы ответов (общий для всех движков, вставляется build.js перед engine)
 
+// №2: невидимые символы Юникода, попадающие в поле при вставке/автозамене
+// с телефона: zero-width (U+200B–U+200D), направляющие метки (U+200E/200F),
+// word joiner (U+2060), BOM (U+FEFF), мягкий перенос (U+00AD).
+// NBSP и узкий NBSP убирать отдельно не нужно — их ловит \s+ в нормализаторах.
+function stripInvisible(s) {
+  return String(s).replace(new RegExp('[\\u200B-\\u200F\\u2060\\uFEFF\\u00AD]', 'g'), '');
+}
+
 function buildNorm(mode) {
+  var f = buildNormRaw(mode);
+  return function(s) { return f(stripInvisible(s)); };
+}
+
+function buildNormRaw(mode) {
   switch (mode) {
     case 'lowercase':
       return function(s) {

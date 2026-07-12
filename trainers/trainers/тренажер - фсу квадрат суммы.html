@@ -646,11 +646,18 @@ input[type="text"].skipped {
   color: #fff;
 }
 
+/* №7: на телефоне математика — главное (крупнее, чем было), служебные
+   элементы (заголовок, счётчики, ссылки в углах) — мельче и бледнее */
 @media (max-width: 500px) {
-  #math-expr { font-size: 1.6em; }
+  #math-expr { font-size: 2em; }
+  #math-expr-error { font-size: 1.8em; }
   #card { padding: 40px 10px 20px; }
-  input[type="text"] { width: 80px; font-size: 1.3em; }
+  input[type="text"] { width: 90px; font-size: 1.5em; }
+  h2 { font-size: 1.25em; margin-bottom: 20px; }
   h2::after { width: 80%; }
+  #task-counter, #round-badge { font-size: 0.8em; opacity: 0.65; }
+  #progress-text { font-size: 0.8em; opacity: 0.75; min-width: 48px; }
+  a.portal-link, a.next-link { font-size: 0.85em; opacity: 0.55; }
 }
 
 /* === Режим кнопок-вариантов (inputMode: choice) === */
@@ -1403,7 +1410,20 @@ const FACTS = [
     <script>
 // norm.js — нормализаторы ответов (общий для всех движков, вставляется build.js перед engine)
 
+// №2: невидимые символы Юникода, попадающие в поле при вставке/автозамене
+// с телефона: zero-width (U+200B–U+200D), направляющие метки (U+200E/200F),
+// word joiner (U+2060), BOM (U+FEFF), мягкий перенос (U+00AD).
+// NBSP и узкий NBSP убирать отдельно не нужно — их ловит \s+ в нормализаторах.
+function stripInvisible(s) {
+  return String(s).replace(new RegExp('[\\u200B-\\u200F\\u2060\\uFEFF\\u00AD]', 'g'), '');
+}
+
 function buildNorm(mode) {
+  var f = buildNormRaw(mode);
+  return function(s) { return f(stripInvisible(s)); };
+}
+
+function buildNormRaw(mode) {
   switch (mode) {
     case 'lowercase':
       return function(s) {
@@ -1662,6 +1682,9 @@ function canonicalizeFactorInner(inner) {
   let usedFactIndices = new Set();
   let locked = false;
   let allPerfect = true;
+  // №3: серия ошибок подряд — со второй ошибки пауза с показом ответа короче,
+  // чтобы серия неудач не превращалась в долгое ожидание
+  let errorStreak = 0;
   // №41: таймер автопроверки — сбрасывается при каждом новом символе (~350 мс)
   let autoTimer = null;
   const AUTO_ADVANCE_MS = 350;
@@ -1671,6 +1694,12 @@ function canonicalizeFactorInner(inner) {
   const FACTS_ARR = (typeof FACTS !== 'undefined') ? FACTS : [];
 
   function taskIndex() { return sprintStartIndex + sprintPos; }
+
+  // №3: сколько держать ✗ и правильный ответ на экране. Первая ошибка — полные
+  // 600 мс сверх базовой задержки, со второй подряд — вдвое короче.
+  function wrongExtraDelay() {
+    return errorStreak >= 2 ? 300 : 600;
+  }
 
   // --- Показ/скрытие и блокировка зоны ответа (input / dual / choice) ---
   function setMainInputVisible(v) {
@@ -1770,6 +1799,7 @@ function canonicalizeFactorInner(inner) {
       $feedback.className = 'correct show';
       totalSolved++;
       streakCount++;
+      errorStreak = 0;
       if (streakCount === 5) { streakCount = 0; fireStreakEffect(); }
       updateProgress();
       lockAnswerUI();
@@ -1782,9 +1812,10 @@ function canonicalizeFactorInner(inner) {
       lockAnswerUI();
       buzz();
       streakCount = 0;
+      errorStreak++;
       allPerfect = false;
       if (!sprintErrors.some(function(e) { return e.q === task.q; })) { sprintErrors.push(task); }
-      setTimeout(function() { $feedback.className = ''; $correct.className = ''; locked = false; advanceTask(); }, FEEDBACK_DELAY + 600);
+      setTimeout(function() { $feedback.className = ''; $correct.className = ''; locked = false; advanceTask(); }, FEEDBACK_DELAY + wrongExtraDelay());
     }
   }
 
@@ -1854,32 +1885,36 @@ function canonicalizeFactorInner(inner) {
         if (valCoef === '' && valRad === '') return;
         answered = true;
         if (valCoef === task.a_coef && valRad === task.a_rad) {
+          errorStreak = 0;
           efeedback.textContent = '✓'; efeedback.className = 'correct';
           efeedback.style.opacity = '1'; efeedback.style.transform = 'scale(1.1)';
           setTimeout(function() { efeedback.style.opacity = '0'; efeedback.style.transform = ''; showErrorTask(errIdx + 1); }, FEEDBACK_DELAY);
         } else {
+          errorStreak++;
           efeedback.textContent = '✗'; efeedback.className = 'incorrect';
           efeedback.style.opacity = '1'; efeedback.style.transform = 'scale(1.1)';
           ecorrect.textContent = getCorrectDisplay(task); ecorrect.className = 'show';
           ecoef.value = ''; erad.value = '';
           buzz();
-          setTimeout(function() { efeedback.style.opacity = '0'; efeedback.style.transform = ''; ecorrect.className = ''; showErrorTask(errIdx + 1); }, FEEDBACK_DELAY + 600);
+          setTimeout(function() { efeedback.style.opacity = '0'; efeedback.style.transform = ''; ecorrect.className = ''; showErrorTask(errIdx + 1); }, FEEDBACK_DELAY + wrongExtraDelay());
         }
       } else {
         const val = norm(einput.value);
         if (val === '') return;
         answered = true;
         if (val === task.a) {
+          errorStreak = 0;
           efeedback.textContent = '✓'; efeedback.className = 'correct';
           efeedback.style.opacity = '1'; efeedback.style.transform = 'scale(1.1)';
           setTimeout(function() { efeedback.style.opacity = '0'; efeedback.style.transform = ''; showErrorTask(errIdx + 1); }, FEEDBACK_DELAY);
         } else {
+          errorStreak++;
           efeedback.textContent = '✗'; efeedback.className = 'incorrect';
           efeedback.style.opacity = '1'; efeedback.style.transform = 'scale(1.1)';
           ecorrect.textContent = task.a; ecorrect.className = 'show';
           einput.value = '';
           buzz();
-          setTimeout(function() { efeedback.style.opacity = '0'; efeedback.style.transform = ''; ecorrect.className = ''; showErrorTask(errIdx + 1); }, FEEDBACK_DELAY + 600);
+          setTimeout(function() { efeedback.style.opacity = '0'; efeedback.style.transform = ''; ecorrect.className = ''; showErrorTask(errIdx + 1); }, FEEDBACK_DELAY + wrongExtraDelay());
         }
       }
     }
@@ -1909,14 +1944,16 @@ function canonicalizeFactorInner(inner) {
           errorChoiceBtns.forEach(function(b) { b.disabled = true; });
           const val = norm(btn.dataset.val);
           if (val === task.a) {
+            errorStreak = 0;
             efeedback.textContent = '✓'; efeedback.className = 'correct';
             efeedback.style.opacity = '1'; efeedback.style.transform = 'scale(1.1)';
             setTimeout(function() { efeedback.style.opacity = '0'; efeedback.style.transform = ''; showErrorTask(errIdx + 1); }, FEEDBACK_DELAY);
           } else {
+            errorStreak++;
             efeedback.textContent = '✗'; efeedback.className = 'incorrect';
             efeedback.style.opacity = '1'; efeedback.style.transform = 'scale(1.1)';
             ecorrect.textContent = task.a; ecorrect.className = 'show';
-            setTimeout(function() { efeedback.style.opacity = '0'; efeedback.style.transform = ''; ecorrect.className = ''; showErrorTask(errIdx + 1); }, FEEDBACK_DELAY + 600);
+            setTimeout(function() { efeedback.style.opacity = '0'; efeedback.style.transform = ''; ecorrect.className = ''; showErrorTask(errIdx + 1); }, FEEDBACK_DELAY + wrongExtraDelay());
           }
         };
       });
@@ -1962,10 +1999,14 @@ function canonicalizeFactorInner(inner) {
       $quoteAuthor.textContent = '— ' + QUOTES[qi].author;
     }
 
-    // Продолжить можно клавишей Enter или касанием/кликом по цитате
+    // Продолжить можно клавишей Enter/Пробел (№4), касанием/кликом
+    // или свайпом по цитате (№6)
+    let swipeStart = null;
     function proceedAfterQuote() {
       document.removeEventListener('keydown', onQuoteContinue);
       $quoteOverlay.removeEventListener('click', proceedAfterQuote);
+      $quoteOverlay.removeEventListener('touchstart', onSwipeStart);
+      $quoteOverlay.removeEventListener('touchend', onSwipeEnd);
       $quoteOverlay.classList.remove('show');
       $card.style.display = '';
       setMainInputVisible(true);
@@ -1975,11 +2016,26 @@ function canonicalizeFactorInner(inner) {
       else { startSprint(); }
     }
     function onQuoteContinue(e) {
-      if (e.key === 'Enter') proceedAfterQuote();
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); proceedAfterQuote(); }
+    }
+    // №6: свайп в любую сторону — тоже «продолжить» (тап и так ловится click)
+    function onSwipeStart(e) {
+      const t = e.touches[0];
+      swipeStart = { x: t.clientX, y: t.clientY };
+    }
+    function onSwipeEnd(e) {
+      if (!swipeStart) return;
+      const t = e.changedTouches[0];
+      const dx = t.clientX - swipeStart.x;
+      const dy = t.clientY - swipeStart.y;
+      swipeStart = null;
+      if (Math.sqrt(dx * dx + dy * dy) > 40) proceedAfterQuote();
     }
     setTimeout(function() {
       document.addEventListener('keydown', onQuoteContinue);
       $quoteOverlay.addEventListener('click', proceedAfterQuote);
+      $quoteOverlay.addEventListener('touchstart', onSwipeStart, { passive: true });
+      $quoteOverlay.addEventListener('touchend', onSwipeEnd, { passive: true });
     }, 100);
   }
 
@@ -2007,11 +2063,21 @@ function canonicalizeFactorInner(inner) {
     sprintStartIndex = 0; sprintPos = 0; sprintNumber = 1;
     totalSolved = 0; streakCount = 0; sprintErrors = [];
     usedQuoteIndices = new Set(); locked = false; allPerfect = true;
+    errorStreak = 0;
     tasks = shuffle(C.tasks.slice());
     startSprint();
   }
 
   // --- Event binding ---
+
+  // №4: Escape — выход на портал из любого места тренажёра
+  // (адрес берём из ссылки «← Все тренажёры», которую вписывает build.js)
+  document.addEventListener('keydown', function(e) {
+    if (e.key !== 'Escape') return;
+    const portalLink = document.querySelector('a.portal-link');
+    if (portalLink) location.href = portalLink.getAttribute('href');
+  });
+
   if (CHOICE) {
     choiceBtns.forEach(function(btn) {
       btn.addEventListener('click', function() {
