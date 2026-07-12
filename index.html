@@ -9,6 +9,9 @@
 <!-- Канонический адрес страницы (подсказка поисковикам, какой адрес «главный») -->
 <link rel="canonical" href="https://bakhadov.ru/">
 
+<!-- Грузим портрет заранее — первый экран появляется быстрее -->
+<link rel="preload" as="image" href="mikhail.jpg">
+
 <!-- Цвет рамки браузера на телефоне — в тон сайта вместо белой полосы -->
 <meta name="theme-color" content="#131A1F">
 
@@ -143,7 +146,8 @@ section[id]{scroll-margin-top:78px}
   background:radial-gradient(circle,rgba(201,168,106,.12),transparent 60%)}
 .hero-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:54px;align-items:center}
 .hero .role{font-size:13px;font-weight:600;letter-spacing:.26em;text-transform:uppercase;color:var(--gold);margin-bottom:24px;
-  display:flex;align-items:center;gap:12px}
+  display:flex;align-items:center;gap:12px;
+  font-family:var(--body);line-height:1.7}  /* свой шрифт, чтобы строка не унаследовала крупный шрифт h1 */
 .hero .role::before{content:"";width:34px;height:1px;background:var(--gold);opacity:.6;flex-shrink:0}
 .hero h1{font-size:clamp(40px,5vw,66px);margin-bottom:18px;letter-spacing:.01em}
 .hero .rule{width:96px;height:1px;background:var(--gold);margin:0 0 24px}
@@ -390,8 +394,8 @@ footer{background:#0C1115;color:var(--ink-soft);padding:40px 0;border-top:1px so
   <div class="wrap">
     <div class="hero-grid">
       <div>
-        <p class="role">Профессиональный репетитор по математике</p>
-        <h1>Михаил<br>Бахадов</h1>
+        <!-- Подзаголовок перенесён внутрь h1: поисковик видит «репетитор по математике» в главном заголовке, вид не изменился -->
+        <h1><span class="role">Профессиональный репетитор по математике</span>Михаил<br>Бахадов</h1>
         <div class="rule"></div>
         <p class="hero-sub">«Предмет математики настолько серьёзен, что полезно не упускать случаев делать его немного занимательнее» — Блез Паскаль</p>
         <div class="btns">
