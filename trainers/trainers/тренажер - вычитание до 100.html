@@ -1117,8 +1117,9 @@ const FACTS = [
 // с телефона: zero-width (U+200B–U+200D), направляющие метки (U+200E/200F),
 // word joiner (U+2060), BOM (U+FEFF), мягкий перенос (U+00AD).
 // NBSP и узкий NBSP убирать отдельно не нужно — их ловит \s+ в нормализаторах.
+var INVISIBLE_RE = new RegExp('[\\u200B-\\u200F\\u2060\\uFEFF\\u00AD]', 'g');
 function stripInvisible(s) {
-  return String(s).replace(new RegExp('[\\u200B-\\u200F\\u2060\\uFEFF\\u00AD]', 'g'), '');
+  return String(s).replace(INVISIBLE_RE, '');
 }
 
 function buildNorm(mode) {
@@ -1321,6 +1322,153 @@ function canonicalizeFactorInner(inner) {
   return poly.replace(/^\+/, '');
 }
 
+// storage.js — слой localStorage (№9): запись каждого ответа — верно/ошибка,
+// время ответа, дата. Общий для всех движков, вставляется build.js после norm.js.
+//
+// Ключ хранилища: trainer:<id> (id из data-файла). Ключ задания — короткий
+// хэш (djb2) LaTeX-вопроса, чтобы не менять data-файлы. Схема данных (v: 1):
+//
+//   {
+//     v: 1,
+//     updated: "2026-07-13T12:34:56.789Z",   // последняя запись (ISO)
+//     tasks: {
+//       "<hash>": {
+//         q: "\\( x + 3 = 7 \\)",  // сам вопрос — чтобы экспорт (№43) и кабинет
+//                                  // репетитора (№44) работали без data-файлов
+//         ok: 12,                  // всего верных ответов
+//         err: 3,                  // всего ошибок
+//         ms: 2300,                // сглаженное время верного ответа (EMA), мс
+//         w: 1.3,                  // вес Лейтнера (№17): старт 1,
+//                                  // ошибка ×2, верно-но-медленно ×1.3,
+//                                  // верно-быстро ×0.9; пределы [0.5, 10]
+//         last: "2026-07-13",      // дата последнего ответа (локальная)
+//         lastOk: true             // последний результат
+//       }
+//     },
+//     days: { "2026-07-13": { ok: 40, err: 5 } },  // итоги по дням (№15, №16)
+//     best: null                   // рекорд времени спринта, мс (№22, позже)
+//   }
+//
+// Устойчивость: localStorage может быть недоступен (приватный режим) или
+// переполнен — тогда слой молча работает в памяти, тренажёр не ломается.
+// Несколько вкладок: побеждает последняя запись (осознанное упрощение).
+
+function TrainerStorage(id) {
+  var KEY = 'trainer:' + id;
+
+  // Константы весов Лейтнера (№17) — подбираются здесь, в одном месте
+  var W_ERR = 2;      // ошибка
+  var W_SLOW = 1.3;   // верно, но медленно
+  var W_FAST = 0.9;   // верно и быстро
+  var W_MAX = 10;
+  var W_MIN = 0.5;
+  var SLOW_RATIO = 1.5;   // «медленно» = дольше полутора своих обычных времён
+  var SLOW_FALLBACK_MS = 8000; // пока своего времени нет — дольше 8 секунд
+  var MS_CAP = 60000;     // отвлёкся/ушёл — не даём выбросу испортить среднее
+
+  var persist = true; // false после первой ошибки записи (квота/приватный режим)
+  var shownAt = null; // Date.now() момента показа задания
+
+  // Короткий хэш строки (djb2) → base36; коллизии на наших объёмах не страшны
+  function hash(s) {
+    var h = 5381;
+    for (var i = 0; i < s.length; i++) {
+      h = ((h << 5) + h + s.charCodeAt(i)) >>> 0;
+    }
+    return h.toString(36);
+  }
+
+  function today() {
+    var d = new Date();
+    var m = d.getMonth() + 1, day = d.getDate();
+    return d.getFullYear() + '-' + (m < 10 ? '0' : '') + m + '-' + (day < 10 ? '0' : '') + day;
+  }
+
+  function load() {
+    try {
+      var raw = localStorage.getItem(KEY);
+      if (raw) {
+        var parsed = JSON.parse(raw);
+        // Незнакомая версия схемы — начинаем заново (данные не критичны)
+        if (parsed && parsed.v === 1 && parsed.tasks && parsed.days) return parsed;
+      }
+    } catch (e) { persist = false; }
+    return { v: 1, updated: null, tasks: {}, days: {}, best: null };
+  }
+
+  var data = load();
+
+  function save() {
+    if (!persist) return;
+    try {
+      localStorage.setItem(KEY, JSON.stringify(data));
+    } catch (e) { persist = false; }
+  }
+
+  // Отметить показ задания — начало отсчёта времени ответа
+  function shown() { shownAt = Date.now(); }
+
+  // Записать ответ. ms передавать не нужно — считается от shown();
+  // движок без замера времени (list) может передать null явно.
+  function record(q, ok, ms) {
+    if (ms === undefined) ms = shownAt !== null ? Date.now() - shownAt : null;
+    if (ms !== null && ms > MS_CAP) ms = MS_CAP;
+
+    var h = hash(q);
+    var t = data.tasks[h];
+    if (!t) { t = data.tasks[h] = { q: q, ok: 0, err: 0, ms: null, w: 1, last: '', lastOk: null }; }
+
+    if (ok) { t.ok++; } else { t.err++; }
+    t.last = today();
+    t.lastOk = ok;
+
+    // Вес Лейтнера — «медленно» сравниваем со СТАРЫМ средним, потом обновляем его
+    if (!ok) {
+      t.w = Math.min(W_MAX, t.w * W_ERR);
+    } else {
+      var slow = ms !== null && (t.ms !== null ? ms > t.ms * SLOW_RATIO : ms > SLOW_FALLBACK_MS);
+      t.w = Math.max(W_MIN, Math.min(W_MAX, t.w * (slow ? W_SLOW : W_FAST)));
+      if (ms !== null) { t.ms = t.ms !== null ? Math.round(t.ms * 0.7 + ms * 0.3) : Math.round(ms); }
+    }
+    t.w = Math.round(t.w * 1000) / 1000; // без плавающего мусора в JSON
+
+    var day = data.days[t.last];
+    if (!day) { day = data.days[t.last] = { ok: 0, err: 0 }; }
+    if (ok) { day.ok++; } else { day.err++; }
+
+    data.updated = new Date().toISOString();
+    save();
+  }
+
+  // Статистика задания по его вопросу (для №17–18)
+  function taskStats(q) { return data.tasks[hash(q)] || null; }
+
+  return {
+    data: data,       // прямой доступ для №15–18, №22, №43
+    shown: shown,
+    record: record,
+    taskStats: taskStats,
+    save: save
+  };
+}
+
+// Прочитать данные всех тренажёров (для портала: №15 «решено сегодня»,
+// №43 экспорт, №44 кабинет). Возвращает { "<id>": data }.
+TrainerStorage.readAll = function() {
+  var all = {};
+  try {
+    for (var i = 0; i < localStorage.length; i++) {
+      var key = localStorage.key(i);
+      if (key.indexOf('trainer:') !== 0) continue;
+      try {
+        var parsed = JSON.parse(localStorage.getItem(key));
+        if (parsed && parsed.v === 1) all[key.slice(8)] = parsed;
+      } catch (e) {}
+    }
+  } catch (e) {}
+  return all;
+};
+
 // engine-card.js — движок «карточка» (одно задание за раз, спринты, цитаты, streak)
 // Работает с window.TRAINER_CONFIG, установленным перед подключением этого скрипта.
 // buildNorm() поступает из norm.js, который build.js вставляет в тот же <script>-блок.
@@ -1333,6 +1481,8 @@ function canonicalizeFactorInner(inner) {
   const CHOICE = C.inputMode === 'choice';
 
   const norm = buildNorm(C.normMode || 'basic');
+  // №9: запись каждого ответа в localStorage (верно/ошибка, время, дата)
+  const store = TrainerStorage(C.id);
 
   // --- shuffle ---
   function shuffle(arr) {
@@ -1476,6 +1626,7 @@ function canonicalizeFactorInner(inner) {
     }
     updateProgress();
     if (window.MathJax) { MathJax.typesetPromise([$expr]); }
+    store.shown(); // №9: старт отсчёта времени ответа
   }
 
   // --- Streak effect ---
@@ -1496,8 +1647,10 @@ function canonicalizeFactorInner(inner) {
     if (DUAL && val.coef === '' && val.rad === '') return;
     locked = true;
     const task = tasks[taskIndex()];
+    const ok = isCorrect(val, task);
+    store.record(task.q, ok); // №9
 
-    if (isCorrect(val, task)) {
+    if (ok) {
       $feedback.textContent = '✓';
       $feedback.className = 'correct show';
       totalSolved++;
@@ -1535,6 +1688,7 @@ function canonicalizeFactorInner(inner) {
 
   // --- Error work ---
   function startErrorWork() {
+    errorStreak = 0; // №3: работа над ошибками — новый контекст, серия обнуляется
     $errorSection.style.display = 'block';
     setMainInputVisible(false);
     $card.style.display = 'none';
@@ -1574,10 +1728,30 @@ function canonicalizeFactorInner(inner) {
     if (DUAL) ecoef.focus(); else if (!CHOICE) einput.focus();
 
     if (window.MathJax) { MathJax.typesetPromise([document.getElementById('math-expr-error')]); }
+    store.shown(); // №9: время ответа считается и в работе над ошибками
 
     // «Уже отвечено» — раньше роль флага играла блокировка поля, но она
     // закрывает мобильную клавиатуру (№1), поэтому обычная переменная
     var answered = false;
+
+    // Единый фидбек ✓/✗ секции ошибок для всех режимов ввода (dual/обычный/choice):
+    // серия ошибок, анимация, показ правильного ответа, очистка полей, переход дальше
+    function errorFeedback(ok, clearInputs) {
+      store.record(task.q, ok); // №9
+      efeedback.textContent = ok ? '✓' : '✗';
+      efeedback.className = ok ? 'correct' : 'incorrect';
+      efeedback.style.opacity = '1'; efeedback.style.transform = 'scale(1.1)';
+      if (ok) {
+        errorStreak = 0;
+        setTimeout(function() { efeedback.style.opacity = '0'; efeedback.style.transform = ''; showErrorTask(errIdx + 1); }, FEEDBACK_DELAY);
+      } else {
+        errorStreak++;
+        ecorrect.textContent = getCorrectDisplay(task); ecorrect.className = 'show';
+        if (clearInputs) clearInputs();
+        buzz();
+        setTimeout(function() { efeedback.style.opacity = '0'; efeedback.style.transform = ''; ecorrect.className = ''; showErrorTask(errIdx + 1); }, FEEDBACK_DELAY + wrongExtraDelay());
+      }
+    }
 
     // Проверка ответа в работе над ошибками — вызывается и по Enter, и кнопкой «✓»
     function submitError() {
@@ -1587,38 +1761,13 @@ function canonicalizeFactorInner(inner) {
         const valRad = norm(erad.value);
         if (valCoef === '' && valRad === '') return;
         answered = true;
-        if (valCoef === task.a_coef && valRad === task.a_rad) {
-          errorStreak = 0;
-          efeedback.textContent = '✓'; efeedback.className = 'correct';
-          efeedback.style.opacity = '1'; efeedback.style.transform = 'scale(1.1)';
-          setTimeout(function() { efeedback.style.opacity = '0'; efeedback.style.transform = ''; showErrorTask(errIdx + 1); }, FEEDBACK_DELAY);
-        } else {
-          errorStreak++;
-          efeedback.textContent = '✗'; efeedback.className = 'incorrect';
-          efeedback.style.opacity = '1'; efeedback.style.transform = 'scale(1.1)';
-          ecorrect.textContent = getCorrectDisplay(task); ecorrect.className = 'show';
-          ecoef.value = ''; erad.value = '';
-          buzz();
-          setTimeout(function() { efeedback.style.opacity = '0'; efeedback.style.transform = ''; ecorrect.className = ''; showErrorTask(errIdx + 1); }, FEEDBACK_DELAY + wrongExtraDelay());
-        }
+        errorFeedback(valCoef === task.a_coef && valRad === task.a_rad,
+          function() { ecoef.value = ''; erad.value = ''; });
       } else {
         const val = norm(einput.value);
         if (val === '') return;
         answered = true;
-        if (val === task.a) {
-          errorStreak = 0;
-          efeedback.textContent = '✓'; efeedback.className = 'correct';
-          efeedback.style.opacity = '1'; efeedback.style.transform = 'scale(1.1)';
-          setTimeout(function() { efeedback.style.opacity = '0'; efeedback.style.transform = ''; showErrorTask(errIdx + 1); }, FEEDBACK_DELAY);
-        } else {
-          errorStreak++;
-          efeedback.textContent = '✗'; efeedback.className = 'incorrect';
-          efeedback.style.opacity = '1'; efeedback.style.transform = 'scale(1.1)';
-          ecorrect.textContent = task.a; ecorrect.className = 'show';
-          einput.value = '';
-          buzz();
-          setTimeout(function() { efeedback.style.opacity = '0'; efeedback.style.transform = ''; ecorrect.className = ''; showErrorTask(errIdx + 1); }, FEEDBACK_DELAY + wrongExtraDelay());
-        }
+        errorFeedback(val === task.a, function() { einput.value = ''; });
       }
     }
 
@@ -1645,19 +1794,7 @@ function canonicalizeFactorInner(inner) {
           if (btn.disabled) return;
           btn.classList.add('chosen');
           errorChoiceBtns.forEach(function(b) { b.disabled = true; });
-          const val = norm(btn.dataset.val);
-          if (val === task.a) {
-            errorStreak = 0;
-            efeedback.textContent = '✓'; efeedback.className = 'correct';
-            efeedback.style.opacity = '1'; efeedback.style.transform = 'scale(1.1)';
-            setTimeout(function() { efeedback.style.opacity = '0'; efeedback.style.transform = ''; showErrorTask(errIdx + 1); }, FEEDBACK_DELAY);
-          } else {
-            errorStreak++;
-            efeedback.textContent = '✗'; efeedback.className = 'incorrect';
-            efeedback.style.opacity = '1'; efeedback.style.transform = 'scale(1.1)';
-            ecorrect.textContent = task.a; ecorrect.className = 'show';
-            setTimeout(function() { efeedback.style.opacity = '0'; efeedback.style.transform = ''; ecorrect.className = ''; showErrorTask(errIdx + 1); }, FEEDBACK_DELAY + wrongExtraDelay());
-          }
+          errorFeedback(norm(btn.dataset.val) === task.a);
         };
       });
     } else if (DUAL) {
@@ -1721,7 +1858,9 @@ function canonicalizeFactorInner(inner) {
     function onQuoteContinue(e) {
       if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); proceedAfterQuote(); }
     }
-    // №6: свайп в любую сторону — тоже «продолжить» (тап и так ловится click)
+    // №6: горизонтальный свайп — тоже «продолжить» (тап и так ловится click).
+    // Вертикальное движение не считаем: длинный факт скроллят, чтобы дочитать,
+    // и скролл не должен закрывать оверлей.
     function onSwipeStart(e) {
       const t = e.touches[0];
       swipeStart = { x: t.clientX, y: t.clientY };
@@ -1732,7 +1871,7 @@ function canonicalizeFactorInner(inner) {
       const dx = t.clientX - swipeStart.x;
       const dy = t.clientY - swipeStart.y;
       swipeStart = null;
-      if (Math.sqrt(dx * dx + dy * dy) > 40) proceedAfterQuote();
+      if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) proceedAfterQuote();
     }
     setTimeout(function() {
       document.addEventListener('keydown', onQuoteContinue);
@@ -1758,7 +1897,9 @@ function canonicalizeFactorInner(inner) {
   }
 
   function startSprint() {
-    sprintPos = 0; sprintErrors = []; streakCount = 0;
+    // №3: серия ошибок не переживает границу спринта — ошибка на последнем
+    // задании и ошибка на первом задании нового спринта не «серия»
+    sprintPos = 0; sprintErrors = []; streakCount = 0; errorStreak = 0;
     showCurrentTask();
   }
 
@@ -1772,14 +1913,7 @@ function canonicalizeFactorInner(inner) {
   }
 
   // --- Event binding ---
-
-  // №4: Escape — выход на портал из любого места тренажёра
-  // (адрес берём из ссылки «← Все тренажёры», которую вписывает build.js)
-  document.addEventListener('keydown', function(e) {
-    if (e.key !== 'Escape') return;
-    const portalLink = document.querySelector('a.portal-link');
-    if (portalLink) location.href = portalLink.getAttribute('href');
-  });
+  // (№4: Escape-выход на портал общий для всех движков — вставляется build.js)
 
   if (CHOICE) {
     choiceBtns.forEach(function(btn) {
@@ -1876,6 +2010,19 @@ if ('serviceWorker' in navigator) navigator.serviceWorker.register('/trainers/sw
     location.replace('../index.html');
   });
 })();
+
+// №4: Escape — выход на портал из любого тренажёра (общее для всех движков;
+// адрес берём из ссылки «← Все тренажёры» выше на странице).
+// Прогресс нигде не сохраняется, поэтому от случайного Escape (привычка
+// закрыть клавиатуру/автодополнение) защищаемся: при фокусе в поле ввода
+// первый Escape только снимает фокус, выходит лишь второй.
+document.addEventListener('keydown', function(e) {
+  if (e.key !== 'Escape' || e.isComposing) return;
+  var ae = document.activeElement;
+  if (ae && ae.tagName === 'INPUT') { ae.blur(); return; }
+  var portalLink = document.querySelector('a.portal-link');
+  if (portalLink) location.href = portalLink.getAttribute('href');
+});
     </script>
 </body>
 </html>
