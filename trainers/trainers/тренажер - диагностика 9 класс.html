@@ -327,6 +327,25 @@ input[type="text"]:disabled {
   color: #5c5240;
 }
 
+/* №15/№16: личная статистика на паузе — между фактом и подсказкой «продолжить» */
+#pause-stats {
+  margin-top: 18px;
+  font-size: 1em;
+  color: #5c5240;
+}
+
+#pause-stats b {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+#pause-stats .ps-history {
+  display: block;
+  margin-top: 6px;
+  font-size: 0.85em;
+  color: #8a8070;
+}
+
 #quote-continue {
   margin-top: 20px;
   font-size: 0.9em;
@@ -1297,11 +1316,7 @@ function TrainerStorage(id) {
     return h.toString(36);
   }
 
-  function today() {
-    var d = new Date();
-    var m = d.getMonth() + 1, day = d.getDate();
-    return d.getFullYear() + '-' + (m < 10 ? '0' : '') + m + '-' + (day < 10 ? '0' : '') + day;
-  }
+  function today() { return TrainerStorage.localDay(); }
 
   function load() {
     try {
@@ -1371,6 +1386,13 @@ function TrainerStorage(id) {
   };
 }
 
+// Локальная дата ГГГГ-ММ-ДД — ключ дня в days
+TrainerStorage.localDay = function() {
+  var d = new Date();
+  var m = d.getMonth() + 1, day = d.getDate();
+  return d.getFullYear() + '-' + (m < 10 ? '0' : '') + m + '-' + (day < 10 ? '0' : '') + day;
+};
+
 // Прочитать данные всех тренажёров (для портала: №15 «решено сегодня»,
 // №43 экспорт, №44 кабинет). Возвращает { "<id>": data }.
 TrainerStorage.readAll = function() {
@@ -1386,6 +1408,32 @@ TrainerStorage.readAll = function() {
     }
   } catch (e) {}
   return all;
+};
+
+// Сводка по ВСЕМ тренажёрам для №15 (пауза) и №16 (личная история):
+//   todayOk — решено сегодня, totalOk — решено за всё время,
+//   fixed — исправлено ошибок (по заданию: ошибок, к которым есть верный
+//   ответ, т.е. min(ok, err) — верное после ошибки и есть исправление),
+//   days — дней занятий (уникальные даты по всем тренажёрам).
+TrainerStorage.summary = function() {
+  var all = TrainerStorage.readAll();
+  var day = TrainerStorage.localDay();
+  var s = { todayOk: 0, totalOk: 0, fixed: 0, days: 0 };
+  var seen = {};
+  for (var id in all) {
+    var d = all[id];
+    for (var k in d.days) {
+      seen[k] = true;
+      s.totalOk += d.days[k].ok || 0;
+      if (k === day) s.todayOk += d.days[k].ok || 0;
+    }
+    for (var h in d.tasks) {
+      var t = d.tasks[h];
+      s.fixed += Math.min(t.ok, t.err);
+    }
+  }
+  s.days = Object.keys(seen).length;
+  return s;
 };
 
 // engine-diagnostic.js — движок «диагностика» (секции, одно задание, «Не знаю», отчёт)

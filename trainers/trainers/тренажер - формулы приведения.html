@@ -327,6 +327,25 @@ input[type="text"]:disabled {
   color: #5c5240;
 }
 
+/* №15/№16: личная статистика на паузе — между фактом и подсказкой «продолжить» */
+#pause-stats {
+  margin-top: 18px;
+  font-size: 1em;
+  color: #5c5240;
+}
+
+#pause-stats b {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+#pause-stats .ps-history {
+  display: block;
+  margin-top: 6px;
+  font-size: 0.85em;
+  color: #8a8070;
+}
+
 #quote-continue {
   margin-top: 20px;
   font-size: 0.9em;
@@ -764,6 +783,7 @@ svg.fig {
         <div id="quote-kicker">Знаете ли вы?</div>
         <div id="quote-text"></div>
         <div id="quote-author"></div>
+        <div id="pause-stats"></div>
         <div id="quote-continue">Нажмите Enter или коснитесь экрана</div>
     </div>
 
@@ -1314,11 +1334,7 @@ function TrainerStorage(id) {
     return h.toString(36);
   }
 
-  function today() {
-    var d = new Date();
-    var m = d.getMonth() + 1, day = d.getDate();
-    return d.getFullYear() + '-' + (m < 10 ? '0' : '') + m + '-' + (day < 10 ? '0' : '') + day;
-  }
+  function today() { return TrainerStorage.localDay(); }
 
   function load() {
     try {
@@ -1388,6 +1404,13 @@ function TrainerStorage(id) {
   };
 }
 
+// Локальная дата ГГГГ-ММ-ДД — ключ дня в days
+TrainerStorage.localDay = function() {
+  var d = new Date();
+  var m = d.getMonth() + 1, day = d.getDate();
+  return d.getFullYear() + '-' + (m < 10 ? '0' : '') + m + '-' + (day < 10 ? '0' : '') + day;
+};
+
 // Прочитать данные всех тренажёров (для портала: №15 «решено сегодня»,
 // №43 экспорт, №44 кабинет). Возвращает { "<id>": data }.
 TrainerStorage.readAll = function() {
@@ -1403,6 +1426,32 @@ TrainerStorage.readAll = function() {
     }
   } catch (e) {}
   return all;
+};
+
+// Сводка по ВСЕМ тренажёрам для №15 (пауза) и №16 (личная история):
+//   todayOk — решено сегодня, totalOk — решено за всё время,
+//   fixed — исправлено ошибок (по заданию: ошибок, к которым есть верный
+//   ответ, т.е. min(ok, err) — верное после ошибки и есть исправление),
+//   days — дней занятий (уникальные даты по всем тренажёрам).
+TrainerStorage.summary = function() {
+  var all = TrainerStorage.readAll();
+  var day = TrainerStorage.localDay();
+  var s = { todayOk: 0, totalOk: 0, fixed: 0, days: 0 };
+  var seen = {};
+  for (var id in all) {
+    var d = all[id];
+    for (var k in d.days) {
+      seen[k] = true;
+      s.totalOk += d.days[k].ok || 0;
+      if (k === day) s.todayOk += d.days[k].ok || 0;
+    }
+    for (var h in d.tasks) {
+      var t = d.tasks[h];
+      s.fixed += Math.min(t.ok, t.err);
+    }
+  }
+  s.days = Object.keys(seen).length;
+  return s;
 };
 
 // engine-card.js — движок «карточка» (одно задание за раз, спринты, цитаты, streak)
@@ -1421,12 +1470,16 @@ TrainerStorage.readAll = function() {
   const store = TrainerStorage(C.id);
 
   // --- shuffle ---
-  function shuffle(arr) {
-    for (let i = arr.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [arr[i], arr[j]] = [arr[j], arr[i]];
-    }
-    return arr;
+  // №17: взвешенная перетасовка (Efraimidis–Spirakis): ключ u^(1/w), сортировка
+  // по убыванию. Задания с большим весом Лейтнера (ошибки, медленные верные)
+  // почти всегда оказываются в первых спринтах, освоенные (w < 1) уходят
+  // в конец. Каждое задание в круге по-прежнему ровно один раз.
+  function weightedShuffle(arr) {
+    return arr.map(function(t) {
+      const s = store.taskStats(t.q);
+      const w = (s && s.w) ? s.w : 1;
+      return { t: t, k: Math.pow(Math.random(), 1 / w) };
+    }).sort(function(a, b) { return b.k - a.k; }).map(function(x) { return x.t; });
   }
 
   // --- DOM refs ---
@@ -1479,8 +1532,17 @@ TrainerStorage.readAll = function() {
   const AUTO_ADVANCE_MS = 350;
 
   const $quoteKicker = document.getElementById('quote-kicker');
+  const $pauseStats = document.getElementById('pause-stats');
   // Массив FACTS может отсутствовать в старых сборках — подстраховка
   const FACTS_ARR = (typeof FACTS !== 'undefined') ? FACTS : [];
+
+  // Склонение числительных: plural(140, 'задание', 'задания', 'заданий')
+  function plural(n, one, few, many) {
+    const m10 = n % 10, m100 = n % 100;
+    if (m10 === 1 && m100 !== 11) return one;
+    if (m10 >= 2 && m10 <= 4 && (m100 < 12 || m100 > 14)) return few;
+    return many;
+  }
 
   function taskIndex() { return sprintStartIndex + sprintPos; }
 
@@ -1607,8 +1669,31 @@ TrainerStorage.readAll = function() {
       errorStreak++;
       allPerfect = false;
       if (!sprintErrors.some(function(e) { return e.q === task.q; })) { sprintErrors.push(task); }
+      scheduleComeback(task); // №18: вернётся ещё раз через 2–3 спринта
       setTimeout(function() { $feedback.className = ''; $correct.className = ''; locked = false; advanceTask(); }, FEEDBACK_DELAY + wrongExtraDelay());
     }
+  }
+
+  // №18: интервальный возврат ошибки — задание вставляется копией через
+  // 2–3 спринта в текущем круге (круг становится на задание длиннее; в самом
+  // конце круга копия просто уходит в хвост). Возвраты «через круг» и «через
+  // сессию» обеспечивает вес Лейтнера (№17): после ошибки w ×2, и задание
+  // попадает в первые спринты следующих кругов. «Работа над ошибками» сразу
+  // после спринта при этом сохраняется — это немедленное исправление,
+  // а возврат — отсроченная проверка.
+  const COMEBACK_SPRINTS_MIN = 2;
+  const COMEBACK_SPRINTS_MAX = 3;
+  function scheduleComeback(task) {
+    // Уже ждёт впереди (вторая ошибка на том же задании) — не дублируем
+    for (let i = taskIndex() + 1; i < tasks.length; i++) {
+      if (tasks[i].q === task.q) return;
+    }
+    const ahead = COMEBACK_SPRINTS_MIN +
+      Math.floor(Math.random() * (COMEBACK_SPRINTS_MAX - COMEBACK_SPRINTS_MIN + 1));
+    let pos = sprintStartIndex + ahead * SPRINT_SIZE + Math.floor(Math.random() * SPRINT_SIZE);
+    if (pos > tasks.length) pos = tasks.length;
+    tasks.splice(pos, 0, task);
+    updateProgress(); // знаменатель прогресса вырос
   }
 
   function advanceTask() {
@@ -1717,7 +1802,13 @@ TrainerStorage.readAll = function() {
       autoTimer = setTimeout(function() {
         if (answered) return;
         if (DUAL) {
-          if (norm(ecoef.value) === task.a_coef && norm(erad.value) === task.a_rad) submitError();
+          const valCoef = norm(ecoef.value);
+          const valRad = norm(erad.value);
+          if (valCoef === task.a_coef && valRad === '') {
+            erad.focus();
+            return;
+          }
+          if (valCoef === task.a_coef && valRad === task.a_rad) submitError();
         } else {
           if (norm(einput.value) === task.a) submitError();
         }
@@ -1773,6 +1864,24 @@ TrainerStorage.readAll = function() {
       $quoteText.className = '';
       $quoteText.textContent = '«' + QUOTES[qi].text + '»';
       $quoteAuthor.textContent = '— ' + QUOTES[qi].author;
+    }
+
+    // №15: «Сегодня решено уже N» — счётчик по ВСЕМ тренажёрам, растёт на глазах.
+    // №16: личная история (всего, исправлено, дней) — со второго дня занятий,
+    // в первый день она дублировала бы «сегодня».
+    if ($pauseStats) {
+      const st = TrainerStorage.summary();
+      let statsHtml = '';
+      if (st.todayOk > 0) {
+        statsHtml = 'Сегодня решено уже <b>' + st.todayOk + '</b> ' +
+          plural(st.todayOk, 'задание', 'задания', 'заданий');
+        if (st.days >= 2) {
+          statsHtml += '<span class="ps-history">всего решено ' + st.totalOk +
+            ' · исправлено ошибок ' + st.fixed +
+            ' · дней занятий ' + st.days + '</span>';
+        }
+      }
+      $pauseStats.innerHTML = statsHtml;
     }
 
     // Продолжить можно клавишей Enter/Пробел (№4), касанием/кликом
@@ -1844,7 +1953,7 @@ TrainerStorage.readAll = function() {
     totalSolved = 0; streakCount = 0; sprintErrors = [];
     usedQuoteIndices = new Set(); locked = false; allPerfect = true;
     errorStreak = 0;
-    tasks = shuffle(C.tasks.slice());
+    tasks = weightedShuffle(C.tasks.slice());
     startSprint();
   }
 
@@ -1891,6 +2000,14 @@ TrainerStorage.readAll = function() {
       if (locked) return;
       const idx = taskIndex();
       if (idx >= tasks.length) return;
+      if (DUAL) {
+        const val = getAnswer();
+        const task = tasks[idx];
+        if (val.coef === task.a_coef && val.rad === '') {
+          $radInput.focus();
+          return;
+        }
+      }
       if (isCorrect(getAnswer(), tasks[idx])) handleAnswer();
     }, AUTO_ADVANCE_MS);
   }
