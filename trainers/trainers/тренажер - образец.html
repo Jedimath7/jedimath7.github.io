@@ -255,9 +255,14 @@ input[type="text"]:disabled {
   transition: opacity 0.2s ease, transform 0.2s ease;
 }
 
+@media (max-width: 500px) {
+  #big-feedback { font-size: 2.4em; height: 1.4em; margin-top: 8px; }
+  #big-feedback-error { font-size: 2.4em; height: 1.4em; margin-top: 8px; }
+}
+
 #big-feedback.show { opacity: 1; transform: scale(1.1); }
-#big-feedback.correct { color: #1a330e; }
-#big-feedback.incorrect { color: #5c0000; }
+#big-feedback.correct { color: #2d8b13; }
+#big-feedback.incorrect { color: #b30000; }
 
 #correct-answer {
   font-size: 1.1em;
@@ -668,10 +673,10 @@ input[type="text"].skipped {
 /* №7: на телефоне математика — главное (крупнее, чем было), служебные
    элементы (заголовок, счётчики, ссылки в углах) — мельче и бледнее */
 @media (max-width: 500px) {
-  #math-expr { font-size: 2em; }
-  #math-expr-error { font-size: 1.8em; }
-  #card { padding: 40px 10px 20px; }
-  input[type="text"] { width: 90px; font-size: 1.5em; }
+  #math-expr { font-size: 1.4em; }
+  #math-expr-error { font-size: 1.3em; }
+  #card { padding: 24px 10px 14px; min-height: 100px; }
+  input[type="text"] { width: 80px; font-size: 1.3em; }
   h2 { font-size: 1.25em; margin-bottom: 20px; }
   h2::after { width: 80%; }
   #task-counter, #round-badge { font-size: 0.8em; opacity: 0.65; }
@@ -740,6 +745,83 @@ svg.fig {
 @media (max-width: 480px) {
   button.choice-btn { font-size: 1.2em; padding: 6px 30px; }
   .choice-row { gap: 16px; }
+}
+
+/* === Кастомная клавиатура (custom keyboard) === */
+
+#custom-keyboard {
+  display: grid;
+  gap: 8px;
+  max-width: 340px;
+  margin: 20px auto 0;
+  padding: 0 4px;
+}
+
+.kb-numeric {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.kb-algebra {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.kb-btn {
+  font-family: 'EB Garamond', serif;
+  font-size: 1.5em;
+  padding: 14px 0;
+  border: 2px solid var(--accent);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--accent);
+  cursor: pointer;
+  transition: all 0.12s ease;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  touch-action: manipulation;
+  line-height: 1;
+}
+
+.kb-btn:active {
+  background: var(--accent);
+  color: #e8dcc0;
+  transform: scale(0.95);
+}
+
+.kb-btn.kb-backspace {
+  font-size: 1.3em;
+}
+
+.kb-btn.kb-wide {
+  grid-column: span 2;
+}
+
+.kb-btn.kb-full {
+  grid-column: 1 / -1;
+}
+
+.kb-btn.kb-submit {
+  grid-column: span 2;
+  background: var(--accent);
+  color: #e8dcc0;
+  border-color: var(--accent);
+  font-size: 1.6em;
+}
+
+.kb-btn.kb-submit:active {
+  background: var(--accent-light);
+  color: #e8dcc0;
+}
+
+/* На мобильных клавиатура чуть компактнее */
+@media (max-width: 400px) {
+  #custom-keyboard {
+    gap: 6px;
+    max-width: 100%;
+  }
+  .kb-btn {
+    padding: 12px 0;
+    font-size: 1.3em;
+  }
 }
 
 
@@ -815,7 +897,8 @@ window.TRAINER_CONFIG = {
       "a": "-32"
     }
   ],
-  "_inputmode": null
+  "_inputmode": null,
+  "keyboardMode": null
 };
     </script>
     <script>
