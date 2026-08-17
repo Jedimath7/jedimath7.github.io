@@ -1,0 +1,2345 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тренажер: Сложение до 100</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&family=EB+Garamond:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <!-- PWA: манифест приложения, цвет системной панели, иконки -->
+
+    <link rel="canonical" href="https://bakhadov.ru/trainers/ustnyi/slozhenie-100.html">
+    <meta property="og:url" content="https://bakhadov.ru/trainers/ustnyi/slozhenie-100.html">
+    <script>
+MathJax = { tex: { macros: { tg: "\\operatorname{tg}", ctg: "\\operatorname{ctg}" } } };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+/* === CORE.CSS — общие стили тренажёров === */
+/* Тема задаётся через CSS custom properties (вставляется build.js после этого файла) */
+
+body {
+  font-family: 'EB Garamond', serif;
+  background: radial-gradient(circle at center, var(--bg-start) 0%, var(--bg-mid) 80%, var(--bg-end) 100%);
+  color: #1a0f09;
+  max-width: var(--body-max-width);
+  margin: 0 auto;
+  padding: 40px 20px;
+  line-height: 1.6;
+  min-height: 100vh;
+  text-align: center;
+}
+
+/* === Ссылки «← Все тренажёры» (на портал) и «следующий тренажёр →» === */
+
+a.portal-link,
+a.next-link {
+  position: absolute;
+  top: 12px;
+  font-size: 0.95em;
+  color: var(--card-muted);
+  text-decoration: none;
+  opacity: 0.75;
+  transition: opacity 0.2s ease;
+}
+
+a.portal-link { left: 16px; }
+a.next-link { right: 16px; }
+
+a.portal-link:hover,
+a.next-link:hover {
+  opacity: 1;
+  text-decoration: underline;
+}
+
+/* На узких экранах слово «тренажёр» прячем, чтобы ссылки в углах не наезжали друг на друга */
+@media (max-width: 480px) {
+  a.next-link .nl-word { display: none; }
+}
+
+h2 {
+  font-family: 'Cinzel', serif;
+  font-weight: 600;
+  color: #1a0f09;
+  text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.15);
+  margin-bottom: 30px;
+  position: relative;
+}
+
+h2::after {
+  content: '';
+  display: block;
+  width: 50%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  margin: 15px auto 0;
+}
+
+h3 {
+  font-family: 'Cinzel', serif;
+  font-weight: 600;
+  color: #1a0f09;
+  margin-bottom: 30px;
+}
+
+/* === Прогресс-бар === */
+
+#progress-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+#progress-bar-wrap {
+  flex: 1;
+  height: 5px;
+  background-color: rgba(42, 23, 16, 0.15);
+  border-radius: 3px;
+  overflow: hidden;
+  box-shadow: inset 0 1px 4px rgba(0,0,0,0.3);
+}
+
+#progress-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--accent), var(--accent-light));
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 0 5px rgba(48, 30, 21, 0.6);
+}
+
+#progress-text {
+  font-size: 0.95em;
+  color: var(--progress-text);
+  white-space: nowrap;
+  min-width: 60px;
+  text-align: right;
+}
+
+/* === Карточка задания === */
+
+#card {
+  margin: 30px 0 20px;
+  padding: 50px 20px 30px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.08);
+  position: relative;
+  min-height: 160px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.15s ease;
+}
+
+#task-counter {
+  position: absolute;
+  top: 12px;
+  left: 20px;
+  font-size: 1em;
+  color: var(--card-muted);
+}
+
+#round-badge {
+  position: absolute;
+  top: 12px;
+  right: 20px;
+  font-size: 0.85em;
+  color: #8b6b4f;
+  display: none;
+}
+
+#round-badge.visible {
+  display: block;
+}
+
+#math-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+#math-row.dual {
+  gap: 6px;
+}
+
+.eq-sign {
+  font-size: var(--math-font-size);
+  color: #1a0f09;
+  margin: 0 4px;
+}
+
+.sqrt-sign {
+  font-size: 1.8em;
+  color: #1a0f09;
+  margin: 0 2px;
+}
+
+#math-expr {
+  font-size: var(--math-font-size);
+  text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+/* === Поля ввода === */
+
+input[type="text"] {
+  width: var(--input-width);
+  padding: 8px 14px;
+  font-size: 1.6em;
+  text-align: center;
+  background-color: transparent;
+  border: none;
+  border-bottom: 2px solid var(--accent);
+  color: #1a0f09;
+  font-family: 'EB Garamond', serif;
+  transition: all 0.3s ease;
+}
+
+input[type="text"]:focus {
+  outline: none;
+  border-bottom-color: #1a0f09;
+  background-color: rgba(0, 0, 0, 0.06);
+  border-radius: 4px 4px 0 0;
+}
+
+input.small-input {
+  width: 60px;
+  padding: 8px 6px;
+  font-size: 1.4em;
+}
+
+/* === Кнопка отправки ответа «✓» (для касания; на клавиатуре — Enter) === */
+
+button.submit-btn {
+  width: 44px;              /* минимальный удобный размер цели для пальца */
+  height: 44px;
+  flex-shrink: 0;
+  margin-left: 6px;
+  border: 2px solid var(--accent);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--accent);
+  font-size: 1.25em;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: all 0.2s ease;
+}
+
+button.submit-btn:hover {
+  opacity: 1;
+  background: rgba(0, 0, 0, 0.06);
+}
+
+button.submit-btn:active {
+  opacity: 1;
+  background: var(--accent);
+  color: #e8dcc0;
+}
+
+input[type="text"]:disabled {
+  border-bottom-color: transparent;
+  color: #1a330e;
+  font-weight: bold;
+  text-shadow: 0 0 8px rgba(119, 148, 77, 0.3);
+}
+
+/* === Обратная связь === */
+
+#big-feedback {
+  font-size: 3em;
+  height: 1.2em;
+  line-height: 1.2;
+  opacity: 0;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+@media (max-width: 500px) {
+  #big-feedback { font-size: 2.4em; height: 1.4em; margin-top: 8px; }
+  #big-feedback-error { font-size: 2.4em; height: 1.4em; margin-top: 8px; }
+}
+
+#big-feedback.show { opacity: 1; transform: scale(1.1); }
+#big-feedback.correct { color: #2d8b13; }
+#big-feedback.incorrect { color: #b30000; }
+
+#correct-answer {
+  font-size: 1.1em;
+  color: var(--card-muted);
+  min-height: 1.5em;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+#correct-answer.show { opacity: 1; }
+
+/* === Сообщение о завершении === */
+
+#done-message {
+  display: none;
+  margin-top: 40px;
+  padding: 20px;
+  font-family: 'Cinzel', serif;
+  font-size: 1.3em;
+  color: #1a330e;
+}
+
+/* === Цитата между спринтами === */
+
+#quote-overlay {
+  display: none;
+  margin: 30px 0 20px;
+  padding: 50px 20px 30px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.08);
+  min-height: 160px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+#quote-overlay.show { display: flex; cursor: pointer; }
+
+/* Шапка для фактов-«изюминок» (скрыта, когда показывается цитата) */
+#quote-kicker {
+  display: none;
+  font-family: 'Cinzel', serif;
+  font-size: 0.85em;
+  letter-spacing: 0.12em;
+  color: var(--accent);
+  margin-bottom: 14px;
+}
+
+#quote-kicker.show { display: block; }
+
+#quote-text {
+  font-size: 1.4em;
+  font-style: italic;
+  color: #1a0f09;
+  margin-bottom: 12px;
+  line-height: 1.5;
+}
+
+/* Факт — не курсивом, чуть мельче цитаты: это справка, а не изречение */
+#quote-text.fact {
+  font-style: normal;
+  font-size: 1.2em;
+}
+
+#quote-author {
+  font-family: 'Cinzel', serif;
+  font-size: 1em;
+  color: #5c5240;
+}
+
+/* №15/№16: личная статистика на паузе — между фактом и подсказкой «продолжить» */
+#pause-stats {
+  margin-top: 18px;
+  font-size: 1em;
+  color: #5c5240;
+}
+
+#pause-stats b {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+#pause-stats .ps-history {
+  display: block;
+  margin-top: 6px;
+  font-size: 0.85em;
+  color: #8a8070;
+}
+
+#quote-continue {
+  margin-top: 20px;
+  font-size: 0.9em;
+  color: #8a8070;
+}
+
+/* === Эффекты streak === */
+
+#streak-flash {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.5);
+  pointer-events: none;
+  z-index: 200;
+  opacity: 0;
+  font-family: 'Cinzel', serif;
+  font-size: 2.2em;
+  color: #1a0f09;
+  text-shadow: 0 0 20px rgba(200, 170, 80, 0.6);
+  transition: none;
+}
+
+#streak-flash.fire {
+  animation: streakPopup 1.2s ease-out forwards;
+}
+
+@keyframes streakPopup {
+  0%   { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+  25%  { opacity: 1; transform: translate(-50%, -50%) scale(1.15); }
+  40%  { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  80%  { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
+}
+
+/* === Секция ошибок === */
+
+#error-section {
+  display: none;
+  margin-top: 40px;
+}
+
+#card-error {
+  padding: 30px 20px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.08);
+  position: relative;
+}
+
+#task-counter-error {
+  font-size: 1em;
+  color: var(--card-muted);
+  margin-bottom: 15px;
+}
+
+.error-math-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.error-math-row.dual {
+  gap: 4px;
+}
+
+#math-expr-error {
+  font-size: 2em;
+  text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+#big-feedback-error {
+  font-size: 3em;
+  height: 1.2em;
+  opacity: 0;
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+#correct-answer-error {
+  font-size: 1.1em;
+  color: var(--card-muted);
+  min-height: 1.5em;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+/* === LIST ENGINE (образец) === */
+
+body.list-mode {
+  text-align: left;
+}
+
+.list-mode h2 {
+  text-align: center;
+}
+
+.list-mode #progress-container {
+  width: 100%;
+  height: 6px;
+  background-color: rgba(42, 23, 16, 0.15);
+  border-radius: 3px;
+  margin-bottom: 40px;
+  overflow: hidden;
+  box-shadow: inset 0 1px 4px rgba(0,0,0,0.3);
+}
+
+.list-mode #progress-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--accent), var(--accent-light));
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 0 5px rgba(48, 30, 21, 0.6);
+}
+
+.task-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 25px;
+  padding: 10px;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+}
+
+.task-container:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.math-expr {
+  width: 50%;
+  text-align: right;
+  margin-right: 25px;
+  font-size: 1.5em;
+  text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.list-mode input[type="text"] {
+  width: 70px;
+  padding: 5px 10px;
+  font-size: 1.4em;
+}
+
+.feedback {
+  width: 40px;
+  margin-left: 20px;
+  font-size: 1.2em;
+  text-align: left;
+  opacity: 0;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.feedback.show { opacity: 1; transform: scale(1.2); }
+.feedback.correct { color: #1a330e; }
+.feedback.incorrect { color: #5c0000; }
+
+#error-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 10%;
+  right: 10%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #5c0000, transparent);
+  opacity: 0.5;
+}
+
+/* === Адаптивность === */
+
+@media (max-width: 600px) {
+  .task-container {
+    flex-direction: column;
+    background-color: rgba(0, 0, 0, 0.04);
+    border-radius: 12px;
+    padding: 20px 10px;
+  }
+  .math-expr {
+    width: 100%;
+    text-align: center;
+    margin-right: 0;
+    margin-bottom: 15px;
+  }
+  .list-mode input[type="text"] { width: 100px; }
+  .feedback {
+    margin-left: 0;
+    margin-top: 15px;
+    text-align: center;
+  }
+  h2::after { width: 80%; }
+}
+
+/* === Diagnostic engine === */
+#section-title {
+  font-family: 'Cinzel', serif;
+  font-size: 1.4em;
+  color: var(--accent);
+  margin-bottom: 4px;
+}
+#overall-counter {
+  font-size: 0.9em;
+  color: var(--card-muted);
+  margin-bottom: 10px;
+}
+#dunno-row {
+  margin-top: 14px;
+}
+#dunno-btn {
+  font-family: 'EB Garamond', serif;
+  font-size: 1em;
+  padding: 6px 24px;
+  border: 2px solid var(--accent);
+  border-radius: 20px;
+  background: transparent;
+  color: var(--accent);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  opacity: 0.7;
+}
+#dunno-btn:hover {
+  opacity: 1;
+  background: rgba(0,0,0,0.06);
+}
+#big-feedback.skipped {
+  color: #8b7a60;
+  font-size: 1.2em;
+  font-style: italic;
+}
+input[type="text"].skipped {
+  border-color: #8b7a60;
+  color: #8b7a60;
+}
+
+/* Report */
+#report-area {
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: left;
+}
+#report-area h2 {
+  text-align: center;
+  margin-bottom: 30px;
+}
+.report-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 24px;
+  font-size: 0.95em;
+}
+.report-table th {
+  background: rgba(0,0,0,0.08);
+  padding: 10px 12px;
+  text-align: left;
+  border-bottom: 2px solid rgba(0,0,0,0.15);
+  font-weight: 700;
+}
+.report-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(0,0,0,0.08);
+  vertical-align: top;
+}
+.sec-name { font-weight: 700; }
+.pct-good { color: #2a6a2a; font-weight: 700; }
+.pct-ok { color: #8a6a00; font-weight: 700; }
+.pct-bad { color: #8a2a2a; font-weight: 700; }
+.trainer-link {
+  color: var(--accent);
+  text-decoration: underline;
+  font-size: 0.9em;
+}
+.trainer-link:hover { opacity: 0.7; }
+.error-detail-row td { padding: 0 12px 16px; }
+.error-detail {
+  background: rgba(0,0,0,0.03);
+  border-radius: 6px;
+  padding: 12px 16px;
+  font-size: 0.9em;
+}
+.error-detail-title {
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: var(--accent);
+}
+.error-item {
+  margin-bottom: 4px;
+  padding: 4px 0;
+}
+.error-q { opacity: 0.8; }
+.report-total {
+  font-size: 1.2em;
+  text-align: center;
+  padding: 16px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  background: rgba(0,0,0,0.04);
+}
+.report-advice {
+  font-size: 0.95em;
+  color: var(--card-muted);
+  margin-bottom: 24px;
+  line-height: 1.6;
+}
+.report-restart {
+  text-align: center;
+  margin-top: 24px;
+}
+#restart-btn {
+  font-family: 'EB Garamond', serif;
+  font-size: 1.05em;
+  padding: 10px 32px;
+  border: 2px solid var(--accent);
+  border-radius: 24px;
+  background: transparent;
+  color: var(--accent);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+#restart-btn:hover {
+  background: var(--accent);
+  color: #fff;
+}
+
+/* №7: на телефоне математика — главное (крупнее, чем было), служебные
+   элементы (заголовок, счётчики, ссылки в углах) — мельче и бледнее */
+@media (max-width: 500px) {
+  #math-expr { font-size: 1.4em; }
+  #math-expr-error { font-size: 1.3em; }
+  #card { padding: 24px 10px 14px; min-height: 100px; }
+  input[type="text"] { width: 80px; font-size: 1.3em; }
+  h2 { font-size: 1.25em; margin-bottom: 20px; }
+  h2::after { width: 80%; }
+  #task-counter, #round-badge { font-size: 0.8em; opacity: 0.65; }
+  #progress-text { font-size: 0.8em; opacity: 0.75; min-width: 48px; }
+  a.portal-link, a.next-link { font-size: 0.85em; opacity: 0.55; }
+}
+
+/* === Режим кнопок-вариантов (inputMode: choice) === */
+
+.choice-row {
+  display: flex;
+  justify-content: center;
+  gap: 28px;
+  margin-top: 20px;
+}
+
+button.choice-btn {
+  font-family: 'EB Garamond', serif;
+  font-size: 1.5em;
+  padding: 8px 44px;
+  border: 2px solid var(--accent);
+  border-radius: 30px;
+  background: transparent;
+  color: var(--accent);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+button.choice-btn:hover:not(:disabled) {
+  background: rgba(0, 0, 0, 0.07);
+}
+
+button.choice-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+button.choice-btn.chosen {
+  background: var(--accent);
+  color: #e8dcc0;
+  opacity: 1;
+}
+
+/* === Вертикальная компоновка карточки (stackedLayout) === */
+
+#math-row.stacked,
+.error-math-row.stacked {
+  flex-direction: column;
+  gap: 16px;
+}
+
+#math-row.stacked #math-expr,
+.error-math-row.stacked #math-expr-error {
+  max-width: 100%;
+}
+
+/* === Чертежи в заданиях (инлайн-SVG) === */
+
+svg.fig {
+  display: block;
+  margin: 0 auto;
+  max-width: 100%;
+  height: auto;
+}
+
+@media (max-width: 480px) {
+  button.choice-btn { font-size: 1.2em; padding: 6px 30px; }
+  .choice-row { gap: 16px; }
+}
+
+/* === Кастомная клавиатура (custom keyboard) === */
+
+#custom-keyboard {
+  display: grid;
+  gap: 8px;
+  max-width: 340px;
+  margin: 20px auto 0;
+  padding: 0 4px;
+}
+
+.kb-numeric {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.kb-algebra {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.kb-btn {
+  font-family: 'EB Garamond', serif;
+  font-size: 1.5em;
+  padding: 14px 0;
+  border: 2px solid var(--accent);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--accent);
+  cursor: pointer;
+  transition: all 0.12s ease;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  touch-action: manipulation;
+  line-height: 1;
+}
+
+.kb-btn:active {
+  background: var(--accent);
+  color: #e8dcc0;
+  transform: scale(0.95);
+}
+
+.kb-btn.kb-backspace {
+  font-size: 1.3em;
+}
+
+.kb-btn.kb-wide {
+  grid-column: span 2;
+}
+
+.kb-btn.kb-full {
+  grid-column: 1 / -1;
+}
+
+.kb-btn.kb-submit {
+  grid-column: span 2;
+  background: var(--accent);
+  color: #e8dcc0;
+  border-color: var(--accent);
+  font-size: 1.6em;
+}
+
+.kb-btn.kb-submit:active {
+  background: var(--accent-light);
+  color: #e8dcc0;
+}
+
+/* === Ссылка на страницу автора (видна без скролла, вверху) === */
+.author-strip {
+  text-align: center;
+  margin: -14px 0 18px;
+  font-size: 1.05em;
+}
+.author-strip a {
+  color: #c9a86a;
+  text-decoration: none;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  transition: opacity 0.2s ease;
+  text-shadow: 0 0 6px rgba(201, 168, 106, 0.2);
+}
+.author-strip a:hover {
+  opacity: 0.8;
+  text-decoration: underline;
+}
+
+/* На мобильных клавиатура чуть компактнее */
+@media (max-width: 400px) {
+  #custom-keyboard {
+    gap: 6px;
+    max-width: 100%;
+  }
+  .kb-btn {
+    padding: 12px 0;
+    font-size: 1.3em;
+  }
+}
+
+
+      :root {
+        --bg-start: #c9c0a8;
+        --bg-mid: #a09878;
+        --bg-end: #706848;
+        --accent: #4a4530;
+        --accent-light: #585038;
+        --progress-text: #3a3028;
+        --card-muted: #5c5240;
+        --input-width: 150px;
+        --math-font-size: 2.8em;
+        --body-max-width: 650px;
+      }
+    </style>
+</head>
+<body>
+    <a class="portal-link" href="index.html">← Все тренажёры</a>
+    <a class="next-link" href="vychitanie-100.html" title="Вычитание до 100">следующий<span class="nl-word"> тренажёр</span> →</a>
+    <div class="author-strip"><a href="https://bakhadov.ru">на страницу автора → bakhadov.ru</a></div>
+    <div id="progress-row">
+        <div id="progress-bar-wrap"><div id="progress-bar"></div></div>
+        <div id="progress-text">0 / 20</div>
+    </div>
+
+    <h2>Сложение до 100</h2>
+
+    <div id="card">
+        <div id="task-counter"></div>
+        <div id="round-badge"></div>
+        <div id="math-row" class="">
+            <div id="math-expr"></div>
+            <input type="text" id="answer-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" inputmode="none" placeholder="?">
+            <button type="button" id="submit-btn" class="submit-btn" aria-label="Ответить">✓</button></div>
+    </div>
+
+    <div id="big-feedback"></div>
+    <div id="correct-answer"></div>
+
+    <div id="quote-overlay">
+        <div id="quote-kicker">Знаете ли вы?</div>
+        <div id="quote-text"></div>
+        <div id="quote-author"></div>
+        <div id="pause-stats"></div>
+        <div id="quote-continue">Нажмите Enter или коснитесь экрана</div>
+    </div>
+
+    <div id="done-message">Все задания решены без ошибок</div>
+
+    <div id="streak-flash"></div>
+
+    <div id="error-section">
+        <h3>Работа над ошибками</h3>
+        <div id="card-error">
+            <div id="task-counter-error"></div>
+            <div class="error-math-row">
+                <div id="math-expr-error"></div>
+                <input type="text" id="error-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" inputmode="none" placeholder="?">
+                <button type="button" id="submit-btn-error" class="submit-btn" aria-label="Ответить">✓</button></div>
+        </div>
+        <div id="big-feedback-error"></div>
+        <div id="correct-answer-error"></div>
+    </div>
+    <script>
+window.TRAINER_CONFIG = {
+  "id": "сложение до 100",
+  "fileName": "slozhenie-100.html",
+  "title": "Сложение до 100",
+  "subtitle": "Устный счёт: сложение натуральных чисел",
+  "classes": [
+    "5-6"
+  ],
+  "engine": "card",
+  "keyboardMode": "numeric",
+  "theme": {
+    "bg": [
+      "#c9c0a8",
+      "#a09878",
+      "#706848"
+    ],
+    "accent": "#4a4530",
+    "accentLight": "#585038",
+    "progressText": "#3a3028",
+    "cardMuted": "#5c5240",
+    "inputWidth": "150px",
+    "mathFontSize": "2.8em"
+  },
+  "tasks": [
+    {
+      "q": "\\( 23 + 14 = \\)",
+      "a": "37",
+      "type": "no-carry"
+    },
+    {
+      "q": "\\( 34 + 25 = \\)",
+      "a": "59",
+      "type": "no-carry"
+    },
+    {
+      "q": "\\( 46 + 23 = \\)",
+      "a": "69",
+      "type": "no-carry"
+    },
+    {
+      "q": "\\( 52 + 17 = \\)",
+      "a": "69",
+      "type": "no-carry"
+    },
+    {
+      "q": "\\( 41 + 28 = \\)",
+      "a": "69",
+      "type": "no-carry"
+    },
+    {
+      "q": "\\( 20 + 30 = \\)",
+      "a": "50",
+      "type": "round-tens"
+    },
+    {
+      "q": "\\( 27 + 5 = \\)",
+      "a": "32",
+      "type": "one-digit-carry"
+    },
+    {
+      "q": "\\( 48 + 7 = \\)",
+      "a": "55",
+      "type": "one-digit-carry"
+    },
+    {
+      "q": "\\( 63 + 9 = \\)",
+      "a": "72",
+      "type": "one-digit-carry"
+    },
+    {
+      "q": "\\( 76 + 8 = \\)",
+      "a": "84",
+      "type": "one-digit-carry"
+    },
+    {
+      "q": "\\( 59 + 6 = \\)",
+      "a": "65",
+      "type": "one-digit-carry"
+    },
+    {
+      "q": "\\( 38 + 27 = \\)",
+      "a": "65",
+      "type": "two-digit-carry"
+    },
+    {
+      "q": "\\( 57 + 36 = \\)",
+      "a": "93",
+      "type": "two-digit-carry"
+    },
+    {
+      "q": "\\( 68 + 24 = \\)",
+      "a": "92",
+      "type": "two-digit-carry"
+    },
+    {
+      "q": "\\( 49 + 38 = \\)",
+      "a": "87",
+      "type": "two-digit-carry"
+    },
+    {
+      "q": "\\( 64 + 27 = \\)",
+      "a": "91",
+      "type": "two-digit-carry"
+    },
+    {
+      "q": "\\( 27 + 58 = \\)",
+      "a": "85",
+      "type": "two-digit-carry"
+    },
+    {
+      "q": "\\( 73 + 18 = \\)",
+      "a": "91",
+      "type": "two-digit-carry"
+    },
+    {
+      "q": "\\( 76 + 24 = \\)",
+      "a": "100",
+      "type": "round-result"
+    },
+    {
+      "q": "\\( 68 + 12 = \\)",
+      "a": "80",
+      "type": "round-result"
+    }
+  ],
+  "placeholder": "?",
+  "sprintSize": 5,
+  "normMode": "basic",
+  "skillProgress": {
+    "enabled": true,
+    "correctThreshold": 20,
+    "streakThreshold": 10,
+    "controlSize": 5,
+    "controlErrorsThreshold": 2
+  },
+  "_inputmode": "numeric"
+};
+    </script>
+    <script>
+// Общий массив цитат для всех card-тренажёров
+const QUOTES = [
+  { text: "Мало обладать выдающимися качествами, надо ещё уметь ими пользоваться.", author: "Ларошфуко" },
+  { text: "Никогда не бывает больших дел без больших трудностей.", author: "Вольтер" },
+  { text: "Людей делят на праведников, которые считают себя грешниками, и грешников, которые считают себя праведниками", author: "Паскаль" },
+  { text: "Ложная скромность так же гнусна, как и тщеславие", author: "Гольдони" },
+  { text: "Любить — это находить в счастье другого своё собственное счастье.", author: "Лейбниц" },
+  { text: "Нет ничего труднее, чем перевоспитать человека, плохо воспитанного.", author: "Ян Амос Коменский" },
+  { text: "Жизнь на десять процентов состоит из того, что вы в ней делаете, а на девяносто из того, как вы её понимаете", author: "Ян Амос Коменский" },
+  { text: "Самые выдающиеся дарования губятся праздностью.", author: "Монтень" },
+  { text: "Крепкие слова не могут быть сильным доказательством", author: "В. Ключевский" },
+  { text: "Ум, не имеющий никакой определённой цели, теряется; быть везде — значит быть нигде.", author: "Монтень" },
+  { text: "Плох тот ученик, который не превзошёл учителя.", author: "Леонардо да Винчи" },
+  { text: "Больше всего оживляет беседы не ум, а взаимное доверие.", author: "Ларошфуко" },
+  { text: "Приятно встретить взгляд человека, которому только что помог", author: "Жан де Лабрюйер" },
+  { text: "Истинное величие состоит в том, чтобы владеть собою.", author: "Лафонтен" },
+  { text: "Куда полезней изучать не книги, а людей.", author: "Ларошфуко" },
+  { text: "Искусство заключается в том, чтобы найти необыкновенное в обыкновенном и обыкновенное в необыкновенном.", author: "Дидро" },
+  { text: "У нас не хватает силы характера, чтобы покорно следовать всем велениям рассудка.", author: "Ларошфуко" },
+  { text: "Благодаря твоим сомнениям совершенствуется мир.", author: "Шри Ауробиндо" },
+  { text: "Шутка никогда не бывает похожа на истину, а истина бывает похожа на самую злую шутку.", author: "Б. Паскаль" },
+  { text: "Величайшая победа — победа над самим собой.", author: "Кальдерон Де Ла Барка" },
+  { text: "Можно дать другому разумный совет, но нельзя научить его разумному поведению.", author: "Ларошфуко" },
+  { text: "Счастье не в счастье, а лишь в его достижении.", author: "Ф. М. Достоевский" },
+  { text: "Где умирает надежда, там возникает пустота.", author: "Леонардо да Винчи" },
+  { text: "Легче встретить людей, обладающих умом, нежели способностью употреблять его в дело, ценить ум в других и находить ему полезное применение.", author: "Лабрюйер" },
+  { text: "Великие люди ничего не делают наполовину.", author: "Виланд" },
+  { text: "Истинно благородный человек не рождается с великой душой, но сам себя делает таковым великолепными своими делами.", author: "Петрарка" },
+  { text: "Ум человека можно определить по тщательности, с которой он учитывает будущее или исход дела.", author: "Лихтенберг" },
+  { text: "Раз уж человек делает глупость, нужно делать её красиво.", author: "В. Скотт" },
+  { text: "Не теряйте голову! А вдруг жизнь захочет вас ещё по ней погладить?", author: "Ежи Лец" },
+  { text: "Как ни редко встречается настоящая любовь, настоящая дружба встречается ещё реже.", author: "Ларошфуко" },
+  { text: "Люди недалёкие обычно осуждают всё, что выходит за пределы их понимания.", author: "Лафонтен" },
+  { text: "Существует три разновидности людей: те, кто видит; те, кто видит, когда им показывают; и те, кто не видит", author: "Леонардо да Винчи" },
+  { text: "Жизнь — это то, что люди больше всего стремятся сохранить и меньше всего берегут.", author: "Лабрюйер" },
+  { text: "Человек чувствует, как тщетны доступные ему удовольствия, но не понимает, как суетны чаемые.", author: "Паскаль" },
+  { text: "Верь, чтобы понимать", author: "Античный афоризм" },
+  { text: "Восклицательный знак, который раскис и сник, становится вопросительным.", author: "Ежи Лец" },
+  { text: "Никто не должен покидать своего ближнего, когда тот в беде. Каждый обязан помочь и поддержать своего ближнего, если хочет, чтобы ему самому помогли в несчастье.", author: "Мартин Лютер" },
+  { text: "Не может управлять другими тот, кто не в состоянии справиться с самим собой.", author: "Английская пословица" },
+  { text: "Нужно быть действительно великим человеком, чтобы суметь устоять даже против здравого смысла.", author: "Ф. Достоевский" },
+  { text: "Прежде чем осудить, всегда надо подумать, нельзя ли найти извинение.", author: "Лихтенберг" },
+  { text: "Свободен тот, кто может не лгать.", author: "Камю" },
+  { text: "Человеку нередко кажется, что он владеет собой, тогда как на самом деле что-то владеет им; пока разумом он стремится к одной цели, сердце незаметно увлекает его к другой.", author: "Ларошфуко" },
+  { text: "Всё, что перестаёт удаваться, перестаёт и привлекать.", author: "Ларошфуко" },
+  { text: "К старости люди становятся безрассуднее и мудрее.", author: "Ларошфуко" },
+  { text: "Снисходительное отношение к глупости присуще каждому умному человеку.", author: "Абу-ль-Фарадж" },
+  { text: "Время укрепляет дружбу, но ослабляет любовь.", author: "Лабрюйер" },
+  { text: "Иногда нужно нахальство, чтобы доказать свою деликатность.", author: "Ежи Лец" },
+  { text: "Чтение делает человека знающим, беседа — находчивым, а привычка записывать — точным", author: "Бэкон" },
+  { text: "Не следует обижаться на людей, утаивших от нас правду: мы и сами постоянно утаиваем её от себя.", author: "Ларошфуко" },
+  { text: "Надо уметь переносить то, чего нельзя избежать.", author: "Монтень" }
+];
+
+// Короткие «изюминки» — факты о математике, показываются вперемешку с цитатами
+// (шапка «Знаете ли вы?»). Список курирует Михаил: править и вычёркивать смело.
+const FACTS = [
+  { text: "Знак равенства «=» придумал в 1557 году валлийский врач и математик Роберт Рекорд: «нет двух вещей более равных, чем две параллельные линии»." },
+  { text: "Слово «алгебра» происходит от арабского «аль-джабр» — «восстановление». Так назывался трактат аль-Хорезми IX века." },
+  { text: "Слово «алгоритм» — это искажённое имя того же аль-Хорезми." },
+  { text: "Слово «цифра» происходит от арабского «сифр» — «пустота, ноль». От этого же слова произошёл «шифр»." },
+  { text: "Ноль как полноценное число впервые описали в Индии: Брахмагупта в VII веке сформулировал правила действий с ним." },
+  { text: "Знаки «+» и «−» впервые появились в печатной книге в 1489 году — у немецкого математика Иоганна Видмана." },
+  { text: "Знак умножения «×» ввёл англичанин Уильям Отред в 1631 году." },
+  { text: "Знак корня «√» появился в 1525 году в книге Кристофа Рудольфа — вероятно, из стилизованной буквы r, от латинского radix, «корень»." },
+  { text: "Символ бесконечности «∞» ввёл Джон Валлис в 1655 году." },
+  { text: "Обозначение π предложил Уильям Джонс в 1706 году, а популярным его сделал Эйлер. Это первая буква греческого слова «периферия» — окружность." },
+  { text: "Знаки «<» и «>» придумал Томас Хэрриот — они впервые напечатаны в 1631 году." },
+  { text: "Знак процента «%» родился из небрежного сокращения итальянского «per cento» — «на сотню»." },
+  { text: "«Минута» — от латинского pars minuta prima, «первая малая часть», а «секунда» — pars minuta secunda, «вторая малая часть». Так делили градус." },
+  { text: "Наши 60 секунд, 60 минут и 360 градусов — наследство шестидесятеричной системы счисления древнего Вавилона." },
+  { text: "«Геометрия» по-гречески — «землемерие»: наука выросла из разметки полей после разливов Нила." },
+  { text: "«Катет» по-гречески означает «отвес», а «гипотенуза» — «натянутая», как тетива лука." },
+  { text: "«Трапеция» по-гречески — «столик». От того же корня — слово «трапеза»." },
+  { text: "«Радиус» по-латыни — «спица колеса»." },
+  { text: "«Синус» по-латыни — «пазуха, изгиб». Так европейцы перевели арабский термин, спутав слова «джиба» (хорда) и «джайб» (пазуха)." },
+  { text: "Слово «логарифм» составил Джон Непер из греческих logos («отношение») и arithmos («число»)." },
+  { text: "Пифагорову теорему знали вавилоняне — за тысячу лет до Пифагора. Сохранилась глиняная табличка с пифагоровыми тройками." },
+  { text: "То, что простых чисел бесконечно много, доказал Евклид около 300 года до нашей эры — доказательство занимает несколько строк." },
+  { text: "Эратосфен ещё в III веке до н.э. измерил окружность Земли — по тени в колодцах двух городов — и ошибся всего на несколько процентов." },
+  { text: "Ферма записал свою Великую теорему на полях книги около 1637 года. Доказали её только в 1995-м — на это ушло 358 лет." },
+  { text: "Число «гугол» — единица со ста нулями — назвал так девятилетний племянник математика Эдварда Казнера. В честь гугола (с опечаткой) назван Google." },
+  { text: "По легенде, изобретатель шахмат попросил у царя зёрен: на каждую клетку вдвое больше, чем на предыдущую. Получилось 2⁶⁴−1 — больше, чем все урожаи мира за тысячи лет." },
+  { text: "По легенде, юный Гаусс мгновенно сложил числа от 1 до 100: он заметил 50 пар, каждая из которых даёт 101." },
+  { text: "Отрицательные числа в Европе долго называли «ложными» — им не доверяли ещё в XVII веке." },
+  { text: "«Декартовы координаты» названы в честь Рене Декарта — по его латинизированному имени Cartesius." },
+  { text: "Дробь по-латыни — fractio, «ломание». Отсюда английское fraction. Русская «дробь» — от «дробить»." },
+  { text: "Теорема о четырёх красках (любую карту можно раскрасить четырьмя цветами) — первая великая теорема, доказанная с помощью компьютера, в 1976 году." },
+  { text: "Совершенное число равно сумме своих делителей: 6 = 1 + 2 + 3. Следующее — 28. Их знали ещё древние греки." }
+];
+
+    </script>
+    <script>
+// norm.js — нормализаторы ответов (общий для всех движков, вставляется build.js перед engine)
+
+// №2: невидимые символы Юникода, попадающие в поле при вставке/автозамене
+// с телефона: zero-width (U+200B–U+200D), направляющие метки (U+200E/200F),
+// word joiner (U+2060), BOM (U+FEFF), мягкий перенос (U+00AD).
+// NBSP и узкий NBSP убирать отдельно не нужно — их ловит \s+ в нормализаторах.
+var INVISIBLE_RE = new RegExp('[\\u200B-\\u200F\\u2060\\uFEFF\\u00AD]', 'g');
+function stripInvisible(s) {
+  return String(s).replace(INVISIBLE_RE, '');
+}
+
+function buildNorm(mode) {
+  var f = buildNormRaw(mode);
+  return function(s) { return f(stripInvisible(s)); };
+}
+
+function buildNormRaw(mode) {
+  switch (mode) {
+    case 'lowercase':
+      return function(s) {
+        return s.trim().replace(/\s+/g, '').replace(/,/g, '.').replace(/[−–]/g, '-').replace(/°/g, '').toLowerCase();
+      };
+    case 'lowercase+pi':
+      return function(s) {
+        return s.trim().replace(/\s+/g, '').replace(/,/g, '.').replace(/[−–]/g, '-').replace(/°/g, '').toLowerCase().replace(/pi/g, 'π');
+      };
+    case 'sqrt':
+      return function(s) {
+        return s.trim().replace(/\s+/g, '').replace(/,/g, '.').replace(/[−–]/g, '-').replace(/°/g, '').toLowerCase()
+          .replace(/sqrt\(?(\d+)\)?/g, '√$1').replace(/г/g, '√').replace(/r/g, '√');
+      };
+    case 'sqrt+undef':
+      return function(s) {
+        s = s.trim().replace(/\s+/g, '').replace(/,/g, '.').replace(/[−–]/g, '-').replace(/°/g, '').toLowerCase()
+          .replace(/sqrt\(?(\d+)\)?/g, '√$1').replace(/г/g, '√').replace(/r/g, '√');
+        if (s === '—' || s === '-' || s === 'undef' || s === 'undefined') return '—';
+        return s;
+      };
+    case 'algebraic':
+      return canonicalizeAlgebraic;
+    default: // 'basic'
+      return function(s) {
+        return s.trim().replace(/\s+/g, '').replace(/,/g, '.').replace(/[−–]/g, '-').replace(/°/g, '');
+      };
+  }
+}
+
+function canonicalizeAlgebraic(s) {
+  s = s.trim()
+    .replace(/\s+/g, '')
+    .replace(/\^2/g, '²').replace(/\^3/g, '³').replace(/\^4/g, '⁴')
+    .replace(/\*/g, '')
+    .replace(/[−–]/g, '-')
+    .replace(/,/g, '.')
+    .replace(/°/g, '');
+
+  if (s.includes('(')) {
+    return canonicalizeFactored(s);
+  }
+  return canonicalizePolynomial(s);
+}
+
+function canonicalizePolynomial(s) {
+  if (s[0] !== '-' && s[0] !== '+') s = '+' + s;
+
+  var terms = [];
+  var parts = s.match(/[+-][^+-]+/g) || [];
+  for (var i = 0; i < parts.length; i++) {
+    var part = parts[i];
+    var sign = part[0] === '-' ? -1 : 1;
+    var body = part.substring(1);
+
+    var varMatch = body.match(/^(\d*\.?\d*)([a-z])([²³⁴]*)$/i);
+    if (varMatch) {
+      var coeffStr = varMatch[1];
+      var variable = varMatch[2];
+      var sup = varMatch[3];
+      var exp = sup === '²' ? 2 : sup === '³' ? 3 : sup === '⁴' ? 4 : 1;
+      var coeff = (coeffStr === '' || coeffStr === '.') ? 1 : parseFloat(coeffStr);
+      terms.push({ coeff: coeff * sign, variable: variable, exp: exp });
+    } else {
+      var singleVar = body.match(/^([a-z])([²³⁴]*)$/i);
+      if (singleVar) {
+        var v = singleVar[1];
+        var s2 = singleVar[2];
+        var e2 = s2 === '²' ? 2 : s2 === '³' ? 3 : s2 === '⁴' ? 4 : 1;
+        terms.push({ coeff: sign, variable: v, exp: e2 });
+      } else {
+        var num = parseFloat(body);
+        if (!isNaN(num)) {
+          terms.push({ coeff: num * sign, variable: null, exp: 0 });
+        } else {
+          var revMatch = body.match(/^([a-z])(\d+)$/i);
+          if (revMatch) {
+            terms.push({ coeff: parseInt(revMatch[2]) * sign, variable: revMatch[1], exp: 1 });
+          }
+        }
+      }
+    }
+  }
+
+  var combined = {};
+  for (var j = 0; j < terms.length; j++) {
+    var t = terms[j];
+    var key = (t.variable || '_') + '^' + t.exp;
+    if (!combined[key]) combined[key] = { coeff: 0, variable: t.variable, exp: t.exp };
+    combined[key].coeff += t.coeff;
+  }
+
+  var filtered = [];
+  var keys = Object.keys(combined);
+  for (var k = 0; k < keys.length; k++) {
+    var ct = combined[keys[k]];
+    if (ct.coeff !== 0) filtered.push(ct);
+  }
+
+  if (filtered.length === 0) return '0';
+
+  filtered.sort(function(a, b) {
+    if (b.exp !== a.exp) return b.exp - a.exp;
+    if ((a.variable || '') < (b.variable || '')) return -1;
+    if ((a.variable || '') > (b.variable || '')) return 1;
+    return Math.abs(b.coeff) - Math.abs(a.coeff);
+  });
+
+  var result = '';
+  for (var m = 0; m < filtered.length; m++) {
+    var ct2 = filtered[m];
+    var absCoeff = Math.abs(ct2.coeff);
+    if (m === 0) {
+      result += ct2.coeff < 0 ? '-' : '';
+    } else {
+      result += ct2.coeff < 0 ? '-' : '+';
+    }
+    if (ct2.variable) {
+      if (absCoeff !== 1) result += absCoeff;
+      result += ct2.variable;
+      if (ct2.exp === 2) result += '²';
+      else if (ct2.exp === 3) result += '³';
+      else if (ct2.exp === 4) result += '⁴';
+    } else {
+      result += absCoeff;
+    }
+  }
+  return result;
+}
+
+function canonicalizeFactored(s) {
+  var factors = [];
+  var regex = /\(([^)]+)\)([²³]*)/g;
+  var match;
+  while ((match = regex.exec(s)) !== null) {
+    var inner = canonicalizeFactorInner(match[1]);
+    var exp = match[2] === '²' ? 2 : match[2] === '³' ? 3 : 1;
+    factors.push({ inner: inner, exp: exp });
+  }
+  if (factors.length === 0) return s;
+
+  for (var i = 0; i < factors.length; i++) {
+    var f = factors[i];
+    var innerForCheck = f.inner;
+    f.variant = innerForCheck.match(/-/) ? 'minus' : 'plus';
+    var constMatch = innerForCheck.match(/([+-]?\d+)$/) || innerForCheck.match(/^(-?\d+)/);
+    f.constVal = constMatch ? parseInt(constMatch[1]) : 0;
+  }
+
+  factors.sort(function(a, b) {
+    if (a.variant === 'minus' && b.variant !== 'minus') return -1;
+    if (a.variant !== 'minus' && b.variant === 'minus') return 1;
+    var absA = Math.abs(a.constVal);
+    var absB = Math.abs(b.constVal);
+    if (absA !== absB) return absA - absB;
+    if (a.inner < b.inner) return -1;
+    if (a.inner > b.inner) return 1;
+    return 0;
+  });
+
+  var merged = [];
+  for (var j = 0; j < factors.length; j++) {
+    var cf = factors[j];
+    var last = merged[merged.length - 1];
+    if (last && last.inner === cf.inner) {
+      last.exp += cf.exp;
+    } else {
+      merged.push({ inner: cf.inner, exp: cf.exp });
+    }
+  }
+
+  var result = '';
+  for (var m = 0; m < merged.length; m++) {
+    var mf = merged[m];
+    result += '(' + mf.inner + ')';
+    if (mf.exp === 2) result += '²';
+    else if (mf.exp === 3) result += '³';
+  }
+  return result;
+}
+
+function canonicalizeFactorInner(inner) {
+  var poly = canonicalizePolynomial(inner);
+  var terms = poly.match(/[+-]?[^+-]+/g) || [];
+  if (terms.length === 2) {
+    var firstTerm = terms[0];
+    var varMatch = firstTerm.match(/^(-?)(\d*\.?\d*)([a-z])([²³⁴]*)$/i);
+    if (varMatch && varMatch[1] === '-') {
+      return terms[1].replace(/^\+/, '') + (firstTerm[0] === '-' ? firstTerm : '+' + firstTerm.substring(1));
+    }
+  }
+  return poly.replace(/^\+/, '');
+}
+
+// storage.js — слой localStorage (№9): запись каждого ответа — верно/ошибка,
+// время ответа, дата. Общий для всех движков, вставляется build.js после norm.js.
+//
+// Ключ хранилища: trainer:<id> (id из data-файла). Ключ задания — короткий
+// хэш (djb2) LaTeX-вопроса, чтобы не менять data-файлы. Схема данных (v: 1):
+//
+//   {
+//     v: 1,
+//     updated: "2026-07-13T12:34:56.789Z",   // последняя запись (ISO)
+//     tasks: {
+//       "<hash>": {
+//         q: "\\( x + 3 = 7 \\)",  // сам вопрос — чтобы экспорт (№43) и кабинет
+//                                  // репетитора (№44) работали без data-файлов
+//         ok: 12,                  // всего верных ответов
+//         err: 3,                  // всего ошибок
+//         ms: 2300,                // сглаженное время верного ответа (EMA), мс
+//         w: 1.3,                  // вес Лейтнера (№17): старт 1,
+//                                  // ошибка ×2, верно-но-медленно ×1.3,
+//                                  // верно-быстро ×0.9; пределы [0.5, 10]
+//         last: "2026-07-13",      // дата последнего ответа (локальная)
+//         lastOk: true             // последний результат
+//       }
+//     },
+//     days: { "2026-07-13": { ok: 40, err: 5 } },  // итоги по дням (№15, №16)
+//     best: null                   // рекорд времени спринта, мс (№22, позже)
+//   }
+//
+// Устойчивость: localStorage может быть недоступен (приватный режим) или
+// переполнен — тогда слой молча работает в памяти, тренажёр не ломается.
+// Несколько вкладок: побеждает последняя запись (осознанное упрощение).
+
+function TrainerStorage(id) {
+  var KEY = 'trainer:' + id;
+
+  // Константы весов Лейтнера (№17) — подбираются здесь, в одном месте
+  var W_ERR = 2;      // ошибка
+  var W_SLOW = 1.3;   // верно, но медленно
+  var W_FAST = 0.9;   // верно и быстро
+  var W_MAX = 10;
+  var W_MIN = 0.5;
+  var SLOW_RATIO = 1.5;   // «медленно» = дольше полутора своих обычных времён
+  var SLOW_FALLBACK_MS = 8000; // пока своего времени нет — дольше 8 секунд
+  var MS_CAP = 60000;     // отвлёкся/ушёл — не даём выбросу испортить среднее
+
+  var persist = true; // false после первой ошибки записи (квота/приватный режим)
+  var shownAt = null; // Date.now() момента показа задания
+
+  // Короткий хэш строки (djb2) → base36; коллизии на наших объёмах не страшны
+  function hash(s) {
+    var h = 5381;
+    for (var i = 0; i < s.length; i++) {
+      h = ((h << 5) + h + s.charCodeAt(i)) >>> 0;
+    }
+    return h.toString(36);
+  }
+
+  function today() { return TrainerStorage.localDay(); }
+
+  function load() {
+    try {
+      var raw = localStorage.getItem(KEY);
+      if (raw) {
+        var parsed = JSON.parse(raw);
+        // Незнакомая версия схемы — начинаем заново (данные не критичны)
+        if (parsed && parsed.v === 1 && parsed.tasks && parsed.days) return parsed;
+      }
+    } catch (e) { persist = false; }
+    return { v: 1, updated: null, tasks: {}, days: {}, best: null };
+  }
+
+  var data = load();
+
+  function save() {
+    if (!persist) return;
+    try {
+      localStorage.setItem(KEY, JSON.stringify(data));
+    } catch (e) { persist = false; }
+  }
+
+  // Отметить показ задания — начало отсчёта времени ответа
+  function shown() { shownAt = Date.now(); }
+
+  // Записать ответ. ms передавать не нужно — считается от shown();
+  // движок без замера времени (list) может передать null явно.
+  function record(q, ok, ms) {
+    if (ms === undefined) ms = shownAt !== null ? Date.now() - shownAt : null;
+    if (ms !== null && ms > MS_CAP) ms = MS_CAP;
+
+    var h = hash(q);
+    var t = data.tasks[h];
+    if (!t) { t = data.tasks[h] = { q: q, ok: 0, err: 0, ms: null, w: 1, last: '', lastOk: null }; }
+
+    if (ok) { t.ok++; } else { t.err++; }
+    t.last = today();
+    t.lastOk = ok;
+
+    // Вес Лейтнера — «медленно» сравниваем со СТАРЫМ средним, потом обновляем его
+    if (!ok) {
+      t.w = Math.min(W_MAX, t.w * W_ERR);
+    } else {
+      var slow = ms !== null && (t.ms !== null ? ms > t.ms * SLOW_RATIO : ms > SLOW_FALLBACK_MS);
+      t.w = Math.max(W_MIN, Math.min(W_MAX, t.w * (slow ? W_SLOW : W_FAST)));
+      if (ms !== null) { t.ms = t.ms !== null ? Math.round(t.ms * 0.7 + ms * 0.3) : Math.round(ms); }
+    }
+    t.w = Math.round(t.w * 1000) / 1000; // без плавающего мусора в JSON
+
+    var day = data.days[t.last];
+    if (!day) { day = data.days[t.last] = { ok: 0, err: 0 }; }
+    if (ok) { day.ok++; } else { day.err++; }
+
+    data.updated = new Date().toISOString();
+    save();
+  }
+
+  // Статистика задания по его вопросу (для №17–18)
+  function taskStats(q) { return data.tasks[hash(q)] || null; }
+
+  return {
+    data: data,       // прямой доступ для №15–18, №22, №43
+    shown: shown,
+    record: record,
+    taskStats: taskStats,
+    save: save
+  };
+}
+
+// Локальная дата ГГГГ-ММ-ДД — ключ дня в days
+TrainerStorage.localDay = function() {
+  var d = new Date();
+  var m = d.getMonth() + 1, day = d.getDate();
+  return d.getFullYear() + '-' + (m < 10 ? '0' : '') + m + '-' + (day < 10 ? '0' : '') + day;
+};
+
+// Прочитать данные всех тренажёров (для портала: №15 «решено сегодня»,
+// №43 экспорт, №44 кабинет). Возвращает { "<id>": data }.
+TrainerStorage.readAll = function() {
+  var all = {};
+  try {
+    for (var i = 0; i < localStorage.length; i++) {
+      var key = localStorage.key(i);
+      if (key.indexOf('trainer:') !== 0) continue;
+      try {
+        var parsed = JSON.parse(localStorage.getItem(key));
+        if (parsed && parsed.v === 1) all[key.slice(8)] = parsed;
+      } catch (e) {}
+    }
+  } catch (e) {}
+  return all;
+};
+
+// Сводка по ВСЕМ тренажёрам для №15 (пауза) и №16 (личная история):
+//   todayOk — решено сегодня, totalOk — решено за всё время,
+//   fixed — исправлено ошибок (по заданию: ошибок, к которым есть верный
+//   ответ, т.е. min(ok, err) — верное после ошибки и есть исправление),
+//   days — дней занятий (уникальные даты по всем тренажёрам).
+TrainerStorage.summary = function() {
+  var all = TrainerStorage.readAll();
+  var day = TrainerStorage.localDay();
+  var s = { todayOk: 0, totalOk: 0, fixed: 0, days: 0 };
+  var seen = {};
+  for (var id in all) {
+    var d = all[id];
+    for (var k in d.days) {
+      seen[k] = true;
+      s.totalOk += d.days[k].ok || 0;
+      if (k === day) s.todayOk += d.days[k].ok || 0;
+    }
+    for (var h in d.tasks) {
+      var t = d.tasks[h];
+      s.fixed += Math.min(t.ok, t.err);
+    }
+  }
+  s.days = Object.keys(seen).length;
+  return s;
+};
+
+(function(root, factory) {
+  if (typeof module === 'object' && module.exports) {
+    module.exports = factory();
+  } else {
+    root.createSkillProgress = factory();
+  }
+})(typeof window !== 'undefined' ? window : this, function() {
+  const SCHEMA_VERSION = 1;
+  const STATES = {
+    NEW: 'не пробовал',
+    LEARNING: 'начал изучать',
+    TRAINING: 'тренируется',
+    FIXED: 'зафиксирован',
+    REVIEW: 'нужно повторить'
+  };
+  function createSkillProgress(config, id) {
+    const KEY = 'skill:' + id + ':progress';
+    let persist = typeof localStorage !== 'undefined' && localStorage !== null;
+    function load() {
+      if (persist) {
+        try {
+          const raw = localStorage.getItem(KEY);
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            if (parsed.v === SCHEMA_VERSION) return parsed;
+          }
+        } catch (e) { persist = false; }
+      }
+      return {
+        v: SCHEMA_VERSION,
+        state: STATES.NEW,
+        totalCorrect: 0,
+        correctStreak: 0,
+        controlAnswers: 0,
+        controlErrors: 0
+      };
+    }
+    let data = load();
+    function save() {
+      if (!persist) return;
+      try {
+        localStorage.setItem(KEY, JSON.stringify(data));
+      } catch (e) { persist = false; }
+    }
+function record(ok) {
+    const prevState = data.state;
+    // State transitions based on previous state
+    if (prevState === STATES.NEW) {
+        data.state = STATES.LEARNING;
+        if (ok) data.totalCorrect++;
+    } else if (prevState === STATES.LEARNING) {
+        if (ok) data.totalCorrect++;
+        if (data.totalCorrect >= (config.correctThreshold || 20)) {
+            data.state = STATES.TRAINING;
+            data.correctStreak = 0;
+        }
+    } else if (prevState === STATES.REVIEW) {
+        data.state = STATES.TRAINING;
+        data.correctStreak = ok ? 1 : 0;
+    } else if (prevState === STATES.TRAINING) {
+        if (ok) {
+            data.correctStreak++;
+            if (data.correctStreak >= (config.streakThreshold || 10)) {
+                data.state = STATES.FIXED;
+                data.controlAnswers = 0;
+                data.controlErrors = 0;
+            }
+        } else {
+            data.correctStreak = 0;
+        }
+    } else if (prevState === STATES.FIXED) {
+        // Control series after FIXED state
+        if (ok) data.controlAnswers++;
+        else data.controlErrors++;
+        if (data.controlAnswers + data.controlErrors >= (config.controlSize || 5)) {
+            if (data.controlErrors >= (config.controlErrorsThreshold || 2)) {
+                data.state = STATES.REVIEW;
+            }
+            data.controlAnswers = 0;
+            data.controlErrors = 0;
+        }
+    }
+    save();
+}
+    const instance = {
+      record,
+      get state() { return data.state; }
+    };
+    return instance;
+  }
+  return createSkillProgress;
+});
+
+// engine-card.js — движок «карточка» (одно задание за раз, спринты, цитаты, streak)
+// Работает с window.TRAINER_CONFIG, установленным перед подключением этого скрипта.
+// buildNorm() поступает из norm.js, который build.js вставляет в тот же <script>-блок.
+
+(function() {
+  const C = window.TRAINER_CONFIG;
+  const SPRINT_SIZE = C.sprintSize || 5;
+  const FEEDBACK_DELAY = 700;
+  const DUAL = C.inputMode === 'dual';
+  const CHOICE = C.inputMode === 'choice';
+
+  const norm = buildNorm(C.normMode || 'basic');
+  // №9: запись каждого ответа в localStorage (верно/ошибка, время, дата)
+  const store = TrainerStorage(C.id);
+  // Инициализация прогресса навыка
+  const skillProgress = C.skillProgress && C.skillProgress.enabled ? createSkillProgress(C.skillProgress, C.id) : null;
+
+  // --- shuffle ---
+  // №17: взвешенная перетасовка (Efraimidis–Spirakis): ключ u^(1/w), сортировка
+  // по убыванию. Задания с большим весом Лейтнера (ошибки, медленные верные)
+  // почти всегда оказываются в первых спринтах, освоенные (w < 1) уходят
+  // в конец. Каждое задание в круге по-прежнему ровно один раз.
+  function weightedShuffle(arr) {
+    return arr.map(function(t) {
+      const s = store.taskStats(t.q);
+      const w = (s && s.w) ? s.w : 1;
+      return { t: t, k: Math.pow(Math.random(), 1 / w) };
+    }).sort(function(a, b) { return b.k - a.k; }).map(function(x) { return x.t; });
+  }
+
+  // --- DOM refs ---
+  const $expr = document.getElementById('math-expr');
+  const $taskCounter = document.getElementById('task-counter');
+  const $input = document.getElementById('answer-input');
+  const $coefInput = DUAL ? document.getElementById('coef-input') : null;
+  const $radInput = DUAL ? document.getElementById('rad-input') : null;
+  const $choiceRow = CHOICE ? document.getElementById('choice-row') : null;
+  const choiceBtns = CHOICE ? Array.prototype.slice.call($choiceRow.querySelectorAll('.choice-btn')) : [];
+  const $choiceRowError = CHOICE ? document.getElementById('choice-row-error') : null;
+  const errorChoiceBtns = CHOICE ? Array.prototype.slice.call($choiceRowError.querySelectorAll('.choice-btn')) : [];
+  const $feedback = document.getElementById('big-feedback');
+  const $correct = document.getElementById('correct-answer');
+  const $progressBar = document.getElementById('progress-bar');
+  const $progressText = document.getElementById('progress-text');
+  const $done = document.getElementById('done-message');
+  const $errorSection = document.getElementById('error-section');
+  const $quoteOverlay = document.getElementById('quote-overlay');
+  const $quoteText = document.getElementById('quote-text');
+  const $quoteAuthor = document.getElementById('quote-author');
+  const $card = document.getElementById('card');
+  const $streakFlash = document.getElementById('streak-flash');
+  const $roundBadge = document.getElementById('round-badge');
+  const $submit = CHOICE ? null : document.getElementById('submit-btn');
+  const $errSubmitBtn = CHOICE ? null : document.getElementById('submit-btn-error');
+
+  // Короткая вибрация при ошибке (работает только на телефонах)
+  function buzz() {
+    if (navigator.vibrate) { try { navigator.vibrate(80); } catch (e) {} }
+  }
+
+  // --- State ---
+  let tasks = [];
+  let sprintStartIndex = 0;
+  let sprintPos = 0;
+  let sprintNumber = 0;
+  let totalSolved = 0;
+  let streakCount = 0;
+  let sprintErrors = [];
+  let usedQuoteIndices = new Set();
+  let usedFactIndices = new Set();
+  let locked = false;
+  let allPerfect = true;
+  // №3: серия ошибок подряд — со второй ошибки пауза с показом ответа короче,
+  // чтобы серия неудач не превращалась в долгое ожидание
+  let errorStreak = 0;
+  // №41: таймер автопроверки — сбрасывается при каждом новом символе (~350 мс)
+  let autoTimer = null;
+  const AUTO_ADVANCE_MS = 350;
+
+  const $quoteKicker = document.getElementById('quote-kicker');
+  const $pauseStats = document.getElementById('pause-stats');
+  // Массив FACTS может отсутствовать в старых сборках — подстраховка
+  const FACTS_ARR = (typeof FACTS !== 'undefined') ? FACTS : [];
+
+  // Склонение числительных: plural(140, 'задание', 'задания', 'заданий')
+  function plural(n, one, few, many) {
+    const m10 = n % 10, m100 = n % 100;
+    if (m10 === 1 && m100 !== 11) return one;
+    if (m10 >= 2 && m10 <= 4 && (m100 < 12 || m100 > 14)) return few;
+    return many;
+  }
+
+  function taskIndex() { return sprintStartIndex + sprintPos; }
+
+  // №3: сколько держать ✗ и правильный ответ на экране. Первая ошибка — полные
+  // 600 мс сверх базовой задержки, со второй подряд — вдвое короче.
+  function wrongExtraDelay() {
+    return errorStreak >= 2 ? 300 : 600;
+  }
+
+  // --- Показ/скрытие и блокировка зоны ответа (input / dual / choice) ---
+  function setMainInputVisible(v) {
+    const d = v ? '' : 'none';
+    if (CHOICE) { $choiceRow.style.display = d; }
+    else if (DUAL) { $coefInput.style.display = d; $radInput.style.display = d; }
+    else { $input.style.display = d; }
+  }
+
+  // Поля ввода на время фидбека НЕ блокируем совсем: и disabled, и readOnly
+  // закрывают мобильную клавиатуру (№1). От повторной отправки защищает флаг
+  // locked, а лишний ввод стирается при показе следующего задания.
+  function lockAnswerUI() {
+    if (CHOICE) { choiceBtns.forEach(function(b) { b.disabled = true; }); }
+  }
+
+  function sprintRemaining() {
+    return Math.min(SPRINT_SIZE, tasks.length - sprintStartIndex);
+  }
+
+  function updateProgress() {
+    const pct = (totalSolved / tasks.length) * 100;
+    $progressBar.style.width = pct + '%';
+    let txt = totalSolved + ' / ' + tasks.length;
+    if (skillProgress) { txt += ' • ' + skillProgress.state; }
+    $progressText.textContent = txt;
+  }
+
+  // --- Get answer (single or dual) ---
+  function getAnswer() {
+    if (DUAL) {
+      return { coef: norm($coefInput.value), rad: norm($radInput.value) };
+    }
+    return norm($input.value);
+  }
+
+  function isCorrect(val, task) {
+    if (DUAL) {
+      return val.coef === task.a_coef && val.rad === task.a_rad;
+    }
+    return val === task.a;
+  }
+
+  function getCorrectDisplay(task) {
+    if (DUAL) return task.a_display || (task.a_coef + '√' + task.a_rad);
+    return task.a;
+  }
+
+  // --- Show task ---
+  function showCurrentTask() {
+    const idx = taskIndex();
+    if (idx >= tasks.length) { finishRound(); return; }
+    showKeyboard();
+    const task = tasks[idx];
+    $expr.innerHTML = task.q;
+    $taskCounter.textContent = (sprintPos + 1) + ' / ' + sprintRemaining();
+    if ($roundBadge) {
+      $roundBadge.textContent = 'Спринт ' + sprintNumber;
+      $roundBadge.classList.add('visible');
+    }
+    $feedback.className = '';
+    $feedback.textContent = '';
+    $correct.className = '';
+    $correct.textContent = '';
+    if (CHOICE) {
+      choiceBtns.forEach(function(b) { b.disabled = false; b.classList.remove('chosen'); });
+    } else if (DUAL) {
+      $coefInput.value = '';
+      $radInput.value = '';
+      $coefInput.focus();
+    } else {
+      $input.value = '';
+      $input.focus();
+    }
+    updateProgress();
+    if (window.MathJax) { MathJax.typesetPromise([$expr]); }
+    store.shown(); // №9: старт отсчёта времени ответа
+  }
+
+  // --- Streak effect ---
+  function fireStreakEffect() {
+    $streakFlash.textContent = 'Ты супер!';
+    $streakFlash.classList.remove('fire');
+    void $streakFlash.offsetWidth;
+    $streakFlash.classList.add('fire');
+    hideKeyboard();
+    setTimeout(function() { $streakFlash.classList.remove('fire'); }, 1200);
+  }
+
+  // --- Handle answer ---
+  function handleAnswer(forcedVal) {
+    if (locked) return;
+    clearTimeout(autoTimer); // ответ уже отправлен — отложенная автопроверка не нужна
+    const val = CHOICE ? forcedVal : getAnswer();
+    if (!DUAL && val === '') return;
+    if (DUAL && val.coef === '' && val.rad === '') return;
+    locked = true;
+    const task = tasks[taskIndex()];
+    const ok = isCorrect(val, task);
+    store.record(task.q, ok); // №9
+    if (skillProgress) { skillProgress.record(ok); }
+
+    if (ok) {
+      $feedback.textContent = '✓';
+      $feedback.className = 'correct show';
+      totalSolved++;
+      streakCount++;
+      errorStreak = 0;
+      if (streakCount === 5) { streakCount = 0; fireStreakEffect(); }
+      updateProgress();
+      lockAnswerUI();
+      setTimeout(function() { $feedback.className = ''; locked = false; advanceTask(); }, FEEDBACK_DELAY);
+    } else {
+      $feedback.textContent = '✗';
+      $feedback.className = 'incorrect show';
+      $correct.textContent = getCorrectDisplay(task);
+      $correct.className = 'show';
+      lockAnswerUI();
+      buzz();
+      streakCount = 0;
+      errorStreak++;
+      allPerfect = false;
+      if (!sprintErrors.some(function(e) { return e.q === task.q; })) { sprintErrors.push(task); }
+      scheduleComeback(task); // №18: вернётся ещё раз через 2–3 спринта
+      setTimeout(function() { $feedback.className = ''; $correct.className = ''; locked = false; advanceTask(); }, FEEDBACK_DELAY + wrongExtraDelay());
+    }
+  }
+
+  // №18: интервальный возврат ошибки — задание вставляется копией через
+  // 2–3 спринта в текущем круге (круг становится на задание длиннее; в самом
+  // конце круга копия просто уходит в хвост). Возвраты «через круг» и «через
+  // сессию» обеспечивает вес Лейтнера (№17): после ошибки w ×2, и задание
+  // попадает в первые спринты следующих кругов. «Работа над ошибками» сразу
+  // после спринта при этом сохраняется — это немедленное исправление,
+  // а возврат — отсроченная проверка.
+  const COMEBACK_SPRINTS_MIN = 2;
+  const COMEBACK_SPRINTS_MAX = 3;
+  function scheduleComeback(task) {
+    // Уже ждёт впереди (вторая ошибка на том же задании) — не дублируем
+    for (let i = taskIndex() + 1; i < tasks.length; i++) {
+      if (tasks[i].q === task.q) return;
+    }
+    const ahead = COMEBACK_SPRINTS_MIN +
+      Math.floor(Math.random() * (COMEBACK_SPRINTS_MAX - COMEBACK_SPRINTS_MIN + 1));
+    let pos = sprintStartIndex + ahead * SPRINT_SIZE + Math.floor(Math.random() * SPRINT_SIZE);
+    if (pos > tasks.length) pos = tasks.length;
+    tasks.splice(pos, 0, task);
+    updateProgress(); // знаменатель прогресса вырос
+  }
+
+  function advanceTask() {
+    sprintPos++;
+    if (sprintPos >= sprintRemaining()) { finishSprint(); }
+    else { showCurrentTask(); }
+  }
+
+  function finishSprint() {
+    if (sprintErrors.length > 0) { startErrorWork(); }
+    else { showQuote(); }
+  }
+
+  // --- Error work ---
+  function startErrorWork() {
+    errorStreak = 0; // №3: работа над ошибками — новый контекст, серия обнуляется
+    $errorSection.style.display = 'block';
+    setMainInputVisible(false);
+    $card.style.display = 'none';
+    $quoteOverlay.classList.remove('show');
+    if ($roundBadge) $roundBadge.classList.remove('visible');
+    showErrorTask(0);
+  }
+
+  function showErrorTask(errIdx) {
+    if (errIdx >= sprintErrors.length) {
+      $errorSection.style.display = 'none';
+      setMainInputVisible(true);
+      sprintErrors = [];
+      showQuote();
+      return;
+    }
+    const task = sprintErrors[errIdx];
+    document.getElementById('math-expr-error').innerHTML = task.q;
+    document.getElementById('task-counter-error').textContent = 'Ошибка ' + (errIdx + 1) + ' / ' + sprintErrors.length;
+
+    const einput = document.getElementById('error-input');
+    const ecoef = DUAL ? document.getElementById('error-coef-input') : null;
+    const erad = DUAL ? document.getElementById('error-rad-input') : null;
+    const efeedback = document.getElementById('big-feedback-error');
+    const ecorrect = document.getElementById('correct-answer-error');
+
+    if (CHOICE) {
+      errorChoiceBtns.forEach(function(b) { b.disabled = false; b.classList.remove('chosen'); });
+    } else if (DUAL) {
+      ecoef.value = '';
+      erad.value = '';
+    } else {
+      einput.value = '';
+    }
+    efeedback.className = ''; efeedback.style.opacity = '0'; efeedback.style.transform = '';
+    ecorrect.className = ''; ecorrect.textContent = '';
+    if (DUAL) ecoef.focus(); else if (!CHOICE) einput.focus();
+
+    if (window.MathJax) { MathJax.typesetPromise([document.getElementById('math-expr-error')]); }
+    store.shown(); // №9: время ответа считается и в работе над ошибками
+
+    // «Уже отвечено» — раньше роль флага играла блокировка поля, но она
+    // закрывает мобильную клавиатуру (№1), поэтому обычная переменная
+    var answered = false;
+
+    // Единый фидбек ✓/✗ секции ошибок для всех режимов ввода (dual/обычный/choice):
+    // серия ошибок, анимация, показ правильного ответа, очистка полей, переход дальше
+    function errorFeedback(ok, clearInputs) {
+      store.record(task.q, ok); // №9
+      if (skillProgress) { skillProgress.record(ok); }
+      efeedback.textContent = ok ? '✓' : '✗';
+      efeedback.className = ok ? 'correct' : 'incorrect';
+      efeedback.style.opacity = '1'; efeedback.style.transform = 'scale(1.1)';
+      if (ok) {
+        errorStreak = 0;
+        setTimeout(function() { efeedback.style.opacity = '0'; efeedback.style.transform = ''; showErrorTask(errIdx + 1); }, FEEDBACK_DELAY);
+      } else {
+        errorStreak++;
+        ecorrect.textContent = getCorrectDisplay(task); ecorrect.className = 'show';
+        if (clearInputs) clearInputs();
+        buzz();
+        setTimeout(function() { efeedback.style.opacity = '0'; efeedback.style.transform = ''; ecorrect.className = ''; showErrorTask(errIdx + 1); }, FEEDBACK_DELAY + wrongExtraDelay());
+      }
+    }
+
+    // Проверка ответа в работе над ошибками — вызывается и по Enter, и кнопкой «✓»
+    function submitError() {
+      if (answered) return;
+      if (DUAL) {
+        const valCoef = norm(ecoef.value);
+        const valRad = norm(erad.value);
+        if (valCoef === '' && valRad === '') return;
+        answered = true;
+        errorFeedback(valCoef === task.a_coef && valRad === task.a_rad,
+          function() { ecoef.value = ''; erad.value = ''; });
+      } else {
+        const val = norm(einput.value);
+        if (val === '') return;
+        answered = true;
+        errorFeedback(val === task.a, function() { einput.value = ''; });
+      }
+    }
+
+    function onErrorKeydown(e) {
+      if (e.key === 'Enter') submitError();
+    }
+
+    // №41: автопереход и в работе над ошибками — та же задержка, тот же таймер
+    function onErrorTyping() {
+      clearTimeout(autoTimer);
+      autoTimer = setTimeout(function() {
+        if (answered) return;
+        if (DUAL) {
+          const valCoef = norm(ecoef.value);
+          const valRad = norm(erad.value);
+          if (valCoef === task.a_coef && valRad === '') {
+            erad.focus();
+            return;
+          }
+          if (valCoef === task.a_coef && valRad === task.a_rad) submitError();
+        } else {
+          if (norm(einput.value) === task.a) submitError();
+        }
+      }, AUTO_ADVANCE_MS);
+    }
+
+    if (CHOICE) {
+      errorChoiceBtns.forEach(function(btn) {
+        btn.onclick = function() {
+          if (btn.disabled) return;
+          btn.classList.add('chosen');
+          errorChoiceBtns.forEach(function(b) { b.disabled = true; });
+          errorFeedback(norm(btn.dataset.val) === task.a);
+        };
+      });
+    } else if (DUAL) {
+      ecoef.onkeydown = onErrorKeydown;
+      erad.onkeydown = onErrorKeydown;
+      ecoef.oninput = onErrorTyping;
+      erad.oninput = onErrorTyping;
+    } else {
+      einput.onkeydown = onErrorKeydown;
+      einput.oninput = onErrorTyping;
+    }
+    if ($errSubmitBtn) { $errSubmitBtn.onclick = submitError; }
+  }
+
+  // --- Quote between sprints ---
+  function showQuote() {
+    $card.style.display = 'none';
+    setMainInputVisible(false);
+    hideKeyboard();
+    if ($roundBadge) $roundBadge.classList.remove('visible');
+    $quoteOverlay.classList.add('show');
+
+    // Пауза-передышка: показываем факты-«изюминки». Цитаты в архиве до пересмотра
+    // списка (решение Михаила 12.07.2026) — чтобы вернуть смесь, поставить < 0.5.
+    const showFact = FACTS_ARR.length > 0;
+    if (showFact) {
+      if (usedFactIndices.size >= FACTS_ARR.length) { usedFactIndices = new Set(); }
+      let fi;
+      do { fi = Math.floor(Math.random() * FACTS_ARR.length); } while (usedFactIndices.has(fi));
+      usedFactIndices.add(fi);
+      if ($quoteKicker) $quoteKicker.className = 'show';
+      $quoteText.className = 'fact';
+      $quoteText.textContent = FACTS_ARR[fi].text;
+      $quoteAuthor.textContent = '';
+    } else {
+      if (usedQuoteIndices.size >= QUOTES.length) { usedQuoteIndices = new Set(); }
+      let qi;
+      do { qi = Math.floor(Math.random() * QUOTES.length); } while (usedQuoteIndices.has(qi));
+      usedQuoteIndices.add(qi);
+      if ($quoteKicker) $quoteKicker.className = '';
+      $quoteText.className = '';
+      $quoteText.textContent = '«' + QUOTES[qi].text + '»';
+      $quoteAuthor.textContent = '— ' + QUOTES[qi].author;
+    }
+
+    // №15: «Сегодня решено уже N» — счётчик по ВСЕМ тренажёрам, растёт на глазах.
+    // №16: личная история (всего, исправлено, дней) — со второго дня занятий,
+    // в первый день она дублировала бы «сегодня».
+    if ($pauseStats) {
+      const st = TrainerStorage.summary();
+      let statsHtml = '';
+      if (st.todayOk > 0) {
+        statsHtml = 'Сегодня решено уже <b>' + st.todayOk + '</b> ' +
+          plural(st.todayOk, 'задание', 'задания', 'заданий');
+        if (st.days >= 2) {
+          statsHtml += '<span class="ps-history">всего решено ' + st.totalOk +
+            ' · исправлено ошибок ' + st.fixed +
+            ' · дней занятий ' + st.days + '</span>';
+        }
+      }
+      $pauseStats.innerHTML = statsHtml;
+    }
+
+    // Продолжить можно клавишей Enter/Пробел (№4), касанием/кликом
+    // или свайпом по цитате (№6)
+    let swipeStart = null;
+    function proceedAfterQuote() {
+      document.removeEventListener('keydown', onQuoteContinue);
+      $quoteOverlay.removeEventListener('click', proceedAfterQuote);
+      $quoteOverlay.removeEventListener('touchstart', onSwipeStart);
+      $quoteOverlay.removeEventListener('touchend', onSwipeEnd);
+      $quoteOverlay.classList.remove('show');
+      $card.style.display = '';
+      setMainInputVisible(true);
+      sprintStartIndex += sprintRemaining();
+      sprintPos = 0; sprintNumber++;
+      if (sprintStartIndex >= tasks.length) { finishRound(); }
+      else { startSprint(); }
+    }
+    function onQuoteContinue(e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); proceedAfterQuote(); }
+    }
+    // №6: горизонтальный свайп — тоже «продолжить» (тап и так ловится click).
+    // Вертикальное движение не считаем: длинный факт скроллят, чтобы дочитать,
+    // и скролл не должен закрывать оверлей.
+    function onSwipeStart(e) {
+      const t = e.touches[0];
+      swipeStart = { x: t.clientX, y: t.clientY };
+    }
+    function onSwipeEnd(e) {
+      if (!swipeStart) return;
+      const t = e.changedTouches[0];
+      const dx = t.clientX - swipeStart.x;
+      const dy = t.clientY - swipeStart.y;
+      swipeStart = null;
+      if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) proceedAfterQuote();
+    }
+    setTimeout(function() {
+      document.addEventListener('keydown', onQuoteContinue);
+      $quoteOverlay.addEventListener('click', proceedAfterQuote);
+      $quoteOverlay.addEventListener('touchstart', onSwipeStart, { passive: true });
+      $quoteOverlay.addEventListener('touchend', onSwipeEnd, { passive: true });
+    }, 100);
+  }
+
+  // --- Round lifecycle ---
+  function finishRound() {
+    updateProgress();
+    $quoteOverlay.classList.remove('show');
+    $card.style.display = '';
+    if (!allPerfect) { $done.textContent = 'Круг завершён! Ошибки исправлены в спринтах.'; }
+    else { $done.textContent = 'Все задания решены без ошибок'; }
+    $done.style.display = 'block';
+    $expr.innerHTML = '';
+    $taskCounter.textContent = '';
+    setMainInputVisible(false);
+    hideKeyboard();
+    if ($roundBadge) $roundBadge.classList.remove('visible');
+    setTimeout(function() { $done.style.display = 'none'; setMainInputVisible(true); newRound(); }, 2000);
+  }
+
+  function startSprint() {
+    // №3: серия ошибок не переживает границу спринта — ошибка на последнем
+    // задании и ошибка на первом задании нового спринта не «серия»
+    sprintPos = 0; sprintErrors = []; streakCount = 0; errorStreak = 0;
+    showCurrentTask();
+  }
+
+  function newRound() {
+    sprintStartIndex = 0; sprintPos = 0; sprintNumber = 1;
+    totalSolved = 0; streakCount = 0; sprintErrors = [];
+    usedQuoteIndices = new Set(); locked = false; allPerfect = true;
+    errorStreak = 0;
+    tasks = weightedShuffle(C.tasks.slice());
+    startSprint();
+  }
+
+  // --- Event binding ---
+  // (№4: Escape-выход на портал общий для всех движков — вставляется build.js)
+
+  if (CHOICE) {
+    choiceBtns.forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        if (locked || btn.disabled) return;
+        btn.classList.add('chosen');
+        handleAnswer(norm(btn.dataset.val));
+      });
+    });
+    // Клавиатура: цифры 1/2/... или первая буква варианта («д»/«н»)
+    document.addEventListener('keydown', function(e) {
+      const errVisible = $errorSection.style.display === 'block';
+      const btns = errVisible ? errorChoiceBtns : choiceBtns;
+      let idx = -1;
+      const num = parseInt(e.key, 10);
+      if (num >= 1 && num <= btns.length) { idx = num - 1; }
+      else {
+        const k = e.key.toLowerCase();
+        idx = btns.findIndex(function(b) { return b.dataset.val.charAt(0).toLowerCase() === k; });
+      }
+      if (idx < 0) return;
+      const btn = btns[idx];
+      if (btn.disabled || btn.offsetParent === null) return;
+      btn.click();
+    });
+  } else if (DUAL) {
+    $coefInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') { e.preventDefault(); $radInput.focus(); } });
+    $radInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') handleAnswer(); });
+  } else {
+    $input.addEventListener('keydown', function(e) { if (e.key === 'Enter') handleAnswer(); });
+  }
+
+  // №41: автопереход при верном ответе — проверка после каждого символа
+  // с задержкой AUTO_ADVANCE_MS (новый символ сбрасывает таймер). Совпало —
+  // как будто нажат Enter. Enter и «✓» продолжают работать как раньше.
+  function onTyping() {
+    clearTimeout(autoTimer);
+    autoTimer = setTimeout(function() {
+      if (locked) return;
+      const idx = taskIndex();
+      if (idx >= tasks.length) return;
+      if (DUAL) {
+        const val = getAnswer();
+        const task = tasks[idx];
+        if (val.coef === task.a_coef && val.rad === '') {
+          $radInput.focus();
+          return;
+        }
+      }
+      if (isCorrect(getAnswer(), tasks[idx])) handleAnswer();
+    }, AUTO_ADVANCE_MS);
+  }
+  if (DUAL) {
+    $coefInput.addEventListener('input', onTyping);
+    $radInput.addEventListener('input', onTyping);
+  } else if (!CHOICE) {
+    $input.addEventListener('input', onTyping);
+  }
+
+  // Кнопка «✓» — отправка ответа касанием (дублирует Enter).
+  // mousedown гасим, чтобы кнопка не забирала фокус у поля (клавиатура бы закрылась).
+  if ($submit) {
+    $submit.addEventListener('mousedown', function(e) { e.preventDefault(); });
+    $submit.addEventListener('click', function() { handleAnswer(); });
+  }
+  if ($errSubmitBtn) {
+    $errSubmitBtn.addEventListener('mousedown', function(e) { e.preventDefault(); });
+  }
+
+  // --- Custom keyboard ---
+  var KB_MODE = C.keyboardMode;
+  var $keyboard = null;
+
+  function hideKeyboard() { if ($keyboard) $keyboard.style.display = 'none'; }
+  function showKeyboard() { if ($keyboard) $keyboard.style.display = ''; }
+
+  function initKeyboard() {
+    if (!KB_MODE || CHOICE || DUAL) return;
+
+    var kbd = document.createElement('div');
+    kbd.id = 'custom-keyboard';
+    kbd.className = 'kb-' + KB_MODE;
+
+    var keys = C.keyboardKeys;
+    if (!keys) {
+      if (KB_MODE === 'numeric') {
+        keys = [['1','2','3'],['4','5','6'],['7','8','9'],['−','0','.'],['⌫']];
+      } else {
+        keys = [['1','2','3','+'],['4','5','6','−'],['7','8','9','('],['x','y','a',')'],['.','²','/','⌫'],['π','kb-wide','✓','kb-submit']];
+      }
+    }
+
+    for (var r = 0; r < keys.length; r++) {
+      var row = keys[r];
+      var singleInRow = row.length === 1;
+      for (var c = 0; c < row.length; c++) {
+        var val = row[c];
+        if (val === 'kb-wide') continue;
+        if (val === '') {
+          kbd.appendChild(document.createElement('div'));
+          continue;
+        }
+        var btn = document.createElement('button');
+        btn.className = 'kb-btn';
+        btn.dataset.ch = val;
+        if (val === 'kb-submit') {
+          btn.className += ' kb-submit';
+          btn.textContent = '✓';
+        } else if (val === '⌫') {
+          btn.className += ' kb-backspace';
+          if (singleInRow) btn.className += ' kb-full';
+          btn.textContent = '⌫';
+        } else {
+          btn.textContent = val;
+        }
+        btn.addEventListener('mousedown', function(e) { e.preventDefault(); });
+        btn.addEventListener('click', onKbClick);
+        kbd.appendChild(btn);
+      }
+    }
+
+    var card = document.getElementById('card');
+    card.parentNode.insertBefore(kbd, card.nextSibling);
+    $keyboard = kbd;
+  }
+
+  function getKbTarget() {
+    if ($errorSection.style.display === 'block') {
+      var et = document.getElementById('error-input');
+      if (et) return et;
+    }
+    return $input;
+  }
+
+  function onKbClick(e) {
+    if (locked) return;
+    var ch = e.currentTarget.dataset.ch;
+    var target = getKbTarget();
+    if (!target) return;
+
+    if (ch === '⌫') {
+      target.value = target.value.slice(0, -1);
+    } else if (ch === '✓') {
+      if ($errorSection.style.display === 'block' && $errSubmitBtn) {
+        $errSubmitBtn.click();
+      } else {
+        handleAnswer();
+      }
+      return;
+    } else {
+      target.value += ch;
+    }
+
+    var evt = new Event('input', { bubbles: true });
+    target.dispatchEvent(evt);
+    target.focus();
+  }
+
+  initKeyboard();
+
+  // --- Start ---
+  newRound();
+})();
+
+    </script>
+    <script>
+// PWA: регистрация service worker (страница тренажёра входит в scope /trainers/)
+
+
+// PWA: системная кнопка «назад» на телефоне не выходит из приложения,
+// а ведёт на портал. Только в standalone-режиме — в обычном браузере
+// «назад» и так возвращает на предыдущую страницу.
+// ВАЖНО: Chrome пропускает записи истории, добавленные БЕЗ действия
+// пользователя (защита от back-trapping), поэтому pushState — только
+// после первого касания/клавиши, а не при загрузке.
+(function() {
+  var standalone = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches)
+    || window.navigator.standalone === true;
+  if (!standalone || !window.history || !history.pushState) return;
+  var armed = false;
+  function arm() {
+    if (armed) return;
+    armed = true;
+    ['pointerdown', 'keydown', 'touchstart'].forEach(function(t) {
+      window.removeEventListener(t, arm, true);
+    });
+    history.pushState({ backToPortal: 1 }, '');
+  }
+  ['pointerdown', 'keydown', 'touchstart'].forEach(function(t) {
+    window.addEventListener(t, arm, true);
+  });
+  window.addEventListener('popstate', function() {
+    location.replace('../index.html');
+  });
+})();
+
+// №4: Escape — выход на портал из любого тренажёра (общее для всех движков;
+// адрес берём из ссылки «← Все тренажёры» выше на странице).
+// Прогресс нигде не сохраняется, поэтому от случайного Escape (привычка
+// закрыть клавиатуру/автодополнение) защищаемся: при фокусе в поле ввода
+// первый Escape только снимает фокус, выходит лишь второй.
+document.addEventListener('keydown', function(e) {
+  if (e.key !== 'Escape' || e.isComposing) return;
+  var ae = document.activeElement;
+  if (ae && ae.tagName === 'INPUT') { ae.blur(); return; }
+  var portalLink = document.querySelector('a.portal-link');
+  if (portalLink) location.href = portalLink.getAttribute('href');
+});
+    </script>
+</body>
+</html>

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Устный счёт | bakhadov.ru</title>
+  <meta name="description" content="Тренажёры устного счёта с личным прогрессом и понятными этапами освоения.">
+  <style>
+    :root { --ink: #251d18; --muted: #75695d; --line: #d8cbbd; --paper: #f5efe7; }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; color: var(--ink); background: radial-gradient(circle at top, #fffaf3 0%, var(--paper) 62%, #e6d7c8 100%); font: 17px/1.5 Georgia, serif; }
+    main { width: min(980px, calc(100% - 32px)); margin: 0 auto; padding: 42px 0 64px; }
+    a { color: inherit; }
+    .back { color: var(--muted); text-decoration: none; }
+    header { max-width: 720px; margin: 48px auto 36px; text-align: center; }
+    h1 { margin: 0 0 12px; font: 600 clamp(2rem, 5vw, 3.4rem)/1.05 Georgia, serif; }
+    header p { margin: 0; color: var(--muted); font-size: 1.12rem; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; }
+    .card { display: block; min-height: 245px; padding: 25px; border: 1px solid rgba(60, 40, 25, .18); border-radius: 18px; text-decoration: none; box-shadow: 0 12px 30px rgba(64, 43, 25, .12); transition: transform .2s ease, box-shadow .2s ease; }
+    .card:hover { transform: translateY(-3px); box-shadow: 0 17px 34px rgba(64, 43, 25, .18); }
+    .class-badge { display: inline-block; padding: 3px 9px; border-radius: 99px; background: rgba(255,255,255,.5); font-size: .83rem; }
+    h2 { margin: 42px 0 8px; font-size: 1.8rem; }
+    .subtitle { margin: 10px 0 20px; }
+    .meta { color: #4d4035; font-size: .92rem; }
+    .rules { margin-top: 18px; padding-top: 12px; border-top: 1px solid rgba(60, 40, 25, .2); color: #5f5146; font-size: .88rem; }
+    footer { margin-top: 44px; color: var(--muted); text-align: center; font-size: .9rem; }
+  </style>
+</head>
+<body>
+<main>
+  <a class="back" href="https://bakhadov.ru">← bakhadov.ru</a>
+  <header>
+    <h1>Устный счёт</h1>
+    <p>Небольшие тренажёры с понятным личным прогрессом: от первой попытки до устойчивого навыка.</p>
+  </header>
+  <section class="grid" id="trainer-grid"></section>
+  <footer>Прогресс хранится в браузере на этом устройстве.</footer>
+</main>
+<script>
+  // GEN:trainers:start — генерируется из portal.js, вручную НЕ править
+    const trainers = [
+        {
+            id: "сложение до 100",
+            title: "Сложение до 100",
+            subtitle: "20 правильных ответов → тренируется → 10 подряд → зафиксирован",
+            file: "slozhenie-100.html",
+            classes: ["5-6"],
+            tasks: 20,
+            gradient: "radial-gradient(circle at center, #c9c0a8 0%, #a09878 80%, #706848 100%)",
+            progress: {"enabled":true,"correctThreshold":20,"streakThreshold":10,"controlSize":5,"controlErrorsThreshold":2}
+        },
+        {
+            id: "вычитание до 100",
+            title: "Вычитание до 100",
+            subtitle: "Без отрицательных ответов, с переходом через десяток",
+            file: "vychitanie-100.html",
+            classes: ["5-6"],
+            tasks: 52,
+            gradient: "radial-gradient(circle at center, #b8a0a8 0%, #907080 80%, #604050 100%)",
+            progress: {"enabled":true,"correctThreshold":20,"streakThreshold":10,"controlSize":5,"controlErrorsThreshold":2}
+        }
+    ];
+  // GEN:trainers:end
+
+  const grid = document.getElementById('trainer-grid');
+  trainers.forEach(function(t) {
+    const card = document.createElement('a');
+    card.className = 'card';
+    card.href = t.file;
+    card.style.background = t.gradient;
+    const p = t.progress || {};
+    let saved = null;
+    try { saved = JSON.parse(localStorage.getItem('skill:' + t.id + ':progress')); } catch (e) {}
+    const state = saved && saved.state ? saved.state : 'не пробовал';
+    card.innerHTML = '<span class="class-badge">' + t.classes.join(', ') + ' кл.</span>' +
+      '<h2>' + t.title + '</h2>' +
+      '<p class="subtitle">' + t.subtitle + '</p>' +
+      '<div class="meta">' + t.tasks + ' заданий · спринт ' + (p.sprintSize || 5) + ' заданий · <b>' + state + '</b></div>' +
+      '<div class="rules">' + (p.correctThreshold || 20) + ' правильных → тренируется · ' +
+      (p.streakThreshold || 10) + ' подряд → зафиксирован · 2 ошибки из 5 → повторить</div>';
+    grid.appendChild(card);
+  });
+</script>
+</body>
+</html>
