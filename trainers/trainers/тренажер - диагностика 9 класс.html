@@ -10,6 +10,8 @@
     <meta name="theme-color" content="#131A1F">
     <link rel="icon" href="/trainers/icons/icon-192.png">
     <link rel="apple-touch-icon" href="/trainers/icons/apple-touch-icon.png">
+    <link rel="canonical" href="https://bakhadov.ru/trainers/тренажер - диагностика 9 класс.html">
+    <meta property="og:url" content="https://bakhadov.ru/trainers/тренажер - диагностика 9 класс.html">
     <script>
 MathJax = { tex: { macros: { tg: "\\operatorname{tg}", ctg: "\\operatorname{ctg}" } } };
     </script>
@@ -812,6 +814,25 @@ svg.fig {
   color: #e8dcc0;
 }
 
+/* === Ссылка на страницу автора (видна без скролла, вверху) === */
+.author-strip {
+  text-align: center;
+  margin: -14px 0 18px;
+  font-size: 1.05em;
+}
+.author-strip a {
+  color: #c9a86a;
+  text-decoration: none;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  transition: opacity 0.2s ease;
+  text-shadow: 0 0 6px rgba(201, 168, 106, 0.2);
+}
+.author-strip a:hover {
+  opacity: 0.8;
+  text-decoration: underline;
+}
+
 /* На мобильных клавиатура чуть компактнее */
 @media (max-width: 400px) {
   #custom-keyboard {
@@ -837,10 +858,12 @@ svg.fig {
         --math-font-size: 2.2em;
         --body-max-width: 650px;
       }
+
     </style>
 </head>
 <body class="diagnostic-mode">
     <a class="portal-link" href="../index.html">← Все тренажёры</a>
+    <div class="author-strip"><a href="https://bakhadov.ru">на страницу автора → bakhadov.ru</a></div>
     <div id="progress-row">
         <div id="progress-bar-wrap"><div id="progress-bar"></div></div>
         <div id="progress-text">0 / 40</div>
@@ -1518,6 +1541,7 @@ TrainerStorage.summary = function() {
   s.days = Object.keys(seen).length;
   return s;
 };
+
 
 // engine-diagnostic.js — движок «диагностика» (секции, одно задание, «Не знаю», отчёт)
 (function() {

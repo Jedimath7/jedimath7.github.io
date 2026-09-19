@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Тренажер: Логарифмы</title>
+    <title>Тренажер: Сложение до 100</title>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&family=EB+Garamond:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
     <!-- PWA: манифест приложения, цвет системной панели, иконки -->
     <link rel="manifest" href="/trainers/manifest.webmanifest">
     <meta name="theme-color" content="#131A1F">
     <link rel="icon" href="/trainers/icons/icon-192.png">
     <link rel="apple-touch-icon" href="/trainers/icons/apple-touch-icon.png">
-    <link rel="canonical" href="https://bakhadov.ru/trainers/тренажер - логарифмы по одному.html">
-    <meta property="og:url" content="https://bakhadov.ru/trainers/тренажер - логарифмы по одному.html">
+    <link rel="canonical" href="https://bakhadov.ru/trainers/тренажер - сложение до 100.html">
+    <meta property="og:url" content="https://bakhadov.ru/trainers/тренажер - сложение до 100.html">
     <script>
 MathJax = { tex: { macros: { tg: "\\operatorname{tg}", ctg: "\\operatorname{ctg}" } } };
     </script>
@@ -847,15 +847,15 @@ svg.fig {
 
 
       :root {
-        --bg-start: #c4a985;
-        --bg-mid: #9c7b50;
-        --bg-end: #6d502b;
-        --accent: #4a3025;
-        --accent-light: #4a3025;
-        --progress-text: #3d2317;
-        --card-muted: #5c3d2e;
-        --input-width: 100px;
-        --math-font-size: 2.2em;
+        --bg-start: #c9c0a8;
+        --bg-mid: #a09878;
+        --bg-end: #706848;
+        --accent: #4a4530;
+        --accent-light: #585038;
+        --progress-text: #3a3028;
+        --card-muted: #5c5240;
+        --input-width: 150px;
+        --math-font-size: 2.8em;
         --body-max-width: 650px;
       }
 
@@ -863,21 +863,20 @@ svg.fig {
 </head>
 <body>
     <a class="portal-link" href="../index.html">← Все тренажёры</a>
-    <a class="next-link" href="тренажер - логарифмы.html" title="Логарифмы (сложный)">следующий<span class="nl-word"> тренажёр</span> →</a>
     <div class="author-strip"><a href="https://bakhadov.ru">на страницу автора → bakhadov.ru</a></div>
     <div id="progress-row">
         <div id="progress-bar-wrap"><div id="progress-bar"></div></div>
-        <div id="progress-text">0 / 33</div>
+        <div id="progress-text">0 / 20</div>
     </div>
 
-    <h2>Логарифмы</h2>
+    <h2>Сложение до 100</h2>
 
     <div id="card">
         <div id="task-counter"></div>
         <div id="round-badge"></div>
         <div id="math-row" class="">
             <div id="math-expr"></div>
-            <input type="text" id="answer-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" inputmode="none" placeholder="">
+            <input type="text" id="answer-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" inputmode="none" placeholder="?">
             <button type="button" id="submit-btn" class="submit-btn" aria-label="Ответить">✓</button></div>
     </div>
 
@@ -902,7 +901,7 @@ svg.fig {
             <div id="task-counter-error"></div>
             <div class="error-math-row">
                 <div id="math-expr-error"></div>
-                <input type="text" id="error-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" inputmode="none" placeholder="">
+                <input type="text" id="error-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" inputmode="none" placeholder="?">
                 <button type="button" id="submit-btn-error" class="submit-btn" aria-label="Ответить">✓</button></div>
         </div>
         <div id="big-feedback-error"></div>
@@ -910,161 +909,132 @@ svg.fig {
     </div>
     <script>
 window.TRAINER_CONFIG = {
-  "id": "логарифмы по одному",
-  "title": "Логарифмы",
+  "id": "сложение до 100",
+  "title": "Сложение до 100",
   "engine": "card",
+  "keyboardMode": "numeric",
   "theme": {
     "bg": [
-      "#c4a985",
-      "#9c7b50",
-      "#6d502b"
+      "#c9c0a8",
+      "#a09878",
+      "#706848"
     ],
-    "accent": "#4a3025",
-    "accentLight": "#4a3025",
-    "progressText": "#3d2317",
-    "cardMuted": "#5c3d2e",
-    "inputWidth": "100px",
-    "mathFontSize": "2.2em"
+    "accent": "#4a4530",
+    "accentLight": "#585038",
+    "progressText": "#3a3028",
+    "cardMuted": "#5c5240",
+    "inputWidth": "150px",
+    "mathFontSize": "2.8em"
   },
   "tasks": [
     {
-      "q": "\\(\\log_2 1 = \\)",
-      "a": "0"
+      "q": "\\( 23 + 14 = \\)",
+      "a": "37",
+      "type": "no-carry"
     },
     {
-      "q": "\\(\\log_2 2 = \\)",
-      "a": "1"
+      "q": "\\( 34 + 25 = \\)",
+      "a": "59",
+      "type": "no-carry"
     },
     {
-      "q": "\\(\\log_3 3 = \\)",
-      "a": "1"
+      "q": "\\( 46 + 23 = \\)",
+      "a": "69",
+      "type": "no-carry"
     },
     {
-      "q": "\\(\\log_2 4 = \\)",
-      "a": "2"
+      "q": "\\( 52 + 17 = \\)",
+      "a": "69",
+      "type": "no-carry"
     },
     {
-      "q": "\\(\\log_3 9 = \\)",
-      "a": "2"
+      "q": "\\( 41 + 28 = \\)",
+      "a": "69",
+      "type": "no-carry"
     },
     {
-      "q": "\\(\\log_4 16 = \\)",
-      "a": "2"
+      "q": "\\( 20 + 30 = \\)",
+      "a": "50",
+      "type": "round-tens"
     },
     {
-      "q": "\\(\\log_5 25 = \\)",
-      "a": "2"
+      "q": "\\( 27 + 5 = \\)",
+      "a": "32",
+      "type": "one-digit-carry"
     },
     {
-      "q": "\\(\\log_6 36 = \\)",
-      "a": "2"
+      "q": "\\( 48 + 7 = \\)",
+      "a": "55",
+      "type": "one-digit-carry"
     },
     {
-      "q": "\\(\\log_7 49 = \\)",
-      "a": "2"
+      "q": "\\( 63 + 9 = \\)",
+      "a": "72",
+      "type": "one-digit-carry"
     },
     {
-      "q": "\\(\\log_8 64 = \\)",
-      "a": "2"
+      "q": "\\( 76 + 8 = \\)",
+      "a": "84",
+      "type": "one-digit-carry"
     },
     {
-      "q": "\\(\\log_9 81 = \\)",
-      "a": "2"
+      "q": "\\( 59 + 6 = \\)",
+      "a": "65",
+      "type": "one-digit-carry"
     },
     {
-      "q": "\\(\\log_2 8 = \\)",
-      "a": "3"
+      "q": "\\( 38 + 27 = \\)",
+      "a": "65",
+      "type": "two-digit-carry"
     },
     {
-      "q": "\\(\\log_3 27 = \\)",
-      "a": "3"
+      "q": "\\( 57 + 36 = \\)",
+      "a": "93",
+      "type": "two-digit-carry"
     },
     {
-      "q": "\\(\\log_4 64 = \\)",
-      "a": "3"
+      "q": "\\( 68 + 24 = \\)",
+      "a": "92",
+      "type": "two-digit-carry"
     },
     {
-      "q": "\\(\\log_5 125 = \\)",
-      "a": "3"
+      "q": "\\( 49 + 38 = \\)",
+      "a": "87",
+      "type": "two-digit-carry"
     },
     {
-      "q": "\\(\\log_6 216 = \\)",
-      "a": "3"
+      "q": "\\( 64 + 27 = \\)",
+      "a": "91",
+      "type": "two-digit-carry"
     },
     {
-      "q": "\\(\\log_7 343 = \\)",
-      "a": "3"
+      "q": "\\( 27 + 58 = \\)",
+      "a": "85",
+      "type": "two-digit-carry"
     },
     {
-      "q": "\\(\\log_8 512 = \\)",
-      "a": "3"
+      "q": "\\( 73 + 18 = \\)",
+      "a": "91",
+      "type": "two-digit-carry"
     },
     {
-      "q": "\\(\\log_9 729 = \\)",
-      "a": "3"
+      "q": "\\( 76 + 24 = \\)",
+      "a": "100",
+      "type": "round-result"
     },
     {
-      "q": "\\(\\log_2 16 = \\)",
-      "a": "4"
-    },
-    {
-      "q": "\\(\\log_3 81 = \\)",
-      "a": "4"
-    },
-    {
-      "q": "\\(\\log_4 256 = \\)",
-      "a": "4"
-    },
-    {
-      "q": "\\(\\log_5 625 = \\)",
-      "a": "4"
-    },
-    {
-      "q": "\\(\\log_6 1296 = \\)",
-      "a": "4"
-    },
-    {
-      "q": "\\(\\log_2 32 = \\)",
-      "a": "5"
-    },
-    {
-      "q": "\\(\\log_3 243 = \\)",
-      "a": "5"
-    },
-    {
-      "q": "\\(\\log_4 1024 = \\)",
-      "a": "5"
-    },
-    {
-      "q": "\\(\\log_2 64 = \\)",
-      "a": "6"
-    },
-    {
-      "q": "\\(\\log_3 729 = \\)",
-      "a": "6"
-    },
-    {
-      "q": "\\(\\log_2 128 = \\)",
-      "a": "7"
-    },
-    {
-      "q": "\\(\\log_2 256 = \\)",
-      "a": "8"
-    },
-    {
-      "q": "\\(\\log_2 512 = \\)",
-      "a": "9"
-    },
-    {
-      "q": "\\(\\log_2 1024 = \\)",
-      "a": "10"
+      "q": "\\( 68 + 12 = \\)",
+      "a": "80",
+      "type": "round-result"
     }
   ],
+  "placeholder": "?",
   "sprintSize": 5,
   "normMode": "basic",
-  "showRoundBadge": true,
-  "_inputmode": "numeric",
-  "keyboardMode": "numeric"
+  "skillProgress": {
+    "enabled": true
+  },
+  "_inputmode": "numeric"
 };
     </script>
     <script>
@@ -1548,6 +1518,98 @@ TrainerStorage.summary = function() {
   return s;
 };
 
+(function(root, factory) {
+  if (typeof module === 'object' && module.exports) {
+    module.exports = factory();
+  } else {
+    root.createSkillProgress = factory();
+  }
+})(typeof window !== 'undefined' ? window : this, function() {
+  const SCHEMA_VERSION = 1;
+  const STATES = {
+    NEW: 'не пробовал',
+    LEARNING: 'начал изучать',
+    TRAINING: 'тренируется',
+    FIXED: 'зафиксирован',
+    REVIEW: 'нужно повторить'
+  };
+  function createSkillProgress(config, id) {
+    const KEY = 'skill:' + id + ':progress';
+    let persist = typeof localStorage !== 'undefined' && localStorage !== null;
+    function load() {
+      if (persist) {
+        try {
+          const raw = localStorage.getItem(KEY);
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            if (parsed.v === SCHEMA_VERSION) return parsed;
+          }
+        } catch (e) { persist = false; }
+      }
+      return {
+        v: SCHEMA_VERSION,
+        state: STATES.NEW,
+        totalCorrect: 0,
+        correctStreak: 0,
+        controlAnswers: 0,
+        controlErrors: 0
+      };
+    }
+    let data = load();
+    function save() {
+      if (!persist) return;
+      try {
+        localStorage.setItem(KEY, JSON.stringify(data));
+      } catch (e) { persist = false; }
+    }
+function record(ok) {
+    const prevState = data.state;
+    // State transitions based on previous state
+    if (prevState === STATES.NEW) {
+        data.state = STATES.LEARNING;
+        if (ok) data.totalCorrect++;
+    } else if (prevState === STATES.LEARNING) {
+        if (ok) data.totalCorrect++;
+        if (data.totalCorrect >= (config.correctThreshold || 20)) {
+            data.state = STATES.TRAINING;
+            data.correctStreak = 0;
+        }
+    } else if (prevState === STATES.REVIEW) {
+        data.state = STATES.TRAINING;
+        data.correctStreak = ok ? 1 : 0;
+    } else if (prevState === STATES.TRAINING) {
+        if (ok) {
+            data.correctStreak++;
+            if (data.correctStreak >= (config.streakThreshold || 10)) {
+                data.state = STATES.FIXED;
+                data.controlAnswers = 0;
+                data.controlErrors = 0;
+            }
+        } else {
+            data.correctStreak = 0;
+        }
+    } else if (prevState === STATES.FIXED) {
+        // Control series after FIXED state
+        if (ok) data.controlAnswers++;
+        else data.controlErrors++;
+        if (data.controlAnswers + data.controlErrors >= (config.controlSize || 5)) {
+            if (data.controlErrors >= (config.controlErrorsThreshold || 2)) {
+                data.state = STATES.REVIEW;
+            }
+            data.controlAnswers = 0;
+            data.controlErrors = 0;
+        }
+    }
+    save();
+}
+    const instance = {
+      record,
+      get state() { return data.state; }
+    };
+    return instance;
+  }
+  return createSkillProgress;
+});
 
 // engine-card.js — движок «карточка» (одно задание за раз, спринты, цитаты, streak)
 // Работает с window.TRAINER_CONFIG, установленным перед подключением этого скрипта.

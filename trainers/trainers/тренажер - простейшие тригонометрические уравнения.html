@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Тренажер: Логарифмы</title>
+    <title>Тренажер: Простейшие тригонометрические уравнения</title>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&family=EB+Garamond:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
     <!-- PWA: манифест приложения, цвет системной панели, иконки -->
     <link rel="manifest" href="/trainers/manifest.webmanifest">
     <meta name="theme-color" content="#131A1F">
     <link rel="icon" href="/trainers/icons/icon-192.png">
     <link rel="apple-touch-icon" href="/trainers/icons/apple-touch-icon.png">
-    <link rel="canonical" href="https://bakhadov.ru/trainers/тренажер - логарифмы по одному.html">
-    <meta property="og:url" content="https://bakhadov.ru/trainers/тренажер - логарифмы по одному.html">
+    <link rel="canonical" href="https://bakhadov.ru/trainers/тренажер - простейшие тригонометрические уравнения.html">
+    <meta property="og:url" content="https://bakhadov.ru/trainers/тренажер - простейшие тригонометрические уравнения.html">
     <script>
 MathJax = { tex: { macros: { tg: "\\operatorname{tg}", ctg: "\\operatorname{ctg}" } } };
     </script>
@@ -847,38 +847,126 @@ svg.fig {
 
 
       :root {
-        --bg-start: #c4a985;
-        --bg-mid: #9c7b50;
-        --bg-end: #6d502b;
-        --accent: #4a3025;
-        --accent-light: #4a3025;
-        --progress-text: #3d2317;
-        --card-muted: #5c3d2e;
-        --input-width: 100px;
-        --math-font-size: 2.2em;
-        --body-max-width: 650px;
+        --bg-start: #fffef8;
+        --bg-mid: #f7efd9;
+        --bg-end: #e9ddbc;
+        --accent: #5b4828;
+        --accent-light: #745f37;
+        --progress-text: #4c3c22;
+        --card-muted: #74664b;
+        --input-width: 150px;
+        --math-font-size: 2.8em;
+        --body-max-width: 1500px;
       }
 
+      .choice-row.formula-grid {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        align-items: start;
+        gap: 14px;
+        width: min(1420px, 100%);
+        margin: 14px auto 0;
+      }
+      .choice-row.formula-grid .choice-group {
+        padding: 10px;
+        border: 1px solid rgba(92, 72, 36, 0.18);
+        border-radius: 10px;
+        background: rgba(255, 248, 214, 0.46);
+        box-shadow: 0 3px 10px rgba(82, 61, 29, 0.08);
+      }
+      .choice-row.formula-grid .choice-group:nth-child(even) {
+        background: rgba(255, 235, 207, 0.52);
+      }
+      .choice-row.formula-grid .choice-group:first-child {
+        grid-column: span 2;
+      }
+      .choice-row.formula-grid .choice-group h3 {
+        margin: 0 0 8px;
+        color: var(--accent);
+        font-family: 'EB Garamond', serif;
+        font-size: 1.05em;
+        font-weight: 700;
+        text-align: center;
+      }
+      .choice-row.formula-grid .choice-group-buttons {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 7px;
+      }
+      .choice-row.formula-grid .choice-group.two-columns .choice-group-buttons {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .choice-row.formula-grid button.choice-btn {
+        width: 100%;
+        min-height: 44px;
+        padding: 5px 7px;
+        border-width: 1px;
+        border-radius: 5px;
+        background: rgba(255, 252, 232, 0.82);
+        font-size: 0.91em;
+        line-height: 1.12;
+      }
+      .choice-row.formula-grid mjx-container {
+        margin: 0 !important;
+      }
+      #math-expr {
+        font-size: 3.4em;
+      }
+      #card {
+        min-height: 150px;
+        padding-top: 34px;
+        padding-bottom: 30px;
+        background: rgba(255, 255, 250, 0.74);
+      }
+      @media (max-width: 1150px) {
+        .choice-row.formula-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .choice-row.formula-grid .choice-group:first-child { grid-column: span 2; }
+      }
+      @media (max-width: 520px) {
+        .choice-row.formula-grid { grid-template-columns: 1fr; gap: 9px; }
+        .choice-row.formula-grid .choice-group:first-child { grid-column: span 1; }
+        .choice-row.formula-grid button.choice-btn {
+          min-height: 42px;
+          padding: 5px 4px;
+          font-size: 0.86em;
+        }
+        #math-expr { font-size: 2.6em; }
+      }
     </style>
 </head>
 <body>
     <a class="portal-link" href="../index.html">← Все тренажёры</a>
-    <a class="next-link" href="тренажер - логарифмы.html" title="Логарифмы (сложный)">следующий<span class="nl-word"> тренажёр</span> →</a>
+    <a class="next-link" href="тренажер - sin cos.html" title="Табличные значения sin/cos">следующий<span class="nl-word"> тренажёр</span> →</a>
     <div class="author-strip"><a href="https://bakhadov.ru">на страницу автора → bakhadov.ru</a></div>
     <div id="progress-row">
         <div id="progress-bar-wrap"><div id="progress-bar"></div></div>
-        <div id="progress-text">0 / 33</div>
+        <div id="progress-text">0 / 30</div>
     </div>
 
-    <h2>Логарифмы</h2>
+    <h2>Простейшие тригонометрические уравнения</h2>
 
     <div id="card">
         <div id="task-counter"></div>
         <div id="round-badge"></div>
         <div id="math-row" class="">
-            <div id="math-expr"></div>
-            <input type="text" id="answer-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" inputmode="none" placeholder="">
-            <button type="button" id="submit-btn" class="submit-btn" aria-label="Ответить">✓</button></div>
+            <div id="math-expr"></div></div>
+        <div id="choice-row" class="choice-row formula-grid">
+          <section class="choice-group two-columns">
+            <h3>Особые случаи</h3>
+            <div class="choice-group-buttons"><button type="button" class="choice-btn" data-val="\(x = \frac{\pi}{2} + \pi n,\; n \in \mathbb{Z}\)">\(x = \frac{\pi}{2} + \pi n,\; n \in \mathbb{Z}\)</button><button type="button" class="choice-btn" data-val="\(x = \pi + 2\pi n,\; n \in \mathbb{Z}\)">\(x = \pi + 2\pi n,\; n \in \mathbb{Z}\)</button><button type="button" class="choice-btn" data-val="\(x = \frac{\pi}{2} + 2\pi n,\; n \in \mathbb{Z}\)">\(x = \frac{\pi}{2} + 2\pi n,\; n \in \mathbb{Z}\)</button><button type="button" class="choice-btn" data-val="\(x = \pi n,\; n \in \mathbb{Z}\)">\(x = \pi n,\; n \in \mathbb{Z}\)</button><button type="button" class="choice-btn" data-val="\(x = -\frac{\pi}{2} + 2\pi n,\; n \in \mathbb{Z}\)">\(x = -\frac{\pi}{2} + 2\pi n,\; n \in \mathbb{Z}\)</button><button type="button" class="choice-btn" data-val="\(x = 2\pi n,\; n \in \mathbb{Z}\)">\(x = 2\pi n,\; n \in \mathbb{Z}\)</button></div>
+          </section>
+          <section class="choice-group">
+            <h3>Углы с π/6</h3>
+            <div class="choice-group-buttons"><button type="button" class="choice-btn" data-val="\(x = \frac{\pi}{6} + \pi n,\; n \in \mathbb{Z}\)">\(x = \frac{\pi}{6} + \pi n,\; n \in \mathbb{Z}\)</button><button type="button" class="choice-btn" data-val="\(x = -\frac{\pi}{6} + \pi n,\; n \in \mathbb{Z}\)">\(x = -\frac{\pi}{6} + \pi n,\; n \in \mathbb{Z}\)</button><button type="button" class="choice-btn" data-val="\(x = \pm\frac{\pi}{6} + 2\pi n,\; n \in \mathbb{Z}\)">\(x = \pm\frac{\pi}{6} + 2\pi n,\; n \in \mathbb{Z}\)</button><button type="button" class="choice-btn" data-val="\(x = \pm\frac{5\pi}{6} + 2\pi n,\; n \in \mathbb{Z}\)">\(x = \pm\frac{5\pi}{6} + 2\pi n,\; n \in \mathbb{Z}\)</button><button type="button" class="choice-btn" data-val="\(\begin{aligned}x &= \frac{\pi}{6} + 2\pi n,\\x &= \frac{5\pi}{6} + 2\pi n,\end{aligned}\; n \in \mathbb{Z}\)">\(\begin{aligned}x &= \frac{\pi}{6} + 2\pi n,\\x &= \frac{5\pi}{6} + 2\pi n,\end{aligned}\; n \in \mathbb{Z}\)</button><button type="button" class="choice-btn" data-val="\(\begin{aligned}x &= -\frac{\pi}{6} + 2\pi n,\\x &= -\frac{5\pi}{6} + 2\pi n,\end{aligned}\; n \in \mathbb{Z}\)">\(\begin{aligned}x &= -\frac{\pi}{6} + 2\pi n,\\x &= -\frac{5\pi}{6} + 2\pi n,\end{aligned}\; n \in \mathbb{Z}\)</button></div>
+          </section>
+          <section class="choice-group">
+            <h3>Углы с π/4</h3>
+            <div class="choice-group-buttons"><button type="button" class="choice-btn" data-val="\(x = \frac{\pi}{4} + \pi n,\; n \in \mathbb{Z}\)">\(x = \frac{\pi}{4} + \pi n,\; n \in \mathbb{Z}\)</button><button type="button" class="choice-btn" data-val="\(x = -\frac{\pi}{4} + \pi n,\; n \in \mathbb{Z}\)">\(x = -\frac{\pi}{4} + \pi n,\; n \in \mathbb{Z}\)</button><button type="button" class="choice-btn" data-val="\(x = \pm\frac{\pi}{4} + 2\pi n,\; n \in \mathbb{Z}\)">\(x = \pm\frac{\pi}{4} + 2\pi n,\; n \in \mathbb{Z}\)</button><button type="button" class="choice-btn" data-val="\(x = \pm\frac{3\pi}{4} + 2\pi n,\; n \in \mathbb{Z}\)">\(x = \pm\frac{3\pi}{4} + 2\pi n,\; n \in \mathbb{Z}\)</button><button type="button" class="choice-btn" data-val="\(\begin{aligned}x &= \frac{\pi}{4} + 2\pi n,\\x &= \frac{3\pi}{4} + 2\pi n,\end{aligned}\; n \in \mathbb{Z}\)">\(\begin{aligned}x &= \frac{\pi}{4} + 2\pi n,\\x &= \frac{3\pi}{4} + 2\pi n,\end{aligned}\; n \in \mathbb{Z}\)</button><button type="button" class="choice-btn" data-val="\(\begin{aligned}x &= -\frac{\pi}{4} + 2\pi n,\\x &= -\frac{3\pi}{4} + 2\pi n,\end{aligned}\; n \in \mathbb{Z}\)">\(\begin{aligned}x &= -\frac{\pi}{4} + 2\pi n,\\x &= -\frac{3\pi}{4} + 2\pi n,\end{aligned}\; n \in \mathbb{Z}\)</button></div>
+          </section>
+          <section class="choice-group">
+            <h3>Углы с π/3</h3>
+            <div class="choice-group-buttons"><button type="button" class="choice-btn" data-val="\(x = \frac{\pi}{3} + \pi n,\; n \in \mathbb{Z}\)">\(x = \frac{\pi}{3} + \pi n,\; n \in \mathbb{Z}\)</button><button type="button" class="choice-btn" data-val="\(x = -\frac{\pi}{3} + \pi n,\; n \in \mathbb{Z}\)">\(x = -\frac{\pi}{3} + \pi n,\; n \in \mathbb{Z}\)</button><button type="button" class="choice-btn" data-val="\(x = \pm\frac{\pi}{3} + 2\pi n,\; n \in \mathbb{Z}\)">\(x = \pm\frac{\pi}{3} + 2\pi n,\; n \in \mathbb{Z}\)</button><button type="button" class="choice-btn" data-val="\(x = \pm\frac{2\pi}{3} + 2\pi n,\; n \in \mathbb{Z}\)">\(x = \pm\frac{2\pi}{3} + 2\pi n,\; n \in \mathbb{Z}\)</button><button type="button" class="choice-btn" data-val="\(\begin{aligned}x &= \frac{\pi}{3} + 2\pi n,\\x &= \frac{2\pi}{3} + 2\pi n,\end{aligned}\; n \in \mathbb{Z}\)">\(\begin{aligned}x &= \frac{\pi}{3} + 2\pi n,\\x &= \frac{2\pi}{3} + 2\pi n,\end{aligned}\; n \in \mathbb{Z}\)</button><button type="button" class="choice-btn" data-val="\(\begin{aligned}x &= -\frac{\pi}{3} + 2\pi n,\\x &= -\frac{2\pi}{3} + 2\pi n,\end{aligned}\; n \in \mathbb{Z}\)">\(\begin{aligned}x &= -\frac{\pi}{3} + 2\pi n,\\x &= -\frac{2\pi}{3} + 2\pi n,\end{aligned}\; n \in \mathbb{Z}\)</button></div>
+          </section></div>
     </div>
 
     <div id="big-feedback"></div>
@@ -901,170 +989,253 @@ svg.fig {
         <div id="card-error">
             <div id="task-counter-error"></div>
             <div class="error-math-row">
-                <div id="math-expr-error"></div>
-                <input type="text" id="error-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" inputmode="none" placeholder="">
-                <button type="button" id="submit-btn-error" class="submit-btn" aria-label="Ответить">✓</button></div>
+                <div id="math-expr-error"></div></div>
+            <div id="choice-row-error" class="choice-row formula-grid">
+          <section class="choice-group two-columns">
+            <h3>Особые случаи</h3>
+            <div class="choice-group-buttons"><button type="button" class="choice-btn" data-val="\(x = \frac{\pi}{2} + \pi n,\; n \in \mathbb{Z}\)">\(x = \frac{\pi}{2} + \pi n,\; n \in \mathbb{Z}\)</button><button type="button" class="choice-btn" data-val="\(x = \pi + 2\pi n,\; n \in \mathbb{Z}\)">\(x = \pi + 2\pi n,\; n \in \mathbb{Z}\)</button><button type="button" class="choice-btn" data-val="\(x = \frac{\pi}{2} + 2\pi n,\; n \in \mathbb{Z}\)">\(x = \frac{\pi}{2} + 2\pi n,\; n \in \mathbb{Z}\)</button><button type="button" class="choice-btn" data-val="\(x = \pi n,\; n \in \mathbb{Z}\)">\(x = \pi n,\; n \in \mathbb{Z}\)</button><button type="button" class="choice-btn" data-val="\(x = -\frac{\pi}{2} + 2\pi n,\; n \in \mathbb{Z}\)">\(x = -\frac{\pi}{2} + 2\pi n,\; n \in \mathbb{Z}\)</button><button type="button" class="choice-btn" data-val="\(x = 2\pi n,\; n \in \mathbb{Z}\)">\(x = 2\pi n,\; n \in \mathbb{Z}\)</button></div>
+          </section>
+          <section class="choice-group">
+            <h3>Углы с π/6</h3>
+            <div class="choice-group-buttons"><button type="button" class="choice-btn" data-val="\(x = \frac{\pi}{6} + \pi n,\; n \in \mathbb{Z}\)">\(x = \frac{\pi}{6} + \pi n,\; n \in \mathbb{Z}\)</button><button type="button" class="choice-btn" data-val="\(x = -\frac{\pi}{6} + \pi n,\; n \in \mathbb{Z}\)">\(x = -\frac{\pi}{6} + \pi n,\; n \in \mathbb{Z}\)</button><button type="button" class="choice-btn" data-val="\(x = \pm\frac{\pi}{6} + 2\pi n,\; n \in \mathbb{Z}\)">\(x = \pm\frac{\pi}{6} + 2\pi n,\; n \in \mathbb{Z}\)</button><button type="button" class="choice-btn" data-val="\(x = \pm\frac{5\pi}{6} + 2\pi n,\; n \in \mathbb{Z}\)">\(x = \pm\frac{5\pi}{6} + 2\pi n,\; n \in \mathbb{Z}\)</button><button type="button" class="choice-btn" data-val="\(\begin{aligned}x &= \frac{\pi}{6} + 2\pi n,\\x &= \frac{5\pi}{6} + 2\pi n,\end{aligned}\; n \in \mathbb{Z}\)">\(\begin{aligned}x &= \frac{\pi}{6} + 2\pi n,\\x &= \frac{5\pi}{6} + 2\pi n,\end{aligned}\; n \in \mathbb{Z}\)</button><button type="button" class="choice-btn" data-val="\(\begin{aligned}x &= -\frac{\pi}{6} + 2\pi n,\\x &= -\frac{5\pi}{6} + 2\pi n,\end{aligned}\; n \in \mathbb{Z}\)">\(\begin{aligned}x &= -\frac{\pi}{6} + 2\pi n,\\x &= -\frac{5\pi}{6} + 2\pi n,\end{aligned}\; n \in \mathbb{Z}\)</button></div>
+          </section>
+          <section class="choice-group">
+            <h3>Углы с π/4</h3>
+            <div class="choice-group-buttons"><button type="button" class="choice-btn" data-val="\(x = \frac{\pi}{4} + \pi n,\; n \in \mathbb{Z}\)">\(x = \frac{\pi}{4} + \pi n,\; n \in \mathbb{Z}\)</button><button type="button" class="choice-btn" data-val="\(x = -\frac{\pi}{4} + \pi n,\; n \in \mathbb{Z}\)">\(x = -\frac{\pi}{4} + \pi n,\; n \in \mathbb{Z}\)</button><button type="button" class="choice-btn" data-val="\(x = \pm\frac{\pi}{4} + 2\pi n,\; n \in \mathbb{Z}\)">\(x = \pm\frac{\pi}{4} + 2\pi n,\; n \in \mathbb{Z}\)</button><button type="button" class="choice-btn" data-val="\(x = \pm\frac{3\pi}{4} + 2\pi n,\; n \in \mathbb{Z}\)">\(x = \pm\frac{3\pi}{4} + 2\pi n,\; n \in \mathbb{Z}\)</button><button type="button" class="choice-btn" data-val="\(\begin{aligned}x &= \frac{\pi}{4} + 2\pi n,\\x &= \frac{3\pi}{4} + 2\pi n,\end{aligned}\; n \in \mathbb{Z}\)">\(\begin{aligned}x &= \frac{\pi}{4} + 2\pi n,\\x &= \frac{3\pi}{4} + 2\pi n,\end{aligned}\; n \in \mathbb{Z}\)</button><button type="button" class="choice-btn" data-val="\(\begin{aligned}x &= -\frac{\pi}{4} + 2\pi n,\\x &= -\frac{3\pi}{4} + 2\pi n,\end{aligned}\; n \in \mathbb{Z}\)">\(\begin{aligned}x &= -\frac{\pi}{4} + 2\pi n,\\x &= -\frac{3\pi}{4} + 2\pi n,\end{aligned}\; n \in \mathbb{Z}\)</button></div>
+          </section>
+          <section class="choice-group">
+            <h3>Углы с π/3</h3>
+            <div class="choice-group-buttons"><button type="button" class="choice-btn" data-val="\(x = \frac{\pi}{3} + \pi n,\; n \in \mathbb{Z}\)">\(x = \frac{\pi}{3} + \pi n,\; n \in \mathbb{Z}\)</button><button type="button" class="choice-btn" data-val="\(x = -\frac{\pi}{3} + \pi n,\; n \in \mathbb{Z}\)">\(x = -\frac{\pi}{3} + \pi n,\; n \in \mathbb{Z}\)</button><button type="button" class="choice-btn" data-val="\(x = \pm\frac{\pi}{3} + 2\pi n,\; n \in \mathbb{Z}\)">\(x = \pm\frac{\pi}{3} + 2\pi n,\; n \in \mathbb{Z}\)</button><button type="button" class="choice-btn" data-val="\(x = \pm\frac{2\pi}{3} + 2\pi n,\; n \in \mathbb{Z}\)">\(x = \pm\frac{2\pi}{3} + 2\pi n,\; n \in \mathbb{Z}\)</button><button type="button" class="choice-btn" data-val="\(\begin{aligned}x &= \frac{\pi}{3} + 2\pi n,\\x &= \frac{2\pi}{3} + 2\pi n,\end{aligned}\; n \in \mathbb{Z}\)">\(\begin{aligned}x &= \frac{\pi}{3} + 2\pi n,\\x &= \frac{2\pi}{3} + 2\pi n,\end{aligned}\; n \in \mathbb{Z}\)</button><button type="button" class="choice-btn" data-val="\(\begin{aligned}x &= -\frac{\pi}{3} + 2\pi n,\\x &= -\frac{2\pi}{3} + 2\pi n,\end{aligned}\; n \in \mathbb{Z}\)">\(\begin{aligned}x &= -\frac{\pi}{3} + 2\pi n,\\x &= -\frac{2\pi}{3} + 2\pi n,\end{aligned}\; n \in \mathbb{Z}\)</button></div>
+          </section></div>
         </div>
         <div id="big-feedback-error"></div>
         <div id="correct-answer-error"></div>
     </div>
     <script>
 window.TRAINER_CONFIG = {
-  "id": "логарифмы по одному",
-  "title": "Логарифмы",
+  "id": "простейшие тригонометрические уравнения",
+  "title": "Простейшие тригонометрические уравнения",
   "engine": "card",
   "theme": {
     "bg": [
-      "#c4a985",
-      "#9c7b50",
-      "#6d502b"
+      "#fffef8",
+      "#f7efd9",
+      "#e9ddbc"
     ],
-    "accent": "#4a3025",
-    "accentLight": "#4a3025",
-    "progressText": "#3d2317",
-    "cardMuted": "#5c3d2e",
-    "inputWidth": "100px",
-    "mathFontSize": "2.2em"
+    "accent": "#5b4828",
+    "accentLight": "#745f37",
+    "progressText": "#4c3c22",
+    "cardMuted": "#74664b",
+    "inputWidth": "150px",
+    "mathFontSize": "2.8em",
+    "bodyMaxWidth": "1500px"
   },
   "tasks": [
     {
-      "q": "\\(\\log_2 1 = \\)",
-      "a": "0"
+      "q": "\\(\\sin x = 0\\)",
+      "a": "\\(x = \\pi n,\\; n \\in \\mathbb{Z}\\)",
+      "displayAnswer": "x = πn, n ∈ Z"
     },
     {
-      "q": "\\(\\log_2 2 = \\)",
-      "a": "1"
+      "q": "\\(\\sin x = 1\\)",
+      "a": "\\(x = \\frac{\\pi}{2} + 2\\pi n,\\; n \\in \\mathbb{Z}\\)",
+      "displayAnswer": "x = π/2 + 2πn, n ∈ Z"
     },
     {
-      "q": "\\(\\log_3 3 = \\)",
-      "a": "1"
+      "q": "\\(\\sin x = -1\\)",
+      "a": "\\(x = -\\frac{\\pi}{2} + 2\\pi n,\\; n \\in \\mathbb{Z}\\)",
+      "displayAnswer": "x = −π/2 + 2πn, n ∈ Z"
     },
     {
-      "q": "\\(\\log_2 4 = \\)",
-      "a": "2"
+      "q": "\\(\\cos x = 0\\)",
+      "a": "\\(x = \\frac{\\pi}{2} + \\pi n,\\; n \\in \\mathbb{Z}\\)",
+      "displayAnswer": "x = π/2 + πn, n ∈ Z"
     },
     {
-      "q": "\\(\\log_3 9 = \\)",
-      "a": "2"
+      "q": "\\(\\cos x = 1\\)",
+      "a": "\\(x = 2\\pi n,\\; n \\in \\mathbb{Z}\\)",
+      "displayAnswer": "x = 2πn, n ∈ Z"
     },
     {
-      "q": "\\(\\log_4 16 = \\)",
-      "a": "2"
+      "q": "\\(\\cos x = -1\\)",
+      "a": "\\(x = \\pi + 2\\pi n,\\; n \\in \\mathbb{Z}\\)",
+      "displayAnswer": "x = π + 2πn, n ∈ Z"
     },
     {
-      "q": "\\(\\log_5 25 = \\)",
-      "a": "2"
+      "q": "\\(\\sin x = \\frac{1}{2}\\)",
+      "a": "\\(\\begin{aligned}x &= \\frac{\\pi}{6} + 2\\pi n,\\\\x &= \\frac{5\\pi}{6} + 2\\pi n,\\end{aligned}\\; n \\in \\mathbb{Z}\\)",
+      "displayAnswer": "x = π/6 + 2πn или 5π/6 + 2πn"
     },
     {
-      "q": "\\(\\log_6 36 = \\)",
-      "a": "2"
+      "q": "\\(\\sin x = -\\frac{1}{2}\\)",
+      "a": "\\(\\begin{aligned}x &= -\\frac{\\pi}{6} + 2\\pi n,\\\\x &= -\\frac{5\\pi}{6} + 2\\pi n,\\end{aligned}\\; n \\in \\mathbb{Z}\\)",
+      "displayAnswer": "x = −π/6 + 2πn или −5π/6 + 2πn"
     },
     {
-      "q": "\\(\\log_7 49 = \\)",
-      "a": "2"
+      "q": "\\(\\sin x = \\frac{\\sqrt{2}}{2}\\)",
+      "a": "\\(\\begin{aligned}x &= \\frac{\\pi}{4} + 2\\pi n,\\\\x &= \\frac{3\\pi}{4} + 2\\pi n,\\end{aligned}\\; n \\in \\mathbb{Z}\\)",
+      "displayAnswer": "x = π/4 + 2πn или 3π/4 + 2πn"
     },
     {
-      "q": "\\(\\log_8 64 = \\)",
-      "a": "2"
+      "q": "\\(\\sin x = -\\frac{\\sqrt{2}}{2}\\)",
+      "a": "\\(\\begin{aligned}x &= -\\frac{\\pi}{4} + 2\\pi n,\\\\x &= -\\frac{3\\pi}{4} + 2\\pi n,\\end{aligned}\\; n \\in \\mathbb{Z}\\)",
+      "displayAnswer": "x = −π/4 + 2πn или −3π/4 + 2πn"
     },
     {
-      "q": "\\(\\log_9 81 = \\)",
-      "a": "2"
+      "q": "\\(\\sin x = \\frac{\\sqrt{3}}{2}\\)",
+      "a": "\\(\\begin{aligned}x &= \\frac{\\pi}{3} + 2\\pi n,\\\\x &= \\frac{2\\pi}{3} + 2\\pi n,\\end{aligned}\\; n \\in \\mathbb{Z}\\)",
+      "displayAnswer": "x = π/3 + 2πn или 2π/3 + 2πn"
     },
     {
-      "q": "\\(\\log_2 8 = \\)",
-      "a": "3"
+      "q": "\\(\\sin x = -\\frac{\\sqrt{3}}{2}\\)",
+      "a": "\\(\\begin{aligned}x &= -\\frac{\\pi}{3} + 2\\pi n,\\\\x &= -\\frac{2\\pi}{3} + 2\\pi n,\\end{aligned}\\; n \\in \\mathbb{Z}\\)",
+      "displayAnswer": "x = −π/3 + 2πn или −2π/3 + 2πn"
     },
     {
-      "q": "\\(\\log_3 27 = \\)",
-      "a": "3"
+      "q": "\\(\\cos x = \\frac{\\sqrt{3}}{2}\\)",
+      "a": "\\(x = \\pm\\frac{\\pi}{6} + 2\\pi n,\\; n \\in \\mathbb{Z}\\)",
+      "displayAnswer": "x = ±π/6 + 2πn, n ∈ Z"
     },
     {
-      "q": "\\(\\log_4 64 = \\)",
-      "a": "3"
+      "q": "\\(\\cos x = -\\frac{\\sqrt{3}}{2}\\)",
+      "a": "\\(x = \\pm\\frac{5\\pi}{6} + 2\\pi n,\\; n \\in \\mathbb{Z}\\)",
+      "displayAnswer": "x = ±5π/6 + 2πn, n ∈ Z"
     },
     {
-      "q": "\\(\\log_5 125 = \\)",
-      "a": "3"
+      "q": "\\(\\cos x = \\frac{\\sqrt{2}}{2}\\)",
+      "a": "\\(x = \\pm\\frac{\\pi}{4} + 2\\pi n,\\; n \\in \\mathbb{Z}\\)",
+      "displayAnswer": "x = ±π/4 + 2πn, n ∈ Z"
     },
     {
-      "q": "\\(\\log_6 216 = \\)",
-      "a": "3"
+      "q": "\\(\\cos x = -\\frac{\\sqrt{2}}{2}\\)",
+      "a": "\\(x = \\pm\\frac{3\\pi}{4} + 2\\pi n,\\; n \\in \\mathbb{Z}\\)",
+      "displayAnswer": "x = ±3π/4 + 2πn, n ∈ Z"
     },
     {
-      "q": "\\(\\log_7 343 = \\)",
-      "a": "3"
+      "q": "\\(\\cos x = \\frac{1}{2}\\)",
+      "a": "\\(x = \\pm\\frac{\\pi}{3} + 2\\pi n,\\; n \\in \\mathbb{Z}\\)",
+      "displayAnswer": "x = ±π/3 + 2πn, n ∈ Z"
     },
     {
-      "q": "\\(\\log_8 512 = \\)",
-      "a": "3"
+      "q": "\\(\\cos x = -\\frac{1}{2}\\)",
+      "a": "\\(x = \\pm\\frac{2\\pi}{3} + 2\\pi n,\\; n \\in \\mathbb{Z}\\)",
+      "displayAnswer": "x = ±2π/3 + 2πn, n ∈ Z"
     },
     {
-      "q": "\\(\\log_9 729 = \\)",
-      "a": "3"
+      "q": "\\(\\tg x = \\frac{\\sqrt{3}}{3}\\)",
+      "a": "\\(x = \\frac{\\pi}{6} + \\pi n,\\; n \\in \\mathbb{Z}\\)",
+      "displayAnswer": "x = π/6 + πn, n ∈ Z"
     },
     {
-      "q": "\\(\\log_2 16 = \\)",
-      "a": "4"
+      "q": "\\(\\tg x = -\\frac{\\sqrt{3}}{3}\\)",
+      "a": "\\(x = -\\frac{\\pi}{6} + \\pi n,\\; n \\in \\mathbb{Z}\\)",
+      "displayAnswer": "x = −π/6 + πn, n ∈ Z"
     },
     {
-      "q": "\\(\\log_3 81 = \\)",
-      "a": "4"
+      "q": "\\(\\tg x = 1\\)",
+      "a": "\\(x = \\frac{\\pi}{4} + \\pi n,\\; n \\in \\mathbb{Z}\\)",
+      "displayAnswer": "x = π/4 + πn, n ∈ Z"
     },
     {
-      "q": "\\(\\log_4 256 = \\)",
-      "a": "4"
+      "q": "\\(\\tg x = -1\\)",
+      "a": "\\(x = -\\frac{\\pi}{4} + \\pi n,\\; n \\in \\mathbb{Z}\\)",
+      "displayAnswer": "x = −π/4 + πn, n ∈ Z"
     },
     {
-      "q": "\\(\\log_5 625 = \\)",
-      "a": "4"
+      "q": "\\(\\tg x = \\sqrt{3}\\)",
+      "a": "\\(x = \\frac{\\pi}{3} + \\pi n,\\; n \\in \\mathbb{Z}\\)",
+      "displayAnswer": "x = π/3 + πn, n ∈ Z"
     },
     {
-      "q": "\\(\\log_6 1296 = \\)",
-      "a": "4"
+      "q": "\\(\\tg x = -\\sqrt{3}\\)",
+      "a": "\\(x = -\\frac{\\pi}{3} + \\pi n,\\; n \\in \\mathbb{Z}\\)",
+      "displayAnswer": "x = −π/3 + πn, n ∈ Z"
     },
     {
-      "q": "\\(\\log_2 32 = \\)",
-      "a": "5"
+      "q": "\\(\\ctg x = \\sqrt{3}\\)",
+      "a": "\\(x = \\frac{\\pi}{6} + \\pi n,\\; n \\in \\mathbb{Z}\\)",
+      "displayAnswer": "x = π/6 + πn, n ∈ Z"
     },
     {
-      "q": "\\(\\log_3 243 = \\)",
-      "a": "5"
+      "q": "\\(\\ctg x = -\\sqrt{3}\\)",
+      "a": "\\(x = -\\frac{\\pi}{6} + \\pi n,\\; n \\in \\mathbb{Z}\\)",
+      "displayAnswer": "x = −π/6 + πn, n ∈ Z"
     },
     {
-      "q": "\\(\\log_4 1024 = \\)",
-      "a": "5"
+      "q": "\\(\\ctg x = 1\\)",
+      "a": "\\(x = \\frac{\\pi}{4} + \\pi n,\\; n \\in \\mathbb{Z}\\)",
+      "displayAnswer": "x = π/4 + πn, n ∈ Z"
     },
     {
-      "q": "\\(\\log_2 64 = \\)",
-      "a": "6"
+      "q": "\\(\\ctg x = -1\\)",
+      "a": "\\(x = -\\frac{\\pi}{4} + \\pi n,\\; n \\in \\mathbb{Z}\\)",
+      "displayAnswer": "x = −π/4 + πn, n ∈ Z"
     },
     {
-      "q": "\\(\\log_3 729 = \\)",
-      "a": "6"
+      "q": "\\(\\ctg x = \\frac{\\sqrt{3}}{3}\\)",
+      "a": "\\(x = \\frac{\\pi}{3} + \\pi n,\\; n \\in \\mathbb{Z}\\)",
+      "displayAnswer": "x = π/3 + πn, n ∈ Z"
     },
     {
-      "q": "\\(\\log_2 128 = \\)",
-      "a": "7"
-    },
-    {
-      "q": "\\(\\log_2 256 = \\)",
-      "a": "8"
-    },
-    {
-      "q": "\\(\\log_2 512 = \\)",
-      "a": "9"
-    },
-    {
-      "q": "\\(\\log_2 1024 = \\)",
-      "a": "10"
+      "q": "\\(\\ctg x = -\\frac{\\sqrt{3}}{3}\\)",
+      "a": "\\(x = -\\frac{\\pi}{3} + \\pi n,\\; n \\in \\mathbb{Z}\\)",
+      "displayAnswer": "x = −π/3 + πn, n ∈ Z"
     }
   ],
   "sprintSize": 5,
   "normMode": "basic",
-  "showRoundBadge": true,
-  "_inputmode": "numeric",
-  "keyboardMode": "numeric"
+  "inputMode": "choice",
+  "retryUntilCorrect": true,
+  "choiceLayout": "formula-grid",
+  "choiceGroups": [
+    {
+      "title": "Особые случаи",
+      "columns": 2,
+      "choices": [
+        "\\(x = \\frac{\\pi}{2} + \\pi n,\\; n \\in \\mathbb{Z}\\)",
+        "\\(x = \\pi + 2\\pi n,\\; n \\in \\mathbb{Z}\\)",
+        "\\(x = \\frac{\\pi}{2} + 2\\pi n,\\; n \\in \\mathbb{Z}\\)",
+        "\\(x = \\pi n,\\; n \\in \\mathbb{Z}\\)",
+        "\\(x = -\\frac{\\pi}{2} + 2\\pi n,\\; n \\in \\mathbb{Z}\\)",
+        "\\(x = 2\\pi n,\\; n \\in \\mathbb{Z}\\)"
+      ]
+    },
+    {
+      "title": "Углы с π/6",
+      "choices": [
+        "\\(x = \\frac{\\pi}{6} + \\pi n,\\; n \\in \\mathbb{Z}\\)",
+        "\\(x = -\\frac{\\pi}{6} + \\pi n,\\; n \\in \\mathbb{Z}\\)",
+        "\\(x = \\pm\\frac{\\pi}{6} + 2\\pi n,\\; n \\in \\mathbb{Z}\\)",
+        "\\(x = \\pm\\frac{5\\pi}{6} + 2\\pi n,\\; n \\in \\mathbb{Z}\\)",
+        "\\(\\begin{aligned}x &= \\frac{\\pi}{6} + 2\\pi n,\\\\x &= \\frac{5\\pi}{6} + 2\\pi n,\\end{aligned}\\; n \\in \\mathbb{Z}\\)",
+        "\\(\\begin{aligned}x &= -\\frac{\\pi}{6} + 2\\pi n,\\\\x &= -\\frac{5\\pi}{6} + 2\\pi n,\\end{aligned}\\; n \\in \\mathbb{Z}\\)"
+      ]
+    },
+    {
+      "title": "Углы с π/4",
+      "choices": [
+        "\\(x = \\frac{\\pi}{4} + \\pi n,\\; n \\in \\mathbb{Z}\\)",
+        "\\(x = -\\frac{\\pi}{4} + \\pi n,\\; n \\in \\mathbb{Z}\\)",
+        "\\(x = \\pm\\frac{\\pi}{4} + 2\\pi n,\\; n \\in \\mathbb{Z}\\)",
+        "\\(x = \\pm\\frac{3\\pi}{4} + 2\\pi n,\\; n \\in \\mathbb{Z}\\)",
+        "\\(\\begin{aligned}x &= \\frac{\\pi}{4} + 2\\pi n,\\\\x &= \\frac{3\\pi}{4} + 2\\pi n,\\end{aligned}\\; n \\in \\mathbb{Z}\\)",
+        "\\(\\begin{aligned}x &= -\\frac{\\pi}{4} + 2\\pi n,\\\\x &= -\\frac{3\\pi}{4} + 2\\pi n,\\end{aligned}\\; n \\in \\mathbb{Z}\\)"
+      ]
+    },
+    {
+      "title": "Углы с π/3",
+      "choices": [
+        "\\(x = \\frac{\\pi}{3} + \\pi n,\\; n \\in \\mathbb{Z}\\)",
+        "\\(x = -\\frac{\\pi}{3} + \\pi n,\\; n \\in \\mathbb{Z}\\)",
+        "\\(x = \\pm\\frac{\\pi}{3} + 2\\pi n,\\; n \\in \\mathbb{Z}\\)",
+        "\\(x = \\pm\\frac{2\\pi}{3} + 2\\pi n,\\; n \\in \\mathbb{Z}\\)",
+        "\\(\\begin{aligned}x &= \\frac{\\pi}{3} + 2\\pi n,\\\\x &= \\frac{2\\pi}{3} + 2\\pi n,\\end{aligned}\\; n \\in \\mathbb{Z}\\)",
+        "\\(\\begin{aligned}x &= -\\frac{\\pi}{3} + 2\\pi n,\\\\x &= -\\frac{2\\pi}{3} + 2\\pi n,\\end{aligned}\\; n \\in \\mathbb{Z}\\)"
+      ]
+    }
+  ],
+  "_inputmode": null,
+  "keyboardMode": null
 };
     </script>
     <script>

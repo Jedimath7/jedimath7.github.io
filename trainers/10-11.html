@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тренажёры по математике для 10–11 класса</title>
+    <meta name="description" content="Тренажёры по математике для 10–11 класса, сгруппированные по темам: тригонометрия, логарифмы и другие разделы.">
+    <link rel="canonical" href="https://bakhadov.ru/trainers/10-11.html">
+
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://bakhadov.ru/trainers/10-11.html">
+    <meta property="og:title" content="Тренажёры для 10–11 класса">
+    <meta property="og:description" content="Тематические тренажёры по математике для системной отработки навыков.">
+    <meta property="og:image" content="https://bakhadov.ru/trainers/icons/icon-512.png">
+    <meta property="og:locale" content="ru_RU">
+
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&family=EB+Garamond:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="manifest" href="/trainers/manifest.webmanifest">
+    <meta name="theme-color" content="#131A1F">
+    <link rel="icon" href="/trainers/icons/icon-192.png">
+    <link rel="apple-touch-icon" href="/trainers/icons/apple-touch-icon.png">
+
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            min-height: 100vh;
+            font-family: 'EB Garamond', serif;
+            line-height: 1.6;
+            color: #ece6d8;
+            background: radial-gradient(circle at 50% 18%, #1d2a30 0%, #131a1f 62%, #0f151a 100%);
+            background-attachment: fixed;
+        }
+
+        .container {
+            width: min(880px, 100%);
+            margin: 0 auto;
+            padding: 28px 24px 80px;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            min-height: 44px;
+            margin-bottom: 36px;
+            color: #c9a86a;
+            text-decoration: none;
+            font-size: 1.02em;
+        }
+
+        .back-link:hover,
+        .back-link:focus-visible { color: #e4c892; }
+
+        .back-link:focus-visible,
+        .trainer-row:focus-visible {
+            outline: 3px solid rgba(228, 200, 146, 0.8);
+            outline-offset: 3px;
+        }
+
+        .hero {
+            text-align: center;
+            margin-bottom: 54px;
+        }
+
+        .hero .eyebrow {
+            margin-bottom: 8px;
+            color: #a7aea9;
+            font-size: 0.95em;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+        }
+
+        .hero h1 {
+            color: #e4c892;
+            font-family: 'Cinzel', serif;
+            font-size: clamp(1.8rem, 5vw, 2.4rem);
+            line-height: 1.2;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+        }
+
+        .hero h1::after {
+            content: '';
+            display: block;
+            width: min(320px, 60%);
+            height: 2px;
+            margin: 20px auto 0;
+            background: linear-gradient(90deg, transparent, #c9a86a, transparent);
+        }
+
+        .hero p {
+            max-width: 620px;
+            margin: 18px auto 0;
+            color: #a7aea9;
+            font-size: 1.12em;
+        }
+
+        .topic-section {
+            margin-top: 14px;
+        }
+
+        .topic-section:first-of-type {
+            margin-top: 0;
+        }
+
+        .topic-heading {
+            margin: 0;
+        }
+
+        .topic-toggle {
+            width: 100%;
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto 24px;
+            gap: 16px;
+            align-items: center;
+            padding: 21px 22px;
+            border: 1px solid rgba(201, 168, 106, 0.3);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.045);
+            color: #e4c892;
+            font-family: 'Cinzel', serif;
+            font-size: 1.35em;
+            text-align: left;
+            cursor: pointer;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.16);
+            transition: border-color 0.2s ease, background 0.2s ease;
+        }
+
+        .topic-toggle:hover,
+        .topic-toggle:focus-visible {
+            border-color: rgba(201, 168, 106, 0.7);
+            background: rgba(201, 168, 106, 0.09);
+        }
+
+        .topic-toggle:focus-visible {
+            outline: 3px solid rgba(228, 200, 146, 0.8);
+            outline-offset: 3px;
+        }
+
+        .topic-count {
+            color: #a7aea9;
+            font-family: 'EB Garamond', serif;
+            font-size: 0.72em;
+            font-weight: 400;
+            white-space: nowrap;
+        }
+
+        .topic-chevron {
+            width: 12px;
+            height: 12px;
+            border-right: 2px solid currentColor;
+            border-bottom: 2px solid currentColor;
+            transform: rotate(45deg) translate(-2px, -2px);
+            transition: transform 0.3s ease;
+        }
+
+        .topic-section.is-open .topic-chevron {
+            transform: rotate(225deg) translate(-2px, -2px);
+        }
+
+        .topic-panel {
+            display: grid;
+            grid-template-rows: 0fr;
+            opacity: 0;
+            transition: grid-template-rows 0.32s ease, opacity 0.24s ease;
+        }
+
+        .topic-panel[hidden] {
+            display: none;
+        }
+
+        .topic-section.is-open .topic-panel {
+            grid-template-rows: 1fr;
+            opacity: 1;
+        }
+
+        .topic-panel-inner {
+            min-height: 0;
+            overflow: hidden;
+        }
+
+        .trainer-list,
+        .nested-list {
+            list-style: none;
+        }
+
+        .trainer-list {
+            display: grid;
+            gap: 12px;
+            padding: 12px 0 4px;
+        }
+
+        .trainer-row {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            gap: 14px 24px;
+            align-items: center;
+            min-height: 96px;
+            padding: 18px 20px;
+            border: 1px solid rgba(201, 168, 106, 0.22);
+            border-radius: 9px;
+            background: rgba(255, 255, 255, 0.035);
+            color: inherit;
+            text-decoration: none;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.16);
+            transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+        }
+
+        .trainer-row:hover {
+            transform: translateY(-2px);
+            border-color: rgba(201, 168, 106, 0.55);
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .trainer-name {
+            display: block;
+            color: #ece6d8;
+            font-family: 'Cinzel', serif;
+            font-size: 1.05em;
+            line-height: 1.35;
+        }
+
+        .trainer-description {
+            display: block;
+            margin-top: 4px;
+            color: #a7aea9;
+            font-size: 0.98em;
+        }
+
+        .trainer-meta {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            white-space: nowrap;
+        }
+
+        .task-count {
+            color: #8f9892;
+            font-size: 0.9em;
+        }
+
+        .open-label {
+            display: inline-block;
+            padding: 6px 18px;
+            border: 1px solid rgba(201, 168, 106, 0.65);
+            border-radius: 20px;
+            color: #e4c892;
+            font-weight: 700;
+        }
+
+        .subtopic {
+            margin-top: 18px;
+            padding-left: 20px;
+            border-left: 1px solid rgba(201, 168, 106, 0.3);
+        }
+
+        .subtopic > h3 {
+            margin-bottom: 12px;
+            color: #d5c4a2;
+            font-size: 1.1em;
+        }
+
+        .nested-list {
+            display: grid;
+            gap: 12px;
+        }
+
+        .empty-state {
+            padding: 24px;
+            border: 1px dashed rgba(201, 168, 106, 0.3);
+            border-radius: 9px;
+            color: #a7aea9;
+            text-align: center;
+        }
+
+        .footer {
+            margin-top: 64px;
+            color: #8a8472;
+            font-size: 0.85em;
+            text-align: center;
+        }
+
+        @media (max-width: 640px) {
+            .container { padding: 20px 16px 56px; }
+            .back-link { margin-bottom: 24px; }
+            .hero { margin-bottom: 42px; }
+            .hero p { font-size: 1em; }
+            .topic-toggle {
+                grid-template-columns: minmax(0, 1fr) 20px;
+                gap: 2px 12px;
+                padding: 17px 16px;
+                font-size: 1.12em;
+            }
+            .topic-title {
+                grid-column: 1;
+                grid-row: 1;
+            }
+            .topic-count {
+                grid-column: 1;
+                grid-row: 2;
+                justify-self: start;
+                font-size: 0.78em;
+            }
+            .topic-chevron {
+                grid-column: 2;
+                grid-row: 1 / span 2;
+                align-self: center;
+            }
+            .trainer-row {
+                grid-template-columns: 1fr;
+                gap: 12px;
+                padding: 16px;
+            }
+            .trainer-meta { justify-content: space-between; }
+            .subtopic { padding-left: 12px; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .trainer-row,
+            .topic-toggle,
+            .topic-chevron,
+            .topic-panel { transition: none; }
+            .trainer-row:hover { transform: none; }
+        }
+    </style>
+</head>
+<body>
+<main class="container">
+    <a class="back-link" href="index.html">← Все классы</a>
+
+    <header class="hero">
+        <div class="eyebrow">Математические тренажёры</div>
+        <h1>10–11 класс</h1>
+        <p>Выберите тему и отработайте один навык до автоматизма. Тренажёры расположены в рекомендуемом порядке.</p>
+    </header>
+
+    <!-- GEN:grade-10-11:start — генерируется из trainer-generator/portal-10-11.js, вручную НЕ править -->
+    <section class="topic-section" id="trigonometry">
+        <h2 class="topic-heading">
+            <button class="topic-toggle" type="button" aria-expanded="false" aria-controls="trigonometry-panel">
+                <span class="topic-title">Тригонометрия</span>
+                <span class="topic-count">6 тренажёров</span>
+                <span class="topic-chevron" aria-hidden="true"></span>
+            </button>
+        </h2>
+        <div class="topic-panel" id="trigonometry-panel" aria-hidden="true" hidden>
+            <div class="topic-panel-inner">
+                <ul class="trainer-list">
+        <li class="trainer-node">
+            <a class="trainer-row" href="trainers/тренажер - радианы в градусы.html" target="_blank" rel="noopener">
+                <span class="trainer-copy">
+                    <span class="trainer-name">Радианы ↔ градусы</span>
+                    <span class="trainer-description">Перевод радиан в градусы и обратно</span>
+                </span>
+                <span class="trainer-meta">
+                    <span class="task-count">16 заданий</span>
+                    <span class="open-label">Открыть</span>
+                </span>
+            </a>
+        </li>
+        <li class="trainer-node">
+            <a class="trainer-row" href="trainers/тренажер - sin cos.html" target="_blank" rel="noopener">
+                <span class="trainer-copy">
+                    <span class="trainer-name">Табличные значения sin/cos</span>
+                    <span class="trainer-description">sin 0°–360°, cos 0°–360° — все табличные углы</span>
+                </span>
+                <span class="trainer-meta">
+                    <span class="task-count">34 задания</span>
+                    <span class="open-label">Открыть</span>
+                </span>
+            </a>
+        </li>
+        <li class="trainer-node">
+            <a class="trainer-row" href="trainers/тренажер - tg ctg.html" target="_blank" rel="noopener">
+                <span class="trainer-copy">
+                    <span class="trainer-name">Табличные значения tg/ctg</span>
+                    <span class="trainer-description">tg 0°–180°, ctg 30°–180° — все табличные углы</span>
+                </span>
+                <span class="trainer-meta">
+                    <span class="task-count">17 заданий</span>
+                    <span class="open-label">Открыть</span>
+                </span>
+            </a>
+        </li>
+        <li class="trainer-node">
+            <a class="trainer-row" href="trainers/тренажер - формулы приведения.html" target="_blank" rel="noopener">
+                <span class="trainer-copy">
+                    <span class="trainer-name">Формулы приведения</span>
+                    <span class="trainer-description">sin, cos, tg, ctg — приведение к углу α</span>
+                </span>
+                <span class="trainer-meta">
+                    <span class="task-count">36 заданий</span>
+                    <span class="open-label">Открыть</span>
+                </span>
+            </a>
+        </li>
+        <li class="trainer-node">
+            <a class="trainer-row" href="trainers/тренажер - основное тригонометрическое тождество.html" target="_blank" rel="noopener">
+                <span class="trainer-copy">
+                    <span class="trainer-name">Основное тригонометрическое тождество</span>
+                    <span class="trainer-description">sin²x + cos²x = 1 — поиск sin, cos, tg по четвертям</span>
+                </span>
+                <span class="trainer-meta">
+                    <span class="task-count">39 заданий</span>
+                    <span class="open-label">Открыть</span>
+                </span>
+            </a>
+        </li>
+        <li class="trainer-node">
+            <a class="trainer-row" href="trainers/тренажер - простейшие тригонометрические уравнения.html" target="_blank" rel="noopener">
+                <span class="trainer-copy">
+                    <span class="trainer-name">Простейшие тригонометрические уравнения</span>
+                    <span class="trainer-description">sin, cos, tg, ctg — выбор общей формулы решения касанием</span>
+                </span>
+                <span class="trainer-meta">
+                    <span class="task-count">30 заданий</span>
+                    <span class="open-label">Открыть</span>
+                </span>
+            </a>
+        </li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section class="topic-section" id="logarithms">
+        <h2 class="topic-heading">
+            <button class="topic-toggle" type="button" aria-expanded="false" aria-controls="logarithms-panel">
+                <span class="topic-title">Логарифмы</span>
+                <span class="topic-count">3 тренажёра</span>
+                <span class="topic-chevron" aria-hidden="true"></span>
+            </button>
+        </h2>
+        <div class="topic-panel" id="logarithms-panel" aria-hidden="true" hidden>
+            <div class="topic-panel-inner">
+                <ul class="trainer-list">
+        <li class="trainer-node">
+            <a class="trainer-row" href="trainers/тренажер - логарифмы по одному.html" target="_blank" rel="noopener">
+                <span class="trainer-copy">
+                    <span class="trainer-name">Логарифмы (простые)</span>
+                    <span class="trainer-description">log₂2–log₂1024, только целые ответы</span>
+                </span>
+                <span class="trainer-meta">
+                    <span class="task-count">33 задания</span>
+                    <span class="open-label">Открыть</span>
+                </span>
+            </a>
+        </li>
+        <li class="trainer-node">
+            <a class="trainer-row" href="trainers/тренажер - логарифмы.html" target="_blank" rel="noopener">
+                <span class="trainer-copy">
+                    <span class="trainer-name">Логарифмы (сложный)</span>
+                    <span class="trainer-description">Отрицательные, дробные, десятичные — расширенный набор</span>
+                </span>
+                <span class="trainer-meta">
+                    <span class="task-count">24 задания</span>
+                    <span class="open-label">Открыть</span>
+                </span>
+            </a>
+        </li>
+        <li class="trainer-node">
+            <a class="trainer-row" href="trainers/тренажер - свойства логарифмов.html" target="_blank" rel="noopener">
+                <span class="trainer-copy">
+                    <span class="trainer-name">Свойства логарифмов</span>
+                    <span class="trainer-description">Сумма, разность, умножение, смена основания, a^(logₐx)=x</span>
+                </span>
+                <span class="trainer-meta">
+                    <span class="task-count">50 заданий</span>
+                    <span class="open-label">Открыть</span>
+                </span>
+            </a>
+        </li>
+                </ul>
+            </div>
+        </div>
+    </section>
+    <!-- GEN:grade-10-11:end -->
+
+    <footer class="footer">Системная отработка навыков</footer>
+</main>
+
+<script>
+const topicSections = Array.from(document.querySelectorAll('.topic-section'));
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+function closeTopic(section) {
+    const button = section.querySelector('.topic-toggle');
+    const panel = section.querySelector('.topic-panel');
+    section.classList.remove('is-open');
+    button.setAttribute('aria-expanded', 'false');
+    panel.setAttribute('aria-hidden', 'true');
+    window.setTimeout(function() {
+        if (!section.classList.contains('is-open')) panel.hidden = true;
+    }, reduceMotion ? 0 : 320);
+}
+
+function openTopic(section) {
+    topicSections.forEach(function(other) {
+        if (other !== section && other.classList.contains('is-open')) closeTopic(other);
+    });
+    const button = section.querySelector('.topic-toggle');
+    const panel = section.querySelector('.topic-panel');
+    panel.hidden = false;
+    panel.setAttribute('aria-hidden', 'false');
+    button.setAttribute('aria-expanded', 'true');
+    window.requestAnimationFrame(function() {
+        section.classList.add('is-open');
+    });
+}
+
+topicSections.forEach(function(section) {
+    section.querySelector('.topic-toggle').addEventListener('click', function() {
+        if (section.classList.contains('is-open')) closeTopic(section);
+        else openTopic(section);
+    });
+});
+
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('/trainers/sw.js');
+</script>
+</body>
+</html>

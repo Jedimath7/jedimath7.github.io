@@ -10,6 +10,8 @@
     <meta name="theme-color" content="#131A1F">
     <link rel="icon" href="/trainers/icons/icon-192.png">
     <link rel="apple-touch-icon" href="/trainers/icons/apple-touch-icon.png">
+    <link rel="canonical" href="https://bakhadov.ru/trainers/тренажер - таблица умножения.html">
+    <meta property="og:url" content="https://bakhadov.ru/trainers/тренажер - таблица умножения.html">
     <script>
 MathJax = { tex: { macros: { tg: "\\operatorname{tg}", ctg: "\\operatorname{ctg}" } } };
     </script>
@@ -812,6 +814,25 @@ svg.fig {
   color: #e8dcc0;
 }
 
+/* === Ссылка на страницу автора (видна без скролла, вверху) === */
+.author-strip {
+  text-align: center;
+  margin: -14px 0 18px;
+  font-size: 1.05em;
+}
+.author-strip a {
+  color: #c9a86a;
+  text-decoration: none;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  transition: opacity 0.2s ease;
+  text-shadow: 0 0 6px rgba(201, 168, 106, 0.2);
+}
+.author-strip a:hover {
+  opacity: 0.8;
+  text-decoration: underline;
+}
+
 /* На мобильных клавиатура чуть компактнее */
 @media (max-width: 400px) {
   #custom-keyboard {
@@ -837,11 +858,13 @@ svg.fig {
         --math-font-size: 2.8em;
         --body-max-width: 650px;
       }
+
     </style>
 </head>
 <body>
     <a class="portal-link" href="../index.html">← Все тренажёры</a>
     <a class="next-link" href="тренажер - вычитание до 100.html" title="Вычитание до 100">следующий<span class="nl-word"> тренажёр</span> →</a>
+    <div class="author-strip"><a href="https://bakhadov.ru">на страницу автора → bakhadov.ru</a></div>
     <div id="progress-row">
         <div id="progress-bar-wrap"><div id="progress-bar"></div></div>
         <div id="progress-text">0 / 128</div>
@@ -1927,6 +1950,7 @@ TrainerStorage.summary = function() {
   return s;
 };
 
+
 // engine-card.js — движок «карточка» (одно задание за раз, спринты, цитаты, streak)
 // Работает с window.TRAINER_CONFIG, установленным перед подключением этого скрипта.
 // buildNorm() поступает из norm.js, который build.js вставляет в тот же <script>-блок.
@@ -1937,10 +1961,13 @@ TrainerStorage.summary = function() {
   const FEEDBACK_DELAY = 700;
   const DUAL = C.inputMode === 'dual';
   const CHOICE = C.inputMode === 'choice';
+  const RETRY_UNTIL_CORRECT = C.retryUntilCorrect === true;
 
   const norm = buildNorm(C.normMode || 'basic');
   // №9: запись каждого ответа в localStorage (верно/ошибка, время, дата)
   const store = TrainerStorage(C.id);
+  // Инициализация прогресса навыка
+  const skillProgress = C.skillProgress && C.skillProgress.enabled ? createSkillProgress(C.skillProgress, C.id) : null;
 
   // --- shuffle ---
   // №17: взвешенная перетасовка (Efraimidis–Spirakis): ключ u^(1/w), сортировка
@@ -2047,7 +2074,9 @@ TrainerStorage.summary = function() {
   function updateProgress() {
     const pct = (totalSolved / tasks.length) * 100;
     $progressBar.style.width = pct + '%';
-    $progressText.textContent = totalSolved + ' / ' + tasks.length;
+    let txt = totalSolved + ' / ' + tasks.length;
+    if (skillProgress) { txt += ' • ' + skillProgress.state; }
+    $progressText.textContent = txt;
   }
 
   // --- Get answer (single or dual) ---
@@ -2122,6 +2151,7 @@ TrainerStorage.summary = function() {
     const task = tasks[taskIndex()];
     const ok = isCorrect(val, task);
     store.record(task.q, ok); // №9
+    if (skillProgress) { skillProgress.record(ok); }
 
     if (ok) {
       $feedback.textContent = '✓';
@@ -2136,8 +2166,10 @@ TrainerStorage.summary = function() {
     } else {
       $feedback.textContent = '✗';
       $feedback.className = 'incorrect show';
-      $correct.textContent = getCorrectDisplay(task);
-      $correct.className = 'show';
+      if (!RETRY_UNTIL_CORRECT) {
+        $correct.textContent = getCorrectDisplay(task);
+        $correct.className = 'show';
+      }
       lockAnswerUI();
       buzz();
       streakCount = 0;
@@ -2145,7 +2177,26 @@ TrainerStorage.summary = function() {
       allPerfect = false;
       if (!sprintErrors.some(function(e) { return e.q === task.q; })) { sprintErrors.push(task); }
       scheduleComeback(task); // №18: вернётся ещё раз через 2–3 спринта
-      setTimeout(function() { $feedback.className = ''; $correct.className = ''; locked = false; advanceTask(); }, FEEDBACK_DELAY + wrongExtraDelay());
+      setTimeout(function() {
+        $feedback.className = '';
+        $correct.className = '';
+        locked = false;
+        if (RETRY_UNTIL_CORRECT) {
+          store.shown();
+          if (CHOICE) {
+            choiceBtns.forEach(function(b) { b.disabled = false; b.classList.remove('chosen'); });
+          } else if (DUAL) {
+            $coefInput.value = '';
+            $radInput.value = '';
+            $coefInput.focus();
+          } else {
+            $input.value = '';
+            $input.focus();
+          }
+        } else {
+          advanceTask();
+        }
+      }, FEEDBACK_DELAY + wrongExtraDelay());
     }
   }
 
@@ -2234,6 +2285,7 @@ TrainerStorage.summary = function() {
     // серия ошибок, анимация, показ правильного ответа, очистка полей, переход дальше
     function errorFeedback(ok, clearInputs) {
       store.record(task.q, ok); // №9
+      if (skillProgress) { skillProgress.record(ok); }
       efeedback.textContent = ok ? '✓' : '✗';
       efeedback.className = ok ? 'correct' : 'incorrect';
       efeedback.style.opacity = '1'; efeedback.style.transform = 'scale(1.1)';
@@ -2242,10 +2294,29 @@ TrainerStorage.summary = function() {
         setTimeout(function() { efeedback.style.opacity = '0'; efeedback.style.transform = ''; showErrorTask(errIdx + 1); }, FEEDBACK_DELAY);
       } else {
         errorStreak++;
-        ecorrect.textContent = getCorrectDisplay(task); ecorrect.className = 'show';
+        if (!RETRY_UNTIL_CORRECT) {
+          ecorrect.textContent = getCorrectDisplay(task); ecorrect.className = 'show';
+        }
         if (clearInputs) clearInputs();
         buzz();
-        setTimeout(function() { efeedback.style.opacity = '0'; efeedback.style.transform = ''; ecorrect.className = ''; showErrorTask(errIdx + 1); }, FEEDBACK_DELAY + wrongExtraDelay());
+        setTimeout(function() {
+          efeedback.style.opacity = '0';
+          efeedback.style.transform = '';
+          ecorrect.className = '';
+          if (RETRY_UNTIL_CORRECT) {
+            answered = false;
+            store.shown();
+            if (CHOICE) {
+              errorChoiceBtns.forEach(function(b) { b.disabled = false; b.classList.remove('chosen'); });
+            } else if (DUAL) {
+              ecoef.focus();
+            } else {
+              einput.focus();
+            }
+          } else {
+            showErrorTask(errIdx + 1);
+          }
+        }, FEEDBACK_DELAY + wrongExtraDelay());
       }
     }
 
