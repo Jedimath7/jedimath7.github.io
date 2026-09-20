@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Тренажер: Сложение до 100</title>
+    <title>Тренажер: Уравнения высших степеней</title>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&family=EB+Garamond:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
     <!-- PWA: манифест приложения, цвет системной панели, иконки -->
     <link rel="manifest" href="/trainers/manifest.webmanifest">
     <meta name="theme-color" content="#131A1F">
     <link rel="icon" href="/trainers/icons/icon-192.png">
     <link rel="apple-touch-icon" href="/trainers/icons/apple-touch-icon.png">
-    <link rel="canonical" href="https://bakhadov.ru/trainers/тренажер - сложение до 100.html">
-    <meta property="og:url" content="https://bakhadov.ru/trainers/тренажер - сложение до 100.html">
+    <link rel="canonical" href="https://bakhadov.ru/trainers/тренажер - уравнения высших степеней.html">
+    <meta property="og:url" content="https://bakhadov.ru/trainers/тренажер - уравнения высших степеней.html">
     <script>
 MathJax = { tex: { macros: { tg: "\\operatorname{tg}", ctg: "\\operatorname{ctg}" } } };
     </script>
@@ -847,38 +847,239 @@ svg.fig {
 
 
       :root {
-        --bg-start: #c9c0a8;
-        --bg-mid: #a09878;
-        --bg-end: #706848;
-        --accent: #4a4530;
-        --accent-light: #585038;
-        --progress-text: #3a3028;
-        --card-muted: #5c5240;
-        --input-width: 150px;
-        --math-font-size: 2.8em;
-        --body-max-width: 650px;
+        --bg-start: #c6b49a;
+        --bg-mid: #9d896b;
+        --bg-end: #6f5c44;
+        --accent: #3e2d1b;
+        --accent-light: #5b452c;
+        --progress-text: #2e2115;
+        --card-muted: #65533d;
+        --input-width: 130px;
+        --math-font-size: 2.2em;
+        --body-max-width: 1250px;
       }
 
 
+      body.guided-choice-mode {
+        padding-top: 24px;
+        padding-bottom: 18px;
+      }
+      body.guided-choice-mode .portal-link,
+      body.guided-choice-mode .next-link {
+        top: 8px;
+        font-family: Arial, sans-serif;
+        font-size: .82rem;
+        line-height: 1.2;
+      }
+      body.guided-choice-mode .author-strip {
+        margin: -2px 0 8px;
+        font-family: Arial, sans-serif;
+        font-size: .86rem;
+        line-height: 1.2;
+      }
+      body.guided-choice-mode .author-strip a {
+        color: var(--accent);
+        font-weight: 500;
+        letter-spacing: .01em;
+        text-shadow: none;
+      }
+      body.guided-choice-mode #progress-row {
+        gap: 8px;
+        margin-bottom: 10px;
+      }
+      body.guided-choice-mode #progress-text {
+        font-size: .86rem;
+      }
+      body.guided-choice-mode h2 {
+        margin: 8px 0 14px;
+        font-size: clamp(1.45rem, 3vw, 2.2rem);
+        line-height: 1.15;
+      }
+      body.guided-choice-mode h2::after {
+        margin-top: 8px;
+      }
+      .guided-choice-card {
+        max-width: 1180px;
+        margin-left: auto;
+        margin-right: auto;
+        min-height: 0;
+        padding: 26px 20px 20px;
+      }
+      .guided-choice-card #math-expr,
+      .guided-choice-card #math-expr-error {
+        min-height: 58px;
+        padding: 8px 12px 6px;
+        font-size: clamp(1.5em, 3vw, 2.4em);
+        text-align: center;
+      }
+      body.guided-choice-mode #card {
+        margin: 14px 0 10px;
+      }
+      .guided-stage {
+        margin: 8px auto 0;
+        padding: 10px;
+        border: 1px solid rgba(92, 72, 36, 0.18);
+        border-radius: 12px;
+        background: rgba(255, 252, 232, 0.72);
+      }
+      .guided-stage h3 {
+        margin: 0 0 7px;
+        color: var(--accent);
+        font-family: 'EB Garamond', serif;
+        font-size: 1.04em;
+        text-align: center;
+      }
+      .guided-choice-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 7px;
+      }
+      .guided-choice-btn {
+        min-height: 40px;
+        padding: 6px 9px;
+        border: 1px solid rgba(92, 72, 36, 0.26);
+        border-radius: 8px;
+        background: rgba(255, 255, 250, 0.9);
+        color: var(--accent);
+        font: inherit;
+        font-size: .93em;
+        line-height: 1.12;
+        cursor: pointer;
+        transition: transform .12s ease, background .12s ease, border-color .12s ease;
+      }
+      .guided-choice-btn:hover { transform: translateY(-1px); background: #fff8d8; }
+      .guided-choice-btn.chosen { border-color: var(--accent); background: #f3e5ba; }
+      .guided-choice-btn.wrong { border-color: #a34e48; background: #f3d3cf; }
+      .guided-choice-btn:disabled { cursor: default; opacity: .78; }
+      .guided-explanation {
+        margin: 10px auto 0;
+        padding: 12px 14px;
+        border: 1px solid rgba(92, 72, 36, 0.28);
+        border-radius: 12px;
+        background: rgba(255, 249, 214, 0.9);
+        text-align: center;
+      }
+      .guided-type-explanation {
+        margin: 10px auto 0;
+        padding: 12px 14px;
+        border: 1px solid rgba(92, 72, 36, 0.28);
+        border-radius: 12px;
+        background: rgba(247, 239, 217, 0.94);
+        text-align: center;
+      }
+      .guided-type-explanation-title {
+        color: var(--accent);
+        font-weight: 700;
+        font-size: 1.12em;
+      }
+      .guided-type-explanation-reason {
+        margin: 5px auto 9px;
+        color: var(--card-muted);
+        line-height: 1.35;
+      }
+      .guided-explanation-title {
+        color: var(--accent);
+        font-weight: 700;
+        font-size: 1.14em;
+      }
+      .guided-step-counter {
+        margin-top: 5px;
+        color: var(--card-muted);
+        font-size: .92em;
+      }
+      .guided-step {
+        min-height: 50px;
+        margin: 8px auto;
+        color: var(--accent);
+        font-size: 1.17em;
+        line-height: 1.42;
+      }
+      .guided-note {
+        margin-top: 8px;
+        color: var(--card-muted);
+        font-size: .82em;
+        line-height: 1.35;
+      }
+      .guided-next-btn {
+        min-height: 38px;
+        padding: 6px 16px;
+        border: 0;
+        border-radius: 8px;
+        background: var(--accent);
+        color: #fffdf0;
+        font: inherit;
+        cursor: pointer;
+      }
+      .guided-next-btn:hover { filter: brightness(1.08); }
+      .guided-step-actions {
+        display: flex;
+        justify-content: center;
+        gap: 9px;
+      }
+      .guided-back-btn {
+        min-height: 38px;
+        padding: 6px 14px;
+        border: 1px solid var(--accent);
+        border-radius: 8px;
+        background: transparent;
+        color: var(--accent);
+        font: inherit;
+        cursor: pointer;
+      }
+      .guided-back-btn:disabled { cursor: default; opacity: .38; }
+      body.guided-choice-mode #big-feedback {
+        height: .8em;
+        font-size: 1.6em;
+      }
+      body.guided-choice-mode #correct-answer {
+        min-height: 0;
+      }
+      @media (max-width: 620px) {
+        .guided-choice-grid { grid-template-columns: 1fr; }
+        .guided-stage { padding: 10px; }
+        .guided-choice-btn { min-height: 42px; font-size: .9em; }
+        .guided-step { font-size: 1.05em; }
+      }
     </style>
 </head>
-<body>
+<body class="guided-choice-mode">
     <a class="portal-link" href="../index.html">← Все тренажёры</a>
+    <a class="next-link" href="тренажер - свойства степеней.html" title="Свойства степеней">следующий<span class="nl-word"> тренажёр</span> →</a>
     <div class="author-strip"><a href="https://bakhadov.ru">на страницу автора → bakhadov.ru</a></div>
     <div id="progress-row">
         <div id="progress-bar-wrap"><div id="progress-bar"></div></div>
-        <div id="progress-text">0 / 20</div>
+        <div id="progress-text">0 / 30</div>
     </div>
 
-    <h2>Сложение до 100</h2>
+    <h2>Уравнения высших степеней</h2>
 
-    <div id="card">
+    <div id="card" class="guided-choice-card">
         <div id="task-counter"></div>
         <div id="round-badge"></div>
-        <div id="math-row" class="">
-            <div id="math-expr"></div>
-            <input type="text" id="answer-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" inputmode="none" placeholder="?">
-            <button type="button" id="submit-btn" class="submit-btn" aria-label="Ответить">✓</button></div>
+        <div id="math-expr"></div>
+        
+      <div class="guided-stage" id="guided-type-stage">
+        <h3>1. Определи структуру</h3>
+        <div class="guided-choice-grid" id="guided-type-choices"><button type="button" class="guided-choice-btn" data-choice="polynomial-rational-root">Обычный многочлен с рациональным корнем</button><button type="button" class="guided-choice-btn" data-choice="factorization">Разложение на множители</button><button type="button" class="guided-choice-btn" data-choice="reciprocal-odd">Возвратное нечётной степени</button><button type="button" class="guided-choice-btn" data-choice="reciprocal-even">Возвратное четвёртой степени</button><button type="button" class="guided-choice-btn" data-choice="anti-reciprocal">Антивозвратное уравнение</button><button type="button" class="guided-choice-btn" data-choice="special-factor">Полный куб или общий множитель</button></div>
+      </div>
+      <div class="guided-type-explanation" id="guided-type-explanation" style="display:none">
+        <div class="guided-type-explanation-title" id="guided-type-explanation-title"></div>
+        <div class="guided-type-explanation-reason" id="guided-type-explanation-reason"></div>
+        <button type="button" class="guided-next-btn" id="guided-type-next-btn">К выбору первого шага</button>
+      </div>
+      <div class="guided-stage" id="guided-method-stage" style="display:none">
+        <h3>2. Выбери первый шаг</h3>
+        <div class="guided-choice-grid" id="guided-method-choices"><button type="button" class="guided-choice-btn" data-choice="rational-root">Подобрать рациональный корень и разделить на линейный множитель</button><button type="button" class="guided-choice-btn" data-choice="grouping">Сгруппировать слагаемые</button><button type="button" class="guided-choice-btn" data-choice="common-factor">Вынести общий множитель</button><button type="button" class="guided-choice-btn" data-choice="perfect-cube">Распознать формулу полного куба</button><button type="button" class="guided-choice-btn" data-choice="reciprocal-plus">Разделить на \(x^2\) и ввести \(t=x+\frac1x\)</button><button type="button" class="guided-choice-btn" data-choice="reciprocal-minus">Разделить на \(x^2\) и ввести \(t=x-\frac1x\)</button><button type="button" class="guided-choice-btn" data-choice="check-one">Проверить \(x=1\) или \(x=-1\) и вынести линейный множитель</button></div>
+      </div>
+      <div class="guided-explanation" id="guided-explanation" style="display:none">
+        <div class="guided-explanation-title">Разбор решения</div>
+        <div class="guided-step-counter" id="guided-step-counter"></div>
+        <div class="guided-step" id="guided-step"></div>
+        <div class="guided-step-actions">
+          <button type="button" class="guided-back-btn" id="guided-back-btn" disabled>Назад</button>
+          <button type="button" class="guided-next-btn" id="guided-next-btn">Следующий шаг</button>
+        </div>
+      </div>
     </div>
 
     <div id="big-feedback"></div>
@@ -893,149 +1094,515 @@ svg.fig {
     </div>
 
     <div id="done-message">Все задания решены без ошибок</div>
-
     <div id="streak-flash"></div>
 
     <div id="error-section">
         <h3>Работа над ошибками</h3>
-        <div id="card-error">
+        <div id="card-error" class="guided-choice-card">
             <div id="task-counter-error"></div>
-            <div class="error-math-row">
-                <div id="math-expr-error"></div>
-                <input type="text" id="error-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" inputmode="none" placeholder="?">
-                <button type="button" id="submit-btn-error" class="submit-btn" aria-label="Ответить">✓</button></div>
+            <div id="math-expr-error"></div>
+            
+      <div class="guided-stage" id="guided-type-stage-error">
+        <h3>1. Определи структуру</h3>
+        <div class="guided-choice-grid" id="guided-type-choices-error"><button type="button" class="guided-choice-btn" data-choice="polynomial-rational-root">Обычный многочлен с рациональным корнем</button><button type="button" class="guided-choice-btn" data-choice="factorization">Разложение на множители</button><button type="button" class="guided-choice-btn" data-choice="reciprocal-odd">Возвратное нечётной степени</button><button type="button" class="guided-choice-btn" data-choice="reciprocal-even">Возвратное четвёртой степени</button><button type="button" class="guided-choice-btn" data-choice="anti-reciprocal">Антивозвратное уравнение</button><button type="button" class="guided-choice-btn" data-choice="special-factor">Полный куб или общий множитель</button></div>
+      </div>
+      <div class="guided-type-explanation" id="guided-type-explanation-error" style="display:none">
+        <div class="guided-type-explanation-title" id="guided-type-explanation-title-error"></div>
+        <div class="guided-type-explanation-reason" id="guided-type-explanation-reason-error"></div>
+        <button type="button" class="guided-next-btn" id="guided-type-next-btn-error">К выбору первого шага</button>
+      </div>
+      <div class="guided-stage" id="guided-method-stage-error" style="display:none">
+        <h3>2. Выбери первый шаг</h3>
+        <div class="guided-choice-grid" id="guided-method-choices-error"><button type="button" class="guided-choice-btn" data-choice="rational-root">Подобрать рациональный корень и разделить на линейный множитель</button><button type="button" class="guided-choice-btn" data-choice="grouping">Сгруппировать слагаемые</button><button type="button" class="guided-choice-btn" data-choice="common-factor">Вынести общий множитель</button><button type="button" class="guided-choice-btn" data-choice="perfect-cube">Распознать формулу полного куба</button><button type="button" class="guided-choice-btn" data-choice="reciprocal-plus">Разделить на \(x^2\) и ввести \(t=x+\frac1x\)</button><button type="button" class="guided-choice-btn" data-choice="reciprocal-minus">Разделить на \(x^2\) и ввести \(t=x-\frac1x\)</button><button type="button" class="guided-choice-btn" data-choice="check-one">Проверить \(x=1\) или \(x=-1\) и вынести линейный множитель</button></div>
+      </div>
+      <div class="guided-explanation" id="guided-explanation-error" style="display:none">
+        <div class="guided-explanation-title">Разбор решения</div>
+        <div class="guided-step-counter" id="guided-step-counter-error"></div>
+        <div class="guided-step" id="guided-step-error"></div>
+        <div class="guided-step-actions">
+          <button type="button" class="guided-back-btn" id="guided-back-btn-error" disabled>Назад</button>
+          <button type="button" class="guided-next-btn" id="guided-next-btn-error">Следующий шаг</button>
+        </div>
+      </div>
         </div>
         <div id="big-feedback-error"></div>
         <div id="correct-answer-error"></div>
     </div>
     <script>
 window.TRAINER_CONFIG = {
-  "id": "сложение до 100",
-  "title": "Сложение до 100",
-  "engine": "card",
-  "keyboardMode": "numeric",
+  "id": "уравнения высших степеней",
+  "title": "Уравнения высших степеней",
+  "engine": "guided-choice",
+  "classes": [
+    "10-11"
+  ],
   "theme": {
     "bg": [
-      "#c9c0a8",
-      "#a09878",
-      "#706848"
+      "#c6b49a",
+      "#9d896b",
+      "#6f5c44"
     ],
-    "accent": "#4a4530",
-    "accentLight": "#585038",
-    "progressText": "#3a3028",
-    "cardMuted": "#5c5240",
-    "inputWidth": "150px",
-    "mathFontSize": "2.8em"
+    "accent": "#3e2d1b",
+    "accentLight": "#5b452c",
+    "progressText": "#2e2115",
+    "cardMuted": "#65533d",
+    "bodyMaxWidth": "1250px"
   },
   "tasks": [
     {
-      "q": "\\( 23 + 14 = \\)",
-      "a": "37",
-      "type": "no-carry"
+      "q": "\\(2x^4+7x^3-12x^2-38x+21=0\\)",
+      "type": "polynomial-rational-root",
+      "method": "rational-root",
+      "steps": [
+        "\\(r=\\pm\\frac pq,\\quad p\\mid21,\\quad q\\mid2\\)<div class=\"guided-note\">Рациональный корень ищем среди делителей свободного члена, делённых на делители старшего коэффициента: \\(\\pm1,\\pm3,\\pm7,\\pm21,\\pm\\frac12,\\pm\\frac32,\\pm\\frac72,\\pm\\frac{21}{2}\\).</div>",
+        "\\(P(-3)=0\\)<div class=\"guided-note\">Проверяем кандидаты по очереди и находим корень \\(x=-3\\).</div>",
+        "\\(P(x)=(x+3)(2x^3+x^2-15x+7)\\)<div class=\"guided-note\">Делим многочлен на линейный множитель \\(x+3\\).</div>",
+        "\\((x+3)(2x-1)(x^2+x-7)=0\\)<div class=\"guided-note\">Остаётся решить полученные уравнения меньшей степени.</div>"
+      ],
+      "section": "А"
     },
     {
-      "q": "\\( 34 + 25 = \\)",
-      "a": "59",
-      "type": "no-carry"
+      "q": "\\(x^4+2x^3-2x^2-6x+5=0\\)",
+      "type": "polynomial-rational-root",
+      "method": "rational-root",
+      "steps": [
+        "\\(r=\\pm\\frac pq,\\quad p\\mid5,\\quad q\\mid1\\)<div class=\"guided-note\">Возможные рациональные корни: \\(r=\\pm1,\\pm5\\).</div>",
+        "\\(P(1)=0\\)<div class=\"guided-note\">Проверяем кандидаты по очереди и находим корень \\(x=1\\).</div>",
+        "\\(P(x)=(x-1)(x^3+3x^2+x-5)\\)<div class=\"guided-note\">После первого деления снова проверяем корень \\(x=1\\).</div>",
+        "\\((x-1)^2(x^2+4x+5)=0\\)<div class=\"guided-note\">Повторное деление даёт квадратный множитель.</div>"
+      ],
+      "section": "А"
     },
     {
-      "q": "\\( 46 + 23 = \\)",
-      "a": "69",
-      "type": "no-carry"
+      "q": "\\(x^3-6x^2+15x-14=0\\)",
+      "type": "polynomial-rational-root",
+      "method": "rational-root",
+      "steps": [
+        "\\(r=\\pm\\frac pq,\\quad p\\mid14,\\quad q\\mid1\\)<div class=\"guided-note\">Возможные рациональные корни: \\(r=\\pm1,\\pm2,\\pm7,\\pm14\\).</div>",
+        "\\(P(2)=0\\)<div class=\"guided-note\">Проверяем кандидаты по очереди и находим корень \\(x=2\\).</div>",
+        "\\(P(x)=(x-2)(x^2-4x+7)\\)<div class=\"guided-note\">Делим кубический многочлен на \\(x-2\\).</div>",
+        "\\(x-2=0\\quad\\text{или}\\quad x^2-4x+7=0\\)<div class=\"guided-note\">Дальше отдельно решаются линейное и квадратное уравнения.</div>"
+      ],
+      "section": "А"
     },
     {
-      "q": "\\( 52 + 17 = \\)",
-      "a": "69",
-      "type": "no-carry"
+      "q": "\\(6x^4-x^3-7x^2+x+1=0\\)",
+      "type": "polynomial-rational-root",
+      "method": "rational-root",
+      "steps": [
+        "\\(r=\\pm\\frac pq,\\quad p\\mid1,\\quad q\\mid6\\)<div class=\"guided-note\">Возможные рациональные корни: \\(r=\\pm1,\\pm\\frac12,\\pm\\frac13,\\pm\\frac16\\).</div>",
+        "\\(P(1)=0\\)<div class=\"guided-note\">Проверяем кандидаты и находим корень \\(x=1\\).</div>",
+        "\\(P(x)=(x-1)(6x^3+5x^2-2x-1)\\)<div class=\"guided-note\">Делим на \\(x-1\\).</div>",
+        "\\((x-1)(x+1)(2x-1)(3x+1)=0\\)<div class=\"guided-note\">Оставшийся кубический множитель раскладывается дальше.</div>"
+      ],
+      "section": "А"
     },
     {
-      "q": "\\( 41 + 28 = \\)",
-      "a": "69",
-      "type": "no-carry"
+      "q": "\\(2x^3+12x^2+13x+15=0\\)",
+      "type": "polynomial-rational-root",
+      "method": "rational-root",
+      "steps": [
+        "\\(r=\\pm\\frac pq,\\quad p\\mid15,\\quad q\\mid2\\)<div class=\"guided-note\">Возможные рациональные корни: \\(r=\\pm1,\\pm3,\\pm5,\\pm15,\\pm\\frac12,\\pm\\frac32,\\pm\\frac52,\\pm\\frac{15}{2}\\).</div>",
+        "\\(P(-5)=0\\)<div class=\"guided-note\">Проверяем кандидаты и находим корень \\(x=-5\\).</div>",
+        "\\(P(x)=(x+5)(2x^2+2x+3)\\)<div class=\"guided-note\">Делим кубический многочлен на \\(x+5\\).</div>",
+        "\\(x+5=0\\quad\\text{или}\\quad 2x^2+2x+3=0\\)<div class=\"guided-note\">Дальше остаётся квадратное уравнение.</div>"
+      ],
+      "section": "А"
     },
     {
-      "q": "\\( 20 + 30 = \\)",
-      "a": "50",
-      "type": "round-tens"
+      "q": "\\(x^4-4x^3+7x^2-16x+12=0\\)",
+      "type": "polynomial-rational-root",
+      "method": "rational-root",
+      "steps": [
+        "\\(r=\\pm\\frac pq,\\quad p\\mid12,\\quad q\\mid1\\)<div class=\"guided-note\">Возможные рациональные корни — числа \\(\\pm1,\\pm2,\\pm3,\\pm4,\\pm6,\\pm12\\).</div>",
+        "\\(P(1)=0\\)<div class=\"guided-note\">Проверяем кандидаты и находим корень \\(x=1\\).</div>",
+        "\\(P(x)=(x-1)(x^3-3x^2+4x-12)\\)<div class=\"guided-note\">Делим на \\(x-1\\).</div>",
+        "\\(x^3-3x^2+4x-12=x^2(x-3)+4(x-3)=(x-3)(x^2+4)\\)<div class=\"guided-note\">Метод группировки: в обеих группах выносим общий множитель \\(x-3\\).</div>"
+      ],
+      "section": "А"
     },
     {
-      "q": "\\( 27 + 5 = \\)",
-      "a": "32",
-      "type": "one-digit-carry"
+      "q": "\\(x^4-9x^3+30x^2-44x+24=0\\)",
+      "type": "polynomial-rational-root",
+      "method": "rational-root",
+      "steps": [
+        "\\(r=\\pm\\frac pq,\\quad p\\mid24,\\quad q\\mid1\\)<div class=\"guided-note\">Возможные кандидаты — делители числа \\(24\\) со знаками: \\(\\pm1,\\pm2,\\pm3,\\pm4,\\pm6,\\pm8,\\pm12,\\pm24\\).</div>",
+        "\\(P(2)=0\\)<div class=\"guided-note\">Проверяем кандидаты и находим корень \\(x=2\\).</div>",
+        "\\(P(x)=(x-2)(x^3-7x^2+16x-12)\\)<div class=\"guided-note\">Делим на \\(x-2\\) и снова ищем рациональный корень.</div>",
+        "\\((x-3)(x-2)^3=0\\)<div class=\"guided-note\">После повторных делений обнаруживается кратный множитель.</div>"
+      ],
+      "section": "А"
     },
     {
-      "q": "\\( 48 + 7 = \\)",
-      "a": "55",
-      "type": "one-digit-carry"
+      "q": "\\(x^4-4x^3-13x^2+28x+12=0\\)",
+      "type": "polynomial-rational-root",
+      "method": "rational-root",
+      "steps": [
+        "\\(r=\\pm\\frac pq,\\quad p\\mid12,\\quad q\\mid1\\)<div class=\"guided-note\">Возможные рациональные корни: \\(r=\\pm1,\\pm2,\\pm3,\\pm4,\\pm6,\\pm12\\).</div>",
+        "\\(P(2)=0\\)<div class=\"guided-note\">Проверяем кандидаты и находим корень \\(x=2\\).</div>",
+        "\\(P(x)=(x-2)(x^3-2x^2-17x-6)\\)<div class=\"guided-note\">Делим на \\(x-2\\).</div>",
+        "\\((x-2)(x+3)(x^2-5x-2)=0\\)<div class=\"guided-note\">Оставшийся кубический множитель раскладывается дальше.</div>"
+      ],
+      "section": "А"
     },
     {
-      "q": "\\( 63 + 9 = \\)",
-      "a": "72",
-      "type": "one-digit-carry"
+      "q": "\\(x^5+5x^4-6x^3-44x^2+8x+96=0\\)",
+      "type": "polynomial-rational-root",
+      "method": "rational-root",
+      "steps": [
+        "\\(r=\\pm\\frac pq,\\quad p\\mid96,\\quad q\\mid1\\)<div class=\"guided-note\">Возможные кандидаты — все делители \\(96\\) со знаками: \\(\\pm1,\\pm2,\\pm3,\\pm4,\\pm6,\\pm8,\\pm12,\\pm16,\\pm24,\\pm32,\\pm48,\\pm96\\).</div>",
+        "\\(P(2)=0\\)<div class=\"guided-note\">Проверяем кандидаты и находим корень \\(x=2\\).</div>",
+        "\\(P(x)=(x-2)(x^4+7x^3+8x^2-28x-48)\\)<div class=\"guided-note\">Делим на найденный линейный множитель.</div>",
+        "\\((x-2)^2(x+2)(x+3)(x+4)=0\\)<div class=\"guided-note\">Повторяем подбор уже для оставшегося многочлена.</div>"
+      ],
+      "section": "А"
     },
     {
-      "q": "\\( 76 + 8 = \\)",
-      "a": "84",
-      "type": "one-digit-carry"
+      "q": "\\(2x^3-4x^2-x=15\\)",
+      "type": "polynomial-rational-root",
+      "method": "rational-root",
+      "steps": [
+        "\\(2x^3-4x^2-x-15=0,\\quad r=\\pm\\frac pq\\)<div class=\"guided-note\">Переносим всё влево; рациональные корни ищем по делителям свободного члена и старшего коэффициента.</div>",
+        "\\(r=\\pm1,\\pm3,\\pm5,\\pm15,\\pm\\frac12,\\pm\\frac32,\\pm\\frac52,\\pm\\frac{15}{2}\\)<div class=\"guided-note\">Это полный список кандидатов для данного многочлена.</div>",
+        "\\(P(3)=0\\)<div class=\"guided-note\">Проверяем кандидатов и находим корень \\(x=3\\).</div>",
+        "\\((x-3)(2x^2+2x+5)=0\\)<div class=\"guided-note\">Делим на \\(x-3\\) и переходим к квадратному уравнению.</div>"
+      ],
+      "section": "А"
     },
     {
-      "q": "\\( 59 + 6 = \\)",
-      "a": "65",
-      "type": "one-digit-carry"
+      "q": "\\(x^3-x^2-x+1=0\\)",
+      "type": "factorization",
+      "method": "grouping",
+      "steps": [
+        "\\(x^2(x-1)-(x-1)=0\\)<div class=\"guided-note\">Группируем первые два и последние два слагаемых.</div>",
+        "\\((x-1)(x^2-1)=0\\)<div class=\"guided-note\">Выносим общий множитель \\(x-1\\).</div>",
+        "\\((x-1)^2(x+1)=0\\)<div class=\"guided-note\">Разлагаем разность квадратов.</div>"
+      ],
+      "section": "В"
     },
     {
-      "q": "\\( 38 + 27 = \\)",
-      "a": "65",
-      "type": "two-digit-carry"
+      "q": "\\(x^4-2x^3+2x-1=0\\)",
+      "type": "anti-reciprocal",
+      "method": "check-one",
+      "steps": [
+        "\\(P(1)=0\\)<div class=\"guided-note\">Для антивозвратного многочлена проверяем \\(x=1\\) или \\(x=-1\\).</div>",
+        "\\(P(x)=(x-1)(x^3-x^2-x+1)\\)<div class=\"guided-note\">Выносим множитель \\(x-1\\).</div>",
+        "\\((x-1)^3(x+1)=0\\)<div class=\"guided-note\">Оставшийся кубический множитель раскладывается группировкой.</div>"
+      ],
+      "section": "В"
     },
     {
-      "q": "\\( 57 + 36 = \\)",
-      "a": "93",
-      "type": "two-digit-carry"
+      "q": "\\(x^4+2x^3-x^2+2x+1=0\\)",
+      "type": "reciprocal-even",
+      "method": "reciprocal-plus",
+      "steps": [
+        "\\(x\\ne0,\\quad x^2+2x-1+\\frac2x+\\frac1{x^2}=0\\)<div class=\"guided-note\">Делим уравнение на \\(x^2\\).</div>",
+        "\\(t=x+\\frac1x,\\quad x^2+\\frac1{x^2}=t^2-2\\)<div class=\"guided-note\">Вводим замену и выражаем сумму квадратов через \\(t\\).</div>",
+        "\\(t^2+2t-3=0\\)<div class=\"guided-note\">Теперь находим корни квадратного уравнения относительно \\(t\\).</div>",
+        "\\(t_1=1,\\quad t_2=-3\\)<div class=\"guided-note\">Для замены \\(t=x+\\frac1x\\) нужно \\(\\lvert t\\rvert\\ge2\\). Поэтому \\(t_1=1\\) отбрасываем, а оставляем \\(t_2=-3\\).</div>",
+        "\\(t=x+\\frac1x\\Longrightarrow tx=x^2+1\\Longrightarrow x^2-tx+1=0\\)<div class=\"guided-note\">Умножаем равенство замены на \\(x\\) и получаем квадратное уравнение для допустимого значения \\(t\\).</div>"
+      ],
+      "section": "В"
     },
     {
-      "q": "\\( 68 + 24 = \\)",
-      "a": "92",
-      "type": "two-digit-carry"
+      "q": "\\(2x^3+7x^2+7x+2=0\\)",
+      "type": "reciprocal-odd",
+      "method": "check-one",
+      "steps": [
+        "\\(P(-1)=0\\)<div class=\"guided-note\">У возвратного кубического многочлена проверяем \\(x=-1\\).</div>",
+        "\\(P(x)=(x+1)(2x^2+5x+2)\\)<div class=\"guided-note\">Выносим множитель \\(x+1\\).</div>",
+        "\\((x+1)(x+2)(2x+1)=0\\)<div class=\"guided-note\">Раскладываем оставшийся квадратный множитель.</div>"
+      ],
+      "section": "С"
     },
     {
-      "q": "\\( 49 + 38 = \\)",
-      "a": "87",
-      "type": "two-digit-carry"
+      "q": "\\(x^3+3x^2+3x+1=0\\)",
+      "type": "special-factor",
+      "method": "perfect-cube",
+      "steps": [
+        "\\(x^3+3x^2+3x+1=(x+1)^3\\)<div class=\"guided-note\">Коэффициенты совпадают с формулой куба суммы.</div>",
+        "\\((x+1)^3=0\\)<div class=\"guided-note\">Получено уравнение полного куба.</div>",
+        "\\text{Дальше решаем полученное уравнение самостоятельно.}<div class=\"guided-note\">Финальный корень в карточке не показывается.</div>"
+      ],
+      "section": "С"
     },
     {
-      "q": "\\( 64 + 27 = \\)",
-      "a": "91",
-      "type": "two-digit-carry"
+      "q": "\\(2x^3+3x^2-3x-2=0\\)",
+      "type": "anti-reciprocal",
+      "method": "check-one",
+      "steps": [
+        "\\(P(1)=0\\)<div class=\"guided-note\">Для антивозвратного кубического многочлена проверяем \\(x=1\\).</div>",
+        "\\(P(x)=(x-1)(2x^2+5x+2)\\)<div class=\"guided-note\">Выносим множитель \\(x-1\\).</div>",
+        "\\((x-1)(x+2)(2x+1)=0\\)<div class=\"guided-note\">Разлагаем оставшийся квадратный множитель.</div>"
+      ],
+      "section": "С"
     },
     {
-      "q": "\\( 27 + 58 = \\)",
-      "a": "85",
-      "type": "two-digit-carry"
+      "q": "\\(x^3-4x^2-4x+1=0\\)",
+      "type": "reciprocal-odd",
+      "method": "check-one",
+      "steps": [
+        "\\(P(-1)=0\\)<div class=\"guided-note\">Коэффициенты симметричны, поэтому проверяем \\(x=-1\\).</div>",
+        "\\(P(x)=(x+1)(x^2-5x+1)\\)<div class=\"guided-note\">Делим на \\(x+1\\).</div>",
+        "\\(x+1=0\\quad\\text{или}\\quad x^2-5x+1=0\\)<div class=\"guided-note\">Дальше остаётся решить квадратное уравнение.</div>"
+      ],
+      "section": "С"
     },
     {
-      "q": "\\( 73 + 18 = \\)",
-      "a": "91",
-      "type": "two-digit-carry"
+      "q": "\\(3x^3+2x^2+2x+3=0\\)",
+      "type": "reciprocal-odd",
+      "method": "check-one",
+      "steps": [
+        "\\(P(-1)=0\\)<div class=\"guided-note\">Проверяем обязательный корень возвратного кубического уравнения.</div>",
+        "\\(P(x)=(x+1)(3x^2-x+3)\\)<div class=\"guided-note\">Выносим множитель \\(x+1\\).</div>",
+        "\\(x+1=0\\quad\\text{или}\\quad 3x^2-x+3=0\\)<div class=\"guided-note\">Получены уравнения меньшей степени.</div>"
+      ],
+      "section": "С"
     },
     {
-      "q": "\\( 76 + 24 = \\)",
-      "a": "100",
-      "type": "round-result"
+      "q": "\\(2x^5+3x^4-5x^3-5x^2+3x+2=0\\)",
+      "type": "reciprocal-odd",
+      "method": "check-one",
+      "steps": [
+        "\\(P(-1)=0\\)<div class=\"guided-note\">У возвратного уравнения нечётной степени проверяем \\(x=-1\\).</div>",
+        "\\(P(x)=(x+1)(x-1)^2(x+2)(2x+1)\\)<div class=\"guided-note\">После деления на \\(x+1\\) оставшийся многочлен раскладывается дальше.</div>",
+        "\\text{Проверяем полученные линейные множители и кратность.}<div class=\"guided-note\">Конечные корни в разборе не выписываются.</div>"
+      ],
+      "section": "С"
     },
     {
-      "q": "\\( 68 + 12 = \\)",
-      "a": "80",
-      "type": "round-result"
+      "q": "\\(x^5+2x^4-3x^3-3x^2+2x+1=0\\)",
+      "type": "reciprocal-odd",
+      "method": "check-one",
+      "steps": [
+        "\\(P(-1)=0\\)<div class=\"guided-note\">Проверяем \\(x=-1\\) как корень возвратного уравнения нечётной степени.</div>",
+        "\\(P(x)=(x+1)(x-1)^2(x^2+3x+1)\\)<div class=\"guided-note\">После деления на \\(x+1\\) раскладываем оставшийся многочлен.</div>",
+        "\\text{Дальше отдельно рассматриваем линейные и квадратный множители.}<div class=\"guided-note\">Финальные значения корней ученик получает сам.</div>"
+      ],
+      "section": "С"
+    },
+    {
+      "q": "\\(x^4+x^3-10x^2+x+1=0\\)",
+      "type": "reciprocal-even",
+      "method": "reciprocal-plus",
+      "steps": [
+        "\\(x\\ne0,\\quad x^2+x+\\frac1x+\\frac1{x^2}-10=0\\)<div class=\"guided-note\">Делим на \\(x^2\\).</div>",
+        "\\(t=x+\\frac1x,\\quad x^2+\\frac1{x^2}=t^2-2\\)<div class=\"guided-note\">Вводим замену и выражаем обратные квадраты через \\(t\\).</div>",
+        "\\(t^2+t-12=0\\)<div class=\"guided-note\">Теперь находим корни квадратного уравнения относительно \\(t\\).</div>",
+        "\\(t_1=3,\\quad t_2=-4\\)<div class=\"guided-note\">Оба значения подходят: \\(\\lvert t_1\\rvert=3\\ge2\\) и \\(\\lvert t_2\\rvert=4\\ge2\\).</div>",
+        "\\(t=x+\\frac1x\\Longrightarrow tx=x^2+1\\Longrightarrow x^2-tx+1=0\\)<div class=\"guided-note\">Умножаем равенство замены на \\(x\\) и получаем квадратное уравнение для каждого допустимого значения \\(t\\).</div>"
+      ],
+      "section": "Д"
+    },
+    {
+      "q": "\\(5x^4+25x^3+10x^2-25x+5=0\\)",
+      "type": "anti-reciprocal",
+      "method": "reciprocal-minus",
+      "steps": [
+        "\\(x\\ne0,\\quad 5\\left(x^2+\\frac1{x^2}\\right)+25\\left(x-\\frac1x\\right)+10=0\\)<div class=\"guided-note\">Делим на \\(x^2\\) и замечаем знак перед обратным выражением.</div>",
+        "\\(t=x-\\frac1x,\\quad x^2+\\frac1{x^2}=t^2+2\\)<div class=\"guided-note\">Для этой симметрии нужна разность, а не сумма.</div>",
+        "\\(5t^2+25t+20=0\\)<div class=\"guided-note\">Теперь находим корни квадратного уравнения относительно \\(t\\).</div>",
+        "\\(t_1=-1,\\quad t_2=-4\\)<div class=\"guided-note\">Оба значения допустимы: для замены \\(t=x-\\frac1x\\) ограничения \\(\\lvert t\\rvert\\ge2\\) нет.</div>",
+        "\\(t=x-\\frac1x\\Longrightarrow tx=x^2-1\\Longrightarrow x^2-tx-1=0\\)<div class=\"guided-note\">Умножаем равенство замены на \\(x\\) и получаем квадратное уравнение для каждого найденного \\(t\\).</div>"
+      ],
+      "section": "Д"
+    },
+    {
+      "q": "\\(x^4-7x^3+14x^2-7x+1=0\\)",
+      "type": "reciprocal-even",
+      "method": "reciprocal-plus",
+      "steps": [
+        "\\(x\\ne0,\\quad x^2+\\frac1{x^2}-7\\left(x+\\frac1x\\right)+14=0\\)<div class=\"guided-note\">Делим на \\(x^2\\).</div>",
+        "\\(t=x+\\frac1x,\\quad x^2+\\frac1{x^2}=t^2-2\\)<div class=\"guided-note\">Вводим замену для симметричной суммы.</div>",
+        "\\(t^2-7t+12=0\\)<div class=\"guided-note\">Теперь находим корни квадратного уравнения относительно \\(t\\).</div>",
+        "\\(t_1=3,\\quad t_2=4\\)<div class=\"guided-note\">Оба значения подходят: \\(\\lvert t_1\\rvert=3\\ge2\\) и \\(\\lvert t_2\\rvert=4\\ge2\\).</div>",
+        "\\(t=x+\\frac1x\\Longrightarrow tx=x^2+1\\Longrightarrow x^2-tx+1=0\\)<div class=\"guided-note\">Умножаем равенство замены на \\(x\\) и получаем квадратное уравнение для каждого допустимого значения \\(t\\).</div>"
+      ],
+      "section": "Д"
+    },
+    {
+      "q": "\\(x^4-3x^3+3x^2-x=0\\)",
+      "type": "special-factor",
+      "method": "common-factor",
+      "steps": [
+        "\\(x(x^3-3x^2+3x-1)=0\\)<div class=\"guided-note\">Сначала выносим общий множитель \\(x\\).</div>",
+        "\\(x(x-1)^3=0\\)<div class=\"guided-note\">В скобках распознаём куб разности.</div>",
+        "\\text{Дальше решаем получившееся произведение.}<div class=\"guided-note\">Конечные корни не показываются.</div>"
+      ],
+      "section": "Д"
+    },
+    {
+      "q": "\\(6x^4+25x^3+12x^2-25x+6=0\\)",
+      "type": "anti-reciprocal",
+      "method": "reciprocal-minus",
+      "steps": [
+        "\\(x\\ne0,\\quad 6\\left(x^2+\\frac1{x^2}\\right)+25\\left(x-\\frac1x\\right)+12=0\\)<div class=\"guided-note\">Делим на \\(x^2\\).</div>",
+        "\\(t=x-\\frac1x,\\quad x^2+\\frac1{x^2}=t^2+2\\)<div class=\"guided-note\">Выбираем замену по знакам симметричных коэффициентов.</div>",
+        "\\(6t^2+25t+24=0\\)<div class=\"guided-note\">Теперь находим корни квадратного уравнения относительно \\(t\\).</div>",
+        "\\(t_1=-\\frac32,\\quad t_2=-\\frac83\\)<div class=\"guided-note\">Оба значения допустимы: для замены \\(t=x-\\frac1x\\) ограничения \\(\\lvert t\\rvert\\ge2\\) нет.</div>",
+        "\\(t=x-\\frac1x\\Longrightarrow tx=x^2-1\\Longrightarrow x^2-tx-1=0\\)<div class=\"guided-note\">Умножаем равенство замены на \\(x\\) и получаем квадратное уравнение для каждого найденного \\(t\\).</div>"
+      ],
+      "section": "Д"
+    },
+    {
+      "q": "\\(x^4-2x^3+4x^2-2x+1=0\\)",
+      "type": "reciprocal-even",
+      "method": "reciprocal-plus",
+      "steps": [
+        "\\(x\\ne0,\\quad x^2+\\frac1{x^2}-2\\left(x+\\frac1x\\right)+4=0\\)<div class=\"guided-note\">Делим на \\(x^2\\).</div>",
+        "\\(t=x+\\frac1x,\\quad x^2+\\frac1{x^2}=t^2-2\\)<div class=\"guided-note\">Заменяем симметричные выражения через \\(t\\).</div>",
+        "\\(t^2-2t+2=0\\)<div class=\"guided-note\">Проверяем, есть ли действительные корни квадратного уравнения относительно \\(t\\).</div>",
+        "\\(\\Delta_t=(-2)^2-4\\cdot1\\cdot2=-4<0\\)<div class=\"guided-note\">Дискриминант отрицателен, поэтому действительных значений \\(t\\) нет.</div>",
+        "В действительных числах исходное уравнение решений не имеет.<div class=\"guided-note\">На этом разбор заканчивается: комплексные корни не рассматриваем.</div>"
+      ],
+      "section": "Д"
+    },
+    {
+      "q": "\\(6x^4-17x^3+17x^2-17x+6=0\\)",
+      "type": "reciprocal-even",
+      "method": "reciprocal-plus",
+      "steps": [
+        "\\(x\\ne0,\\quad 6\\left(x^2+\\frac1{x^2}\\right)-17\\left(x+\\frac1x\\right)+17=0\\)<div class=\"guided-note\">Делим на \\(x^2\\).</div>",
+        "\\(t=x+\\frac1x,\\quad x^2+\\frac1{x^2}=t^2-2\\)<div class=\"guided-note\">Вводим стандартную замену для возвратного уравнения.</div>",
+        "\\(6t^2-17t+5=0\\)<div class=\"guided-note\">Теперь находим корни квадратного уравнения относительно \\(t\\).</div>",
+        "\\(t_1=\\frac52,\\quad t_2=\\frac13\\)<div class=\"guided-note\">Подходит только \\(t_1=\\frac52\\), потому что \\(\\lvert t_1\\rvert\\ge2\\). Значение \\(t_2=\\frac13\\) отбрасываем: \\(\\lvert t_2\\rvert<2\\).</div>",
+        "\\(t=x+\\frac1x\\Longrightarrow tx=x^2+1\\Longrightarrow x^2-tx+1=0\\)<div class=\"guided-note\">Умножаем равенство замены на \\(x\\) и получаем квадратное уравнение для допустимого значения \\(t\\).</div>"
+      ],
+      "section": "Д"
+    },
+    {
+      "q": "\\(x^4-2x^3-x^2-2x+1=0\\)",
+      "type": "reciprocal-even",
+      "method": "reciprocal-plus",
+      "steps": [
+        "\\(x\\ne0,\\quad x^2+\\frac1{x^2}-2\\left(x+\\frac1x\\right)-1=0\\)<div class=\"guided-note\">Делим на \\(x^2\\).</div>",
+        "\\(t=x+\\frac1x,\\quad x^2+\\frac1{x^2}=t^2-2\\)<div class=\"guided-note\">Все выражение теперь зависит только от \\(t\\).</div>",
+        "\\(t^2-2t-3=0\\)<div class=\"guided-note\">Теперь находим корни квадратного уравнения относительно \\(t\\).</div>",
+        "\\(t_1=3,\\quad t_2=-1\\)<div class=\"guided-note\">Подходит только \\(t_1=3\\), потому что \\(\\lvert t_1\\rvert\\ge2\\). Значение \\(t_2=-1\\) отбрасываем: \\(\\lvert t_2\\rvert<2\\).</div>",
+        "\\(t=x+\\frac1x\\Longrightarrow tx=x^2+1\\Longrightarrow x^2-tx+1=0\\)<div class=\"guided-note\">Умножаем равенство замены на \\(x\\) и получаем квадратное уравнение для допустимого значения \\(t\\); конечные корни не выписываем.</div>"
+      ],
+      "section": "Д"
+    },
+    {
+      "q": "\\(x^2+x+\\frac1x+\\frac1{x^2}=4\\)",
+      "type": "reciprocal-even",
+      "method": "reciprocal-plus",
+      "steps": [
+        "\\(x\\ne0\\)<div class=\"guided-note\">Уравнение уже содержит обратные выражения, поэтому сначала фиксируем область допустимых значений.</div>",
+        "\\(t=x+\\frac1x,\\quad x^2+\\frac1{x^2}=t^2-2\\)<div class=\"guided-note\">Симметричная часть уравнения подсказывает замену и позволяет выразить обратные квадраты через \\(t\\).</div>",
+        "\\(t^2+t-6=0\\)<div class=\"guided-note\">Теперь находим корни квадратного уравнения относительно \\(t\\).</div>",
+        "\\(t_1=2,\\quad t_2=-3\\)<div class=\"guided-note\">Оба значения подходят: \\(\\lvert t_1\\rvert=2\\ge2\\) и \\(\\lvert t_2\\rvert=3\\ge2\\).</div>",
+        "\\(t=x+\\frac1x\\Longrightarrow tx=x^2+1\\Longrightarrow x^2-tx+1=0\\)<div class=\"guided-note\">Умножаем равенство замены на \\(x\\) и получаем квадратное уравнение для каждого допустимого значения \\(t\\).</div>"
+      ],
+      "section": "Д"
+    },
+    {
+      "q": "\\(x^4-4x^3+5x^2-4x+1=0\\)",
+      "type": "reciprocal-even",
+      "method": "reciprocal-plus",
+      "steps": [
+        "\\(x\\ne0,\\quad x^2+\\frac1{x^2}-4\\left(x+\\frac1x\\right)+5=0\\)<div class=\"guided-note\">Делим на \\(x^2\\).</div>",
+        "\\(t=x+\\frac1x,\\quad x^2+\\frac1{x^2}=t^2-2\\)<div class=\"guided-note\">Применяем формулу для квадрата суммы обратных величин.</div>",
+        "\\(t^2-4t+3=0\\)<div class=\"guided-note\">Теперь находим корни квадратного уравнения относительно \\(t\\).</div>",
+        "\\(t_1=1,\\quad t_2=3\\)<div class=\"guided-note\">Подходит только \\(t_2=3\\), потому что \\(\\lvert t_2\\rvert\\ge2\\). Значение \\(t_1=1\\) отбрасываем: \\(\\lvert t_1\\rvert<2\\).</div>",
+        "\\(t=x+\\frac1x\\Longrightarrow tx=x^2+1\\Longrightarrow x^2-tx+1=0\\)<div class=\"guided-note\">Умножаем равенство замены на \\(x\\) и получаем квадратное уравнение для допустимого значения \\(t\\); конечные корни не выписываем.</div>"
+      ],
+      "section": "Д"
     }
   ],
-  "placeholder": "?",
   "sprintSize": 5,
-  "normMode": "basic",
-  "skillProgress": {
-    "enabled": true
+  "retryUntilCorrect": true,
+  "typeChoices": [
+    {
+      "id": "polynomial-rational-root",
+      "label": "Обычный многочлен с рациональным корнем"
+    },
+    {
+      "id": "factorization",
+      "label": "Разложение на множители"
+    },
+    {
+      "id": "reciprocal-odd",
+      "label": "Возвратное нечётной степени"
+    },
+    {
+      "id": "reciprocal-even",
+      "label": "Возвратное четвёртой степени"
+    },
+    {
+      "id": "anti-reciprocal",
+      "label": "Антивозвратное уравнение"
+    },
+    {
+      "id": "special-factor",
+      "label": "Полный куб или общий множитель"
+    }
+  ],
+  "methodChoices": [
+    {
+      "id": "rational-root",
+      "label": "Подобрать рациональный корень и разделить на линейный множитель"
+    },
+    {
+      "id": "grouping",
+      "label": "Сгруппировать слагаемые"
+    },
+    {
+      "id": "common-factor",
+      "label": "Вынести общий множитель"
+    },
+    {
+      "id": "perfect-cube",
+      "label": "Распознать формулу полного куба"
+    },
+    {
+      "id": "reciprocal-plus",
+      "label": "Разделить на \\(x^2\\) и ввести \\(t=x+\\frac1x\\)"
+    },
+    {
+      "id": "reciprocal-minus",
+      "label": "Разделить на \\(x^2\\) и ввести \\(t=x-\\frac1x\\)"
+    },
+    {
+      "id": "check-one",
+      "label": "Проверить \\(x=1\\) или \\(x=-1\\) и вынести линейный множитель"
+    }
+  ],
+  "typeExplanations": {
+    "polynomial-rational-root": {
+      "title": "обычное многочленное уравнение с рациональным корнем",
+      "reason": "нет более сильной симметрии, поэтому можно перебрать рациональные кандидаты и понизить степень"
+    },
+    "factorization": {
+      "title": "уравнение, которое удобно разложить на множители",
+      "reason": "слагаемые можно объединить так, чтобы появился общий множитель"
+    },
+    "reciprocal-odd": {
+      "title": "возвратное уравнение нечётной степени",
+      "reason": "коэффициенты расположены симметрично, поэтому сначала проверяется специальный корень \\(x=-1\\)"
+    },
+    "reciprocal-even": {
+      "title": "возвратное уравнение четвёртой степени",
+      "reason": "коэффициенты с начала и конца совпадают, поэтому после деления на \\(x^2\\) появляются \\(x+1/x\\) и \\(x^2+1/x^2\\)"
+    },
+    "anti-reciprocal": {
+      "title": "антивозвратное уравнение",
+      "reason": "коэффициенты симметричны со сменой знака, поэтому стоит проверить \\(x=1\\) или \\(x=-1\\)"
+    },
+    "special-factor": {
+      "title": "уравнение с очевидным общим множителем или полной степенью",
+      "reason": "часть выражения сразу узнаётся как общий множитель, полный квадрат или полный куб"
+    }
   },
-  "_inputmode": "numeric"
+  "skillProgress": {
+    "enabled": true,
+    "correctThreshold": 20,
+    "streakThreshold": 10,
+    "controlSize": 5,
+    "controlErrorsThreshold": 2
+  },
+  "_inputmode": null,
+  "keyboardMode": null
 };
     </script>
     <script>
@@ -1612,68 +2179,72 @@ function record(ok) {
   return createSkillProgress;
 });
 
-// engine-card.js — движок «карточка» (одно задание за раз, спринты, цитаты, streak)
-// Работает с window.TRAINER_CONFIG, установленным перед подключением этого скрипта.
-// buildNorm() поступает из norm.js, который build.js вставляет в тот же <script>-блок.
+// engine-guided-choice.js — две ступени выбора и пошаговый разбор.
+// Данные задания: { q, type, method, steps, section }.
 
 (function() {
   const C = window.TRAINER_CONFIG;
   const SPRINT_SIZE = C.sprintSize || 5;
-  const FEEDBACK_DELAY = 700;
-  const DUAL = C.inputMode === 'dual';
-  const CHOICE = C.inputMode === 'choice';
-  const RETRY_UNTIL_CORRECT = C.retryUntilCorrect === true;
-
-  const norm = buildNorm(C.normMode || 'basic');
-  // №9: запись каждого ответа в localStorage (верно/ошибка, время, дата)
+  const FEEDBACK_DELAY = 650;
   const store = TrainerStorage(C.id);
-  // Инициализация прогресса навыка
-  const skillProgress = C.skillProgress && C.skillProgress.enabled ? createSkillProgress(C.skillProgress, C.id) : null;
+  const skillProgress = C.skillProgress && C.skillProgress.enabled
+    ? createSkillProgress(C.skillProgress, C.id) : null;
 
-  // --- shuffle ---
-  // №17: взвешенная перетасовка (Efraimidis–Spirakis): ключ u^(1/w), сортировка
-  // по убыванию. Задания с большим весом Лейтнера (ошибки, медленные верные)
-  // почти всегда оказываются в первых спринтах, освоенные (w < 1) уходят
-  // в конец. Каждое задание в круге по-прежнему ровно один раз.
+  const typeChoices = C.typeChoices || [];
+  const methodChoices = C.methodChoices || [];
+  const typeLabels = {};
+  const methodLabels = {};
+  typeChoices.forEach(function(choice) { typeLabels[choice.id] = choice.label; });
+  methodChoices.forEach(function(choice) { methodLabels[choice.id] = choice.label; });
+
   function weightedShuffle(arr) {
-    return arr.map(function(t) {
-      const s = store.taskStats(t.q);
-      const w = (s && s.w) ? s.w : 1;
-      return { t: t, k: Math.pow(Math.random(), 1 / w) };
-    }).sort(function(a, b) { return b.k - a.k; }).map(function(x) { return x.t; });
+    return arr.map(function(task) {
+      const stats = store.taskStats(task.q);
+      const weight = stats && stats.w ? stats.w : 1;
+      return { task: task, key: Math.pow(Math.random(), 1 / weight) };
+    }).sort(function(a, b) { return b.key - a.key; }).map(function(item) { return item.task; });
   }
 
-  // --- DOM refs ---
-  const $expr = document.getElementById('math-expr');
-  const $taskCounter = document.getElementById('task-counter');
-  const $input = document.getElementById('answer-input');
-  const $coefInput = DUAL ? document.getElementById('coef-input') : null;
-  const $radInput = DUAL ? document.getElementById('rad-input') : null;
-  const $choiceRow = CHOICE ? document.getElementById('choice-row') : null;
-  const choiceBtns = CHOICE ? Array.prototype.slice.call($choiceRow.querySelectorAll('.choice-btn')) : [];
-  const $choiceRowError = CHOICE ? document.getElementById('choice-row-error') : null;
-  const errorChoiceBtns = CHOICE ? Array.prototype.slice.call($choiceRowError.querySelectorAll('.choice-btn')) : [];
-  const $feedback = document.getElementById('big-feedback');
-  const $correct = document.getElementById('correct-answer');
+  function refs(error) {
+    const suffix = error ? '-error' : '';
+    return {
+      error: error,
+      card: document.getElementById(error ? 'card-error' : 'card'),
+      expr: document.getElementById('math-expr' + suffix),
+      counter: document.getElementById('task-counter' + suffix),
+      typeStage: document.getElementById('guided-type-stage' + suffix),
+      methodStage: document.getElementById('guided-method-stage' + suffix),
+      typeButtons: Array.prototype.slice.call(document.querySelectorAll('#guided-type-choices' + suffix + ' .guided-choice-btn')),
+      methodButtons: Array.prototype.slice.call(document.querySelectorAll('#guided-method-choices' + suffix + ' .guided-choice-btn')),
+      typeExplanation: document.getElementById('guided-type-explanation' + suffix),
+      typeExplanationTitle: document.getElementById('guided-type-explanation-title' + suffix),
+      typeExplanationReason: document.getElementById('guided-type-explanation-reason' + suffix),
+      typeNext: document.getElementById('guided-type-next-btn' + suffix),
+      explanation: document.getElementById('guided-explanation' + suffix),
+      stepCounter: document.getElementById('guided-step-counter' + suffix),
+      step: document.getElementById('guided-step' + suffix),
+      back: document.getElementById('guided-back-btn' + suffix),
+      next: document.getElementById('guided-next-btn' + suffix),
+      feedback: document.getElementById(error ? 'big-feedback-error' : 'big-feedback')
+    };
+  }
+
+  const main = refs(false);
+  const error = refs(true);
   const $progressBar = document.getElementById('progress-bar');
   const $progressText = document.getElementById('progress-text');
-  const $done = document.getElementById('done-message');
   const $errorSection = document.getElementById('error-section');
+  const $card = document.getElementById('card');
+  const $done = document.getElementById('done-message');
   const $quoteOverlay = document.getElementById('quote-overlay');
   const $quoteText = document.getElementById('quote-text');
   const $quoteAuthor = document.getElementById('quote-author');
-  const $card = document.getElementById('card');
+  const $quoteKicker = document.getElementById('quote-kicker');
+  const $pauseStats = document.getElementById('pause-stats');
   const $streakFlash = document.getElementById('streak-flash');
   const $roundBadge = document.getElementById('round-badge');
-  const $submit = CHOICE ? null : document.getElementById('submit-btn');
-  const $errSubmitBtn = CHOICE ? null : document.getElementById('submit-btn-error');
+  const FACTS_ARR = (typeof FACTS !== 'undefined') ? FACTS : [];
 
-  // Короткая вибрация при ошибке (работает только на телефонах)
-  function buzz() {
-    if (navigator.vibrate) { try { navigator.vibrate(80); } catch (e) {} }
-  }
-
-  // --- State ---
   let tasks = [];
   let sprintStartIndex = 0;
   let sprintPos = 0;
@@ -1681,23 +2252,12 @@ function record(ok) {
   let totalSolved = 0;
   let streakCount = 0;
   let sprintErrors = [];
+  let errorIndex = 0;
   let usedQuoteIndices = new Set();
   let usedFactIndices = new Set();
-  let locked = false;
   let allPerfect = true;
-  // №3: серия ошибок подряд — со второй ошибки пауза с показом ответа короче,
-  // чтобы серия неудач не превращалась в долгое ожидание
   let errorStreak = 0;
-  // №41: таймер автопроверки — сбрасывается при каждом новом символе (~350 мс)
-  let autoTimer = null;
-  const AUTO_ADVANCE_MS = 350;
 
-  const $quoteKicker = document.getElementById('quote-kicker');
-  const $pauseStats = document.getElementById('pause-stats');
-  // Массив FACTS может отсутствовать в старых сборках — подстраховка
-  const FACTS_ARR = (typeof FACTS !== 'undefined') ? FACTS : [];
-
-  // Склонение числительных: plural(140, 'задание', 'задания', 'заданий')
   function plural(n, one, few, many) {
     const m10 = n % 10, m100 = n % 100;
     if (m10 === 1 && m100 !== 11) return one;
@@ -1707,628 +2267,325 @@ function record(ok) {
 
   function taskIndex() { return sprintStartIndex + sprintPos; }
 
-  // №3: сколько держать ✗ и правильный ответ на экране. Первая ошибка — полные
-  // 600 мс сверх базовой задержки, со второй подряд — вдвое короче.
-  function wrongExtraDelay() {
-    return errorStreak >= 2 ? 300 : 600;
+  function typeset(elements) {
+    if (window.MathJax && window.MathJax.typesetPromise) {
+      window.MathJax.typesetPromise(elements.filter(Boolean));
+    }
   }
 
-  // --- Показ/скрытие и блокировка зоны ответа (input / dual / choice) ---
-  function setMainInputVisible(v) {
-    const d = v ? '' : 'none';
-    if (CHOICE) { $choiceRow.style.display = d; }
-    else if (DUAL) { $coefInput.style.display = d; $radInput.style.display = d; }
-    else { $input.style.display = d; }
-  }
-
-  // Поля ввода на время фидбека НЕ блокируем совсем: и disabled, и readOnly
-  // закрывают мобильную клавиатуру (№1). От повторной отправки защищает флаг
-  // locked, а лишний ввод стирается при показе следующего задания.
-  function lockAnswerUI() {
-    if (CHOICE) { choiceBtns.forEach(function(b) { b.disabled = true; }); }
+  function updateProgress() {
+    const pct = (totalSolved / tasks.length) * 100;
+    $progressBar.style.width = pct + '%';
+    let text = totalSolved + ' / ' + tasks.length;
+    if (skillProgress) text += ' • ' + skillProgress.state;
+    $progressText.textContent = text;
   }
 
   function sprintRemaining() {
     return Math.min(SPRINT_SIZE, tasks.length - sprintStartIndex);
   }
 
-  function updateProgress() {
-    const pct = (totalSolved / tasks.length) * 100;
-    $progressBar.style.width = pct + '%';
-    let txt = totalSolved + ' / ' + tasks.length;
-    if (skillProgress) { txt += ' • ' + skillProgress.state; }
-    $progressText.textContent = txt;
+  function setFeedback(panel, ok, message) {
+    panel.feedback.textContent = message || (ok ? '✓' : '✗');
+    panel.feedback.className = ok ? 'correct show' : 'incorrect show';
+    clearTimeout(panel.feedbackTimer);
+    panel.feedbackTimer = setTimeout(function() {
+      panel.feedback.className = '';
+      panel.feedback.textContent = '';
+    }, FEEDBACK_DELAY);
   }
 
-  // --- Get answer (single or dual) ---
-  function getAnswer() {
-    if (DUAL) {
-      return { coef: norm($coefInput.value), rad: norm($radInput.value) };
+  function resetButtons(buttons) {
+    buttons.forEach(function(button) {
+      button.disabled = false;
+      button.classList.remove('chosen', 'wrong');
+    });
+  }
+
+  function lockButtons(buttons, chosen) {
+    buttons.forEach(function(button) {
+      button.disabled = true;
+      if (button === chosen) button.classList.add('chosen');
+    });
+  }
+
+  function markError(task, panel) {
+    if (panel.error) return;
+    allPerfect = false;
+    panel.hadError = true;
+    if (!sprintErrors.some(function(item) { return item.q === task.q; })) {
+      sprintErrors.push(task);
     }
-    return norm($input.value);
+    store.record(task.q, false);
+    if (skillProgress) skillProgress.record(false);
+    errorStreak++;
   }
 
-  function isCorrect(val, task) {
-    if (DUAL) {
-      return val.coef === task.a_coef && val.rad === task.a_rad;
+  function showTask(panel, task, position) {
+    panel.task = task;
+    panel.phase = 'type';
+    panel.stepIndex = 0;
+    panel.hadError = false;
+    panel.expr.innerHTML = task.q;
+    panel.counter.textContent = panel.error
+      ? 'Ошибка ' + position + ' / ' + sprintErrors.length
+      : (sprintPos + 1) + ' / ' + sprintRemaining();
+
+    panel.typeStage.style.display = '';
+    panel.typeExplanation.style.display = 'none';
+    panel.typeExplanationTitle.textContent = '';
+    panel.typeExplanationReason.textContent = '';
+    panel.methodStage.style.display = 'none';
+    panel.explanation.style.display = 'none';
+    panel.step.innerHTML = '';
+    panel.stepCounter.textContent = '';
+    panel.back.disabled = true;
+    panel.next.textContent = 'Следующий шаг';
+    resetButtons(panel.typeButtons);
+    resetButtons(panel.methodButtons);
+    panel.feedback.className = '';
+    panel.feedback.textContent = '';
+    typeset([panel.expr, panel.typeStage, panel.methodStage]);
+    store.shown();
+  }
+
+  function handleChoice(panel, kind, button) {
+    const task = panel.task;
+    if (!task || panel.phase === 'explanation' || panel.phase === 'type-confirmation') return;
+
+    const expected = kind === 'type' ? task.type : task.method;
+    if (button.dataset.choice !== expected) {
+      button.classList.add('wrong');
+      markError(task, panel);
+      setFeedback(panel, false, '✗ Попробуй ещё раз');
+      setTimeout(function() { button.classList.remove('wrong'); }, FEEDBACK_DELAY);
+      return;
     }
-    return val === task.a;
+
+    if (kind === 'type') {
+      panel.phase = 'type-confirmation';
+      lockButtons(panel.typeButtons, button);
+      panel.typeStage.style.display = 'none';
+      const explanation = C.typeExplanations && C.typeExplanations[task.type];
+      panel.typeExplanationTitle.textContent = '✓ Верно — это ' +
+        ((explanation && explanation.title) || typeLabels[task.type] || 'такое уравнение') + '.';
+      panel.typeExplanationReason.innerHTML = 'Потому что ' +
+        ((explanation && explanation.reason) || 'его коэффициенты и степени имеют характерную структуру.');
+      panel.typeExplanation.style.display = '';
+      setFeedback(panel, true, '✓ Структура определена');
+      typeset([panel.typeExplanation]);
+      return;
+    }
+
+    panel.phase = 'explanation';
+    lockButtons(panel.methodButtons, button);
+    panel.methodStage.style.display = 'none';
+    panel.explanation.style.display = '';
+    if (!panel.error) {
+      totalSolved++;
+      streakCount = panel.hadError ? 0 : streakCount + 1;
+      if (streakCount === 5) {
+        streakCount = 0;
+        $streakFlash.textContent = 'Пять верных решений подряд!';
+        $streakFlash.classList.remove('fire');
+        void $streakFlash.offsetWidth;
+        $streakFlash.classList.add('fire');
+        setTimeout(function() { $streakFlash.classList.remove('fire'); }, 1200);
+      }
+      updateProgress();
+    }
+    store.record(task.q, true);
+    if (skillProgress) skillProgress.record(true);
+    errorStreak = 0;
+    setFeedback(panel, true, '✓ Первый шаг выбран');
+    renderStep(panel);
   }
 
-  function getCorrectDisplay(task) {
-    if (DUAL) return task.a_display || (task.a_coef + '√' + task.a_rad);
-    return task.a;
+  function continueToMethod(panel) {
+    if (panel.phase !== 'type-confirmation') return;
+    panel.phase = 'method';
+    panel.typeStage.style.display = 'none';
+    panel.typeExplanation.style.display = 'none';
+    panel.methodStage.style.display = '';
+    setFeedback(panel, true, 'Теперь выбери первый шаг');
+    typeset([panel.methodStage]);
   }
 
-  // --- Show task ---
+  function renderStep(panel) {
+    const steps = panel.task.steps || [];
+    const last = panel.stepIndex >= steps.length - 1;
+    panel.stepCounter.textContent = 'Шаг ' + (panel.stepIndex + 1) + ' из ' + steps.length;
+    panel.step.innerHTML = steps[panel.stepIndex] || '';
+    panel.back.disabled = panel.stepIndex === 0;
+    panel.next.textContent = last ? 'Продолжить' : 'Следующий шаг';
+    typeset([panel.step]);
+  }
+
+  function previousStep(panel) {
+    if (panel.phase !== 'explanation' || panel.stepIndex === 0) return;
+    panel.stepIndex--;
+    renderStep(panel);
+  }
+
+  function nextStep(panel) {
+    if (panel.phase !== 'explanation') return;
+    if (panel.stepIndex < panel.task.steps.length - 1) {
+      panel.stepIndex++;
+      renderStep(panel);
+      return;
+    }
+    if (panel.error) showErrorTask(errorIndex + 1);
+    else advanceTask();
+  }
+
+  function bindPanel(panel) {
+    panel.typeButtons.forEach(function(button) {
+      button.addEventListener('click', function() { handleChoice(panel, 'type', button); });
+    });
+    panel.typeNext.addEventListener('click', function() { continueToMethod(panel); });
+    panel.methodButtons.forEach(function(button) {
+      button.addEventListener('click', function() { handleChoice(panel, 'method', button); });
+    });
+    panel.back.addEventListener('click', function() { previousStep(panel); });
+    panel.next.addEventListener('click', function() { nextStep(panel); });
+  }
+
   function showCurrentTask() {
-    const idx = taskIndex();
-    if (idx >= tasks.length) { finishRound(); return; }
-    showKeyboard();
-    const task = tasks[idx];
-    $expr.innerHTML = task.q;
-    $taskCounter.textContent = (sprintPos + 1) + ' / ' + sprintRemaining();
+    const index = taskIndex();
+    if (index >= tasks.length) { finishRound(); return; }
+    $errorSection.style.display = 'none';
+    $card.style.display = '';
     if ($roundBadge) {
       $roundBadge.textContent = 'Спринт ' + sprintNumber;
       $roundBadge.classList.add('visible');
     }
-    $feedback.className = '';
-    $feedback.textContent = '';
-    $correct.className = '';
-    $correct.textContent = '';
-    if (CHOICE) {
-      choiceBtns.forEach(function(b) { b.disabled = false; b.classList.remove('chosen'); });
-    } else if (DUAL) {
-      $coefInput.value = '';
-      $radInput.value = '';
-      $coefInput.focus();
-    } else {
-      $input.value = '';
-      $input.focus();
-    }
-    updateProgress();
-    if (window.MathJax) { MathJax.typesetPromise([$expr]); }
-    store.shown(); // №9: старт отсчёта времени ответа
+    showTask(main, tasks[index], sprintPos + 1);
   }
 
-  // --- Streak effect ---
-  function fireStreakEffect() {
-    $streakFlash.textContent = 'Ты супер!';
-    $streakFlash.classList.remove('fire');
-    void $streakFlash.offsetWidth;
-    $streakFlash.classList.add('fire');
-    hideKeyboard();
-    setTimeout(function() { $streakFlash.classList.remove('fire'); }, 1200);
-  }
-
-  // --- Handle answer ---
-  function handleAnswer(forcedVal) {
-    if (locked) return;
-    clearTimeout(autoTimer); // ответ уже отправлен — отложенная автопроверка не нужна
-    const val = CHOICE ? forcedVal : getAnswer();
-    if (!DUAL && val === '') return;
-    if (DUAL && val.coef === '' && val.rad === '') return;
-    locked = true;
-    const task = tasks[taskIndex()];
-    const ok = isCorrect(val, task);
-    store.record(task.q, ok); // №9
-    if (skillProgress) { skillProgress.record(ok); }
-
-    if (ok) {
-      $feedback.textContent = '✓';
-      $feedback.className = 'correct show';
-      totalSolved++;
-      streakCount++;
-      errorStreak = 0;
-      if (streakCount === 5) { streakCount = 0; fireStreakEffect(); }
-      updateProgress();
-      lockAnswerUI();
-      setTimeout(function() { $feedback.className = ''; locked = false; advanceTask(); }, FEEDBACK_DELAY);
-    } else {
-      $feedback.textContent = '✗';
-      $feedback.className = 'incorrect show';
-      if (!RETRY_UNTIL_CORRECT) {
-        $correct.textContent = getCorrectDisplay(task);
-        $correct.className = 'show';
-      }
-      lockAnswerUI();
-      buzz();
-      streakCount = 0;
-      errorStreak++;
-      allPerfect = false;
-      if (!sprintErrors.some(function(e) { return e.q === task.q; })) { sprintErrors.push(task); }
-      scheduleComeback(task); // №18: вернётся ещё раз через 2–3 спринта
-      setTimeout(function() {
-        $feedback.className = '';
-        $correct.className = '';
-        locked = false;
-        if (RETRY_UNTIL_CORRECT) {
-          store.shown();
-          if (CHOICE) {
-            choiceBtns.forEach(function(b) { b.disabled = false; b.classList.remove('chosen'); });
-          } else if (DUAL) {
-            $coefInput.value = '';
-            $radInput.value = '';
-            $coefInput.focus();
-          } else {
-            $input.value = '';
-            $input.focus();
-          }
-        } else {
-          advanceTask();
-        }
-      }, FEEDBACK_DELAY + wrongExtraDelay());
+  function showErrorTask(index) {
+    errorIndex = index;
+    if (index >= sprintErrors.length) {
+      $errorSection.style.display = 'none';
+      $card.style.display = '';
+      showQuote();
+      return;
     }
-  }
-
-  // №18: интервальный возврат ошибки — задание вставляется копией через
-  // 2–3 спринта в текущем круге (круг становится на задание длиннее; в самом
-  // конце круга копия просто уходит в хвост). Возвраты «через круг» и «через
-  // сессию» обеспечивает вес Лейтнера (№17): после ошибки w ×2, и задание
-  // попадает в первые спринты следующих кругов. «Работа над ошибками» сразу
-  // после спринта при этом сохраняется — это немедленное исправление,
-  // а возврат — отсроченная проверка.
-  const COMEBACK_SPRINTS_MIN = 2;
-  const COMEBACK_SPRINTS_MAX = 3;
-  function scheduleComeback(task) {
-    // Уже ждёт впереди (вторая ошибка на том же задании) — не дублируем
-    for (let i = taskIndex() + 1; i < tasks.length; i++) {
-      if (tasks[i].q === task.q) return;
-    }
-    const ahead = COMEBACK_SPRINTS_MIN +
-      Math.floor(Math.random() * (COMEBACK_SPRINTS_MAX - COMEBACK_SPRINTS_MIN + 1));
-    let pos = sprintStartIndex + ahead * SPRINT_SIZE + Math.floor(Math.random() * SPRINT_SIZE);
-    if (pos > tasks.length) pos = tasks.length;
-    tasks.splice(pos, 0, task);
-    updateProgress(); // знаменатель прогресса вырос
+    $card.style.display = 'none';
+    $errorSection.style.display = 'block';
+    if ($roundBadge) $roundBadge.classList.remove('visible');
+    showTask(error, sprintErrors[index], index + 1);
   }
 
   function advanceTask() {
     sprintPos++;
-    if (sprintPos >= sprintRemaining()) { finishSprint(); }
-    else { showCurrentTask(); }
+    if (sprintPos >= sprintRemaining()) finishSprint();
+    else showCurrentTask();
   }
 
   function finishSprint() {
-    if (sprintErrors.length > 0) { startErrorWork(); }
-    else { showQuote(); }
+    if (sprintErrors.length > 0) startErrorWork();
+    else showQuote();
   }
 
-  // --- Error work ---
   function startErrorWork() {
-    errorStreak = 0; // №3: работа над ошибками — новый контекст, серия обнуляется
-    $errorSection.style.display = 'block';
-    setMainInputVisible(false);
-    $card.style.display = 'none';
-    $quoteOverlay.classList.remove('show');
-    if ($roundBadge) $roundBadge.classList.remove('visible');
+    errorStreak = 0;
     showErrorTask(0);
   }
 
-  function showErrorTask(errIdx) {
-    if (errIdx >= sprintErrors.length) {
-      $errorSection.style.display = 'none';
-      setMainInputVisible(true);
-      sprintErrors = [];
-      showQuote();
-      return;
-    }
-    const task = sprintErrors[errIdx];
-    document.getElementById('math-expr-error').innerHTML = task.q;
-    document.getElementById('task-counter-error').textContent = 'Ошибка ' + (errIdx + 1) + ' / ' + sprintErrors.length;
-
-    const einput = document.getElementById('error-input');
-    const ecoef = DUAL ? document.getElementById('error-coef-input') : null;
-    const erad = DUAL ? document.getElementById('error-rad-input') : null;
-    const efeedback = document.getElementById('big-feedback-error');
-    const ecorrect = document.getElementById('correct-answer-error');
-
-    if (CHOICE) {
-      errorChoiceBtns.forEach(function(b) { b.disabled = false; b.classList.remove('chosen'); });
-    } else if (DUAL) {
-      ecoef.value = '';
-      erad.value = '';
-    } else {
-      einput.value = '';
-    }
-    efeedback.className = ''; efeedback.style.opacity = '0'; efeedback.style.transform = '';
-    ecorrect.className = ''; ecorrect.textContent = '';
-    if (DUAL) ecoef.focus(); else if (!CHOICE) einput.focus();
-
-    if (window.MathJax) { MathJax.typesetPromise([document.getElementById('math-expr-error')]); }
-    store.shown(); // №9: время ответа считается и в работе над ошибками
-
-    // «Уже отвечено» — раньше роль флага играла блокировка поля, но она
-    // закрывает мобильную клавиатуру (№1), поэтому обычная переменная
-    var answered = false;
-
-    // Единый фидбек ✓/✗ секции ошибок для всех режимов ввода (dual/обычный/choice):
-    // серия ошибок, анимация, показ правильного ответа, очистка полей, переход дальше
-    function errorFeedback(ok, clearInputs) {
-      store.record(task.q, ok); // №9
-      if (skillProgress) { skillProgress.record(ok); }
-      efeedback.textContent = ok ? '✓' : '✗';
-      efeedback.className = ok ? 'correct' : 'incorrect';
-      efeedback.style.opacity = '1'; efeedback.style.transform = 'scale(1.1)';
-      if (ok) {
-        errorStreak = 0;
-        setTimeout(function() { efeedback.style.opacity = '0'; efeedback.style.transform = ''; showErrorTask(errIdx + 1); }, FEEDBACK_DELAY);
-      } else {
-        errorStreak++;
-        if (!RETRY_UNTIL_CORRECT) {
-          ecorrect.textContent = getCorrectDisplay(task); ecorrect.className = 'show';
-        }
-        if (clearInputs) clearInputs();
-        buzz();
-        setTimeout(function() {
-          efeedback.style.opacity = '0';
-          efeedback.style.transform = '';
-          ecorrect.className = '';
-          if (RETRY_UNTIL_CORRECT) {
-            answered = false;
-            store.shown();
-            if (CHOICE) {
-              errorChoiceBtns.forEach(function(b) { b.disabled = false; b.classList.remove('chosen'); });
-            } else if (DUAL) {
-              ecoef.focus();
-            } else {
-              einput.focus();
-            }
-          } else {
-            showErrorTask(errIdx + 1);
-          }
-        }, FEEDBACK_DELAY + wrongExtraDelay());
-      }
-    }
-
-    // Проверка ответа в работе над ошибками — вызывается и по Enter, и кнопкой «✓»
-    function submitError() {
-      if (answered) return;
-      if (DUAL) {
-        const valCoef = norm(ecoef.value);
-        const valRad = norm(erad.value);
-        if (valCoef === '' && valRad === '') return;
-        answered = true;
-        errorFeedback(valCoef === task.a_coef && valRad === task.a_rad,
-          function() { ecoef.value = ''; erad.value = ''; });
-      } else {
-        const val = norm(einput.value);
-        if (val === '') return;
-        answered = true;
-        errorFeedback(val === task.a, function() { einput.value = ''; });
-      }
-    }
-
-    function onErrorKeydown(e) {
-      if (e.key === 'Enter') submitError();
-    }
-
-    // №41: автопереход и в работе над ошибками — та же задержка, тот же таймер
-    function onErrorTyping() {
-      clearTimeout(autoTimer);
-      autoTimer = setTimeout(function() {
-        if (answered) return;
-        if (DUAL) {
-          const valCoef = norm(ecoef.value);
-          const valRad = norm(erad.value);
-          if (valCoef === task.a_coef && valRad === '') {
-            erad.focus();
-            return;
-          }
-          if (valCoef === task.a_coef && valRad === task.a_rad) submitError();
-        } else {
-          if (norm(einput.value) === task.a) submitError();
-        }
-      }, AUTO_ADVANCE_MS);
-    }
-
-    if (CHOICE) {
-      errorChoiceBtns.forEach(function(btn) {
-        btn.onclick = function() {
-          if (btn.disabled) return;
-          btn.classList.add('chosen');
-          errorChoiceBtns.forEach(function(b) { b.disabled = true; });
-          errorFeedback(norm(btn.dataset.val) === task.a);
-        };
-      });
-    } else if (DUAL) {
-      ecoef.onkeydown = onErrorKeydown;
-      erad.onkeydown = onErrorKeydown;
-      ecoef.oninput = onErrorTyping;
-      erad.oninput = onErrorTyping;
-    } else {
-      einput.onkeydown = onErrorKeydown;
-      einput.oninput = onErrorTyping;
-    }
-    if ($errSubmitBtn) { $errSubmitBtn.onclick = submitError; }
-  }
-
-  // --- Quote between sprints ---
   function showQuote() {
     $card.style.display = 'none';
-    setMainInputVisible(false);
-    hideKeyboard();
+    $errorSection.style.display = 'none';
     if ($roundBadge) $roundBadge.classList.remove('visible');
     $quoteOverlay.classList.add('show');
 
-    // Пауза-передышка: показываем факты-«изюминки». Цитаты в архиве до пересмотра
-    // списка (решение Михаила 12.07.2026) — чтобы вернуть смесь, поставить < 0.5.
     const showFact = FACTS_ARR.length > 0;
     if (showFact) {
-      if (usedFactIndices.size >= FACTS_ARR.length) { usedFactIndices = new Set(); }
-      let fi;
-      do { fi = Math.floor(Math.random() * FACTS_ARR.length); } while (usedFactIndices.has(fi));
-      usedFactIndices.add(fi);
-      if ($quoteKicker) $quoteKicker.className = 'show';
+      if (usedFactIndices.size >= FACTS_ARR.length) usedFactIndices = new Set();
+      let index;
+      do { index = Math.floor(Math.random() * FACTS_ARR.length); }
+      while (usedFactIndices.has(index));
+      usedFactIndices.add(index);
+      $quoteKicker.className = 'show';
       $quoteText.className = 'fact';
-      $quoteText.textContent = FACTS_ARR[fi].text;
+      $quoteText.textContent = FACTS_ARR[index].text;
       $quoteAuthor.textContent = '';
     } else {
-      if (usedQuoteIndices.size >= QUOTES.length) { usedQuoteIndices = new Set(); }
-      let qi;
-      do { qi = Math.floor(Math.random() * QUOTES.length); } while (usedQuoteIndices.has(qi));
-      usedQuoteIndices.add(qi);
-      if ($quoteKicker) $quoteKicker.className = '';
+      if (usedQuoteIndices.size >= QUOTES.length) usedQuoteIndices = new Set();
+      let index;
+      do { index = Math.floor(Math.random() * QUOTES.length); }
+      while (usedQuoteIndices.has(index));
+      usedQuoteIndices.add(index);
+      $quoteKicker.className = '';
       $quoteText.className = '';
-      $quoteText.textContent = '«' + QUOTES[qi].text + '»';
-      $quoteAuthor.textContent = '— ' + QUOTES[qi].author;
+      $quoteText.textContent = '«' + QUOTES[index].text + '»';
+      $quoteAuthor.textContent = '— ' + QUOTES[index].author;
     }
 
-    // №15: «Сегодня решено уже N» — счётчик по ВСЕМ тренажёрам, растёт на глазах.
-    // №16: личная история (всего, исправлено, дней) — со второго дня занятий,
-    // в первый день она дублировала бы «сегодня».
     if ($pauseStats) {
-      const st = TrainerStorage.summary();
-      let statsHtml = '';
-      if (st.todayOk > 0) {
-        statsHtml = 'Сегодня решено уже <b>' + st.todayOk + '</b> ' +
-          plural(st.todayOk, 'задание', 'задания', 'заданий');
-        if (st.days >= 2) {
-          statsHtml += '<span class="ps-history">всего решено ' + st.totalOk +
-            ' · исправлено ошибок ' + st.fixed +
-            ' · дней занятий ' + st.days + '</span>';
-        }
+      const stats = TrainerStorage.summary();
+      let text = '';
+      if (stats.todayOk > 0) {
+        text = 'Сегодня решено уже <b>' + stats.todayOk + '</b> ' +
+          plural(stats.todayOk, 'задание', 'задания', 'заданий');
       }
-      $pauseStats.innerHTML = statsHtml;
+      $pauseStats.innerHTML = text;
     }
 
-    // Продолжить можно клавишей Enter/Пробел (№4), касанием/кликом
-    // или свайпом по цитате (№6)
-    let swipeStart = null;
-    function proceedAfterQuote() {
-      document.removeEventListener('keydown', onQuoteContinue);
-      $quoteOverlay.removeEventListener('click', proceedAfterQuote);
-      $quoteOverlay.removeEventListener('touchstart', onSwipeStart);
-      $quoteOverlay.removeEventListener('touchend', onSwipeEnd);
+    function proceed() {
       $quoteOverlay.classList.remove('show');
-      $card.style.display = '';
-      setMainInputVisible(true);
+      $quoteOverlay.removeEventListener('click', proceed);
       sprintStartIndex += sprintRemaining();
-      sprintPos = 0; sprintNumber++;
-      if (sprintStartIndex >= tasks.length) { finishRound(); }
-      else { startSprint(); }
+      sprintPos = 0;
+      sprintNumber++;
+      if (sprintStartIndex >= tasks.length) finishRound();
+      else startSprint();
     }
-    function onQuoteContinue(e) {
-      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); proceedAfterQuote(); }
-    }
-    // №6: горизонтальный свайп — тоже «продолжить» (тап и так ловится click).
-    // Вертикальное движение не считаем: длинный факт скроллят, чтобы дочитать,
-    // и скролл не должен закрывать оверлей.
-    function onSwipeStart(e) {
-      const t = e.touches[0];
-      swipeStart = { x: t.clientX, y: t.clientY };
-    }
-    function onSwipeEnd(e) {
-      if (!swipeStart) return;
-      const t = e.changedTouches[0];
-      const dx = t.clientX - swipeStart.x;
-      const dy = t.clientY - swipeStart.y;
-      swipeStart = null;
-      if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) proceedAfterQuote();
-    }
-    setTimeout(function() {
-      document.addEventListener('keydown', onQuoteContinue);
-      $quoteOverlay.addEventListener('click', proceedAfterQuote);
-      $quoteOverlay.addEventListener('touchstart', onSwipeStart, { passive: true });
-      $quoteOverlay.addEventListener('touchend', onSwipeEnd, { passive: true });
-    }, 100);
+    $quoteOverlay.addEventListener('click', proceed);
+    document.addEventListener('keydown', function onKey(event) {
+      if (!$quoteOverlay.classList.contains('show')) return;
+      if (event.key !== 'Enter' && event.key !== ' ') return;
+      event.preventDefault();
+      document.removeEventListener('keydown', onKey);
+      proceed();
+    });
   }
 
-  // --- Round lifecycle ---
   function finishRound() {
-    updateProgress();
     $quoteOverlay.classList.remove('show');
     $card.style.display = '';
-    if (!allPerfect) { $done.textContent = 'Круг завершён! Ошибки исправлены в спринтах.'; }
-    else { $done.textContent = 'Все задания решены без ошибок'; }
+    $errorSection.style.display = 'none';
+    $done.textContent = allPerfect
+      ? 'Все задания решены без ошибок'
+      : 'Круг завершён! Ошибки разобраны повторно.';
     $done.style.display = 'block';
-    $expr.innerHTML = '';
-    $taskCounter.textContent = '';
-    setMainInputVisible(false);
-    hideKeyboard();
-    if ($roundBadge) $roundBadge.classList.remove('visible');
-    setTimeout(function() { $done.style.display = 'none'; setMainInputVisible(true); newRound(); }, 2000);
+    setTimeout(function() {
+      $done.style.display = 'none';
+      newRound();
+    }, 2000);
   }
 
   function startSprint() {
-    // №3: серия ошибок не переживает границу спринта — ошибка на последнем
-    // задании и ошибка на первом задании нового спринта не «серия»
-    sprintPos = 0; sprintErrors = []; streakCount = 0; errorStreak = 0;
+    sprintPos = 0;
+    sprintErrors = [];
+    errorIndex = 0;
     showCurrentTask();
   }
 
   function newRound() {
-    sprintStartIndex = 0; sprintPos = 0; sprintNumber = 1;
-    totalSolved = 0; streakCount = 0; sprintErrors = [];
-    usedQuoteIndices = new Set(); locked = false; allPerfect = true;
-    errorStreak = 0;
     tasks = weightedShuffle(C.tasks.slice());
+    sprintStartIndex = 0;
+    sprintPos = 0;
+    sprintNumber = 1;
+    totalSolved = 0;
+    streakCount = 0;
+    allPerfect = true;
+    updateProgress();
     startSprint();
   }
 
-  // --- Event binding ---
-  // (№4: Escape-выход на портал общий для всех движков — вставляется build.js)
-
-  if (CHOICE) {
-    choiceBtns.forEach(function(btn) {
-      btn.addEventListener('click', function() {
-        if (locked || btn.disabled) return;
-        btn.classList.add('chosen');
-        handleAnswer(norm(btn.dataset.val));
-      });
-    });
-    // Клавиатура: цифры 1/2/... или первая буква варианта («д»/«н»)
-    document.addEventListener('keydown', function(e) {
-      const errVisible = $errorSection.style.display === 'block';
-      const btns = errVisible ? errorChoiceBtns : choiceBtns;
-      let idx = -1;
-      const num = parseInt(e.key, 10);
-      if (num >= 1 && num <= btns.length) { idx = num - 1; }
-      else {
-        const k = e.key.toLowerCase();
-        idx = btns.findIndex(function(b) { return b.dataset.val.charAt(0).toLowerCase() === k; });
-      }
-      if (idx < 0) return;
-      const btn = btns[idx];
-      if (btn.disabled || btn.offsetParent === null) return;
-      btn.click();
-    });
-  } else if (DUAL) {
-    $coefInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') { e.preventDefault(); $radInput.focus(); } });
-    $radInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') handleAnswer(); });
-  } else {
-    $input.addEventListener('keydown', function(e) { if (e.key === 'Enter') handleAnswer(); });
-  }
-
-  // №41: автопереход при верном ответе — проверка после каждого символа
-  // с задержкой AUTO_ADVANCE_MS (новый символ сбрасывает таймер). Совпало —
-  // как будто нажат Enter. Enter и «✓» продолжают работать как раньше.
-  function onTyping() {
-    clearTimeout(autoTimer);
-    autoTimer = setTimeout(function() {
-      if (locked) return;
-      const idx = taskIndex();
-      if (idx >= tasks.length) return;
-      if (DUAL) {
-        const val = getAnswer();
-        const task = tasks[idx];
-        if (val.coef === task.a_coef && val.rad === '') {
-          $radInput.focus();
-          return;
-        }
-      }
-      if (isCorrect(getAnswer(), tasks[idx])) handleAnswer();
-    }, AUTO_ADVANCE_MS);
-  }
-  if (DUAL) {
-    $coefInput.addEventListener('input', onTyping);
-    $radInput.addEventListener('input', onTyping);
-  } else if (!CHOICE) {
-    $input.addEventListener('input', onTyping);
-  }
-
-  // Кнопка «✓» — отправка ответа касанием (дублирует Enter).
-  // mousedown гасим, чтобы кнопка не забирала фокус у поля (клавиатура бы закрылась).
-  if ($submit) {
-    $submit.addEventListener('mousedown', function(e) { e.preventDefault(); });
-    $submit.addEventListener('click', function() { handleAnswer(); });
-  }
-  if ($errSubmitBtn) {
-    $errSubmitBtn.addEventListener('mousedown', function(e) { e.preventDefault(); });
-  }
-
-  // --- Custom keyboard ---
-  var KB_MODE = C.keyboardMode;
-  var $keyboard = null;
-
-  function hideKeyboard() { if ($keyboard) $keyboard.style.display = 'none'; }
-  function showKeyboard() { if ($keyboard) $keyboard.style.display = ''; }
-
-  function initKeyboard() {
-    if (!KB_MODE || CHOICE || DUAL) return;
-
-    var kbd = document.createElement('div');
-    kbd.id = 'custom-keyboard';
-    kbd.className = 'kb-' + KB_MODE;
-
-    var keys = C.keyboardKeys;
-    if (!keys) {
-      if (KB_MODE === 'numeric') {
-        keys = [['1','2','3'],['4','5','6'],['7','8','9'],['−','0','.'],['⌫']];
-      } else {
-        keys = [['1','2','3','+'],['4','5','6','−'],['7','8','9','('],['x','y','a',')'],['.','²','/','⌫'],['π','kb-wide','✓','kb-submit']];
-      }
-    }
-
-    for (var r = 0; r < keys.length; r++) {
-      var row = keys[r];
-      var singleInRow = row.length === 1;
-      for (var c = 0; c < row.length; c++) {
-        var val = row[c];
-        if (val === 'kb-wide') continue;
-        if (val === '') {
-          kbd.appendChild(document.createElement('div'));
-          continue;
-        }
-        var btn = document.createElement('button');
-        btn.className = 'kb-btn';
-        btn.dataset.ch = val;
-        if (val === 'kb-submit') {
-          btn.className += ' kb-submit';
-          btn.textContent = '✓';
-        } else if (val === '⌫') {
-          btn.className += ' kb-backspace';
-          if (singleInRow) btn.className += ' kb-full';
-          btn.textContent = '⌫';
-        } else {
-          btn.textContent = val;
-        }
-        btn.addEventListener('mousedown', function(e) { e.preventDefault(); });
-        btn.addEventListener('click', onKbClick);
-        kbd.appendChild(btn);
-      }
-    }
-
-    var card = document.getElementById('card');
-    card.parentNode.insertBefore(kbd, card.nextSibling);
-    $keyboard = kbd;
-  }
-
-  function getKbTarget() {
-    if ($errorSection.style.display === 'block') {
-      var et = document.getElementById('error-input');
-      if (et) return et;
-    }
-    return $input;
-  }
-
-  function onKbClick(e) {
-    if (locked) return;
-    var ch = e.currentTarget.dataset.ch;
-    var target = getKbTarget();
-    if (!target) return;
-
-    if (ch === '⌫') {
-      target.value = target.value.slice(0, -1);
-    } else if (ch === '✓') {
-      if ($errorSection.style.display === 'block' && $errSubmitBtn) {
-        $errSubmitBtn.click();
-      } else {
-        handleAnswer();
-      }
-      return;
-    } else {
-      target.value += ch;
-    }
-
-    var evt = new Event('input', { bubbles: true });
-    target.dispatchEvent(evt);
-    target.focus();
-  }
-
-  initKeyboard();
-
-  // --- Start ---
+  bindPanel(main);
+  bindPanel(error);
+  typeset([main.typeStage, main.methodStage, error.typeStage, error.methodStage]);
   newRound();
 })();
 
