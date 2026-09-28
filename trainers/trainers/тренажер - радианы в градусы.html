@@ -26,27 +26,44 @@ body {
   color: #1a0f09;
   max-width: var(--body-max-width);
   margin: 0 auto;
-  padding: 40px 20px;
+  padding: 18px 20px 36px;
   line-height: 1.6;
   min-height: 100vh;
   text-align: center;
 }
 
-/* === Ссылки «← Все тренажёры» (на портал) и «следующий тренажёр →» === */
+.trainer-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+/* === Навигация между тренажёрами === */
 
 a.portal-link,
 a.next-link {
-  position: absolute;
-  top: 12px;
   font-size: 0.95em;
-  color: var(--card-muted);
+  color: #3d3027;
   text-decoration: none;
-  opacity: 0.75;
   transition: opacity 0.2s ease;
 }
 
-a.portal-link { left: 16px; }
-a.next-link { right: 16px; }
+.trainer-nav {
+  display: flex;
+  flex: 1.5;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  min-height: 32px;
+  margin-bottom: 0;
+  padding: 3px 10px;
+  border-radius: 8px;
+  background: rgba(255, 250, 239, 0.48);
+  text-align: left;
+}
+
+.trainer-nav a:last-child { text-align: right; }
 
 a.portal-link:hover,
 a.next-link:hover {
@@ -54,7 +71,7 @@ a.next-link:hover {
   text-decoration: underline;
 }
 
-/* На узких экранах слово «тренажёр» прячем, чтобы ссылки в углах не наезжали друг на друга */
+/* На узких экранах сокращаем подпись следующего тренажёра */
 @media (max-width: 480px) {
   a.next-link .nl-word { display: none; }
 }
@@ -64,7 +81,7 @@ h2 {
   font-weight: 600;
   color: #1a0f09;
   text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.15);
-  margin-bottom: 30px;
+  margin-bottom: 18px;
   position: relative;
 }
 
@@ -74,7 +91,7 @@ h2::after {
   width: 50%;
   height: 2px;
   background: linear-gradient(90deg, transparent, var(--accent), transparent);
-  margin: 15px auto 0;
+  margin: 10px auto 0;
 }
 
 h3 {
@@ -88,9 +105,13 @@ h3 {
 
 #progress-row {
   display: flex;
+  flex: 1;
   align-items: center;
   gap: 12px;
-  margin-bottom: 20px;
+  margin-bottom: 0;
+  padding: 5px 10px;
+  border-radius: 8px;
+  background: rgba(255, 250, 239, 0.48);
 }
 
 #progress-bar-wrap {
@@ -112,7 +133,7 @@ h3 {
 
 #progress-text {
   font-size: 0.95em;
-  color: var(--progress-text);
+  color: #3d3027;
   white-space: nowrap;
   min-width: 60px;
   text-align: right;
@@ -121,10 +142,11 @@ h3 {
 /* === Карточка задания === */
 
 #card {
-  margin: 30px 0 20px;
-  padding: 50px 20px 30px;
+  margin: 18px 0 12px;
+  padding: 46px 22px 28px;
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 250, 239, 0.48);
+  border: 1px solid rgba(53, 38, 27, 0.14);
   position: relative;
   min-height: 160px;
   display: flex;
@@ -139,7 +161,7 @@ h3 {
   top: 12px;
   left: 20px;
   font-size: 1em;
-  color: var(--card-muted);
+  color: #49372a;
 }
 
 #round-badge {
@@ -147,7 +169,7 @@ h3 {
   top: 12px;
   right: 20px;
   font-size: 0.85em;
-  color: #8b6b4f;
+  color: #49372a;
   display: none;
 }
 
@@ -196,6 +218,11 @@ input[type="text"] {
   color: #1a0f09;
   font-family: 'EB Garamond', serif;
   transition: all 0.3s ease;
+}
+
+input[type="text"]::placeholder {
+  color: #3d3027;
+  opacity: 1;
 }
 
 input[type="text"]:focus {
@@ -249,22 +276,32 @@ input[type="text"]:disabled {
 
 /* === Обратная связь === */
 
-#big-feedback {
-  font-size: 3em;
-  height: 1.2em;
-  line-height: 1.2;
+.answer-feedback {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: center;
+  gap: 4px 14px;
+  min-height: 2.3em;
+}
+
+#big-feedback,
+#big-feedback-error {
+  font-size: 1.15em;
+  font-weight: 700;
+  min-height: 1.4em;
+  line-height: 1.4;
   opacity: 0;
   transition: opacity 0.2s ease, transform 0.2s ease;
 }
 
 @media (max-width: 500px) {
-  #big-feedback { font-size: 2.4em; height: 1.4em; margin-top: 8px; }
-  #big-feedback-error { font-size: 2.4em; height: 1.4em; margin-top: 8px; }
+  #big-feedback, #big-feedback-error { font-size: 1.05em; }
 }
 
-#big-feedback.show { opacity: 1; transform: scale(1.1); }
-#big-feedback.correct { color: #2d8b13; }
-#big-feedback.incorrect { color: #b30000; }
+#big-feedback.show { opacity: 1; transform: scale(1.05); }
+#big-feedback.correct, #big-feedback-error.correct { color: #1b5c21; }
+#big-feedback.incorrect, #big-feedback-error.incorrect { color: #8a1d17; }
 
 #correct-answer {
   font-size: 1.1em;
@@ -398,7 +435,8 @@ input[type="text"]:disabled {
 #card-error {
   padding: 30px 20px;
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 250, 239, 0.48);
+  border: 1px solid rgba(53, 38, 27, 0.14);
   position: relative;
 }
 
@@ -424,13 +462,6 @@ input[type="text"]:disabled {
   text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.2);
 }
 
-#big-feedback-error {
-  font-size: 3em;
-  height: 1.2em;
-  opacity: 0;
-  transition: opacity 0.2s, transform 0.2s;
-}
-
 #correct-answer-error {
   font-size: 1.1em;
   color: var(--card-muted);
@@ -450,11 +481,12 @@ body.list-mode {
 }
 
 .list-mode #progress-container {
+  flex: 1;
   width: 100%;
   height: 6px;
   background-color: rgba(42, 23, 16, 0.15);
   border-radius: 3px;
-  margin-bottom: 40px;
+  margin-bottom: 0;
   overflow: hidden;
   box-shadow: inset 0 1px 4px rgba(0,0,0,0.3);
 }
@@ -672,18 +704,23 @@ input[type="text"].skipped {
   color: #fff;
 }
 
-/* №7: на телефоне математика — главное (крупнее, чем было), служебные
-   элементы (заголовок, счётчики, ссылки в углах) — мельче и бледнее */
+/* На телефоне математика остаётся главным элементом экрана */
 @media (max-width: 500px) {
-  #math-expr { font-size: 1.4em; }
+  #math-expr { font-size: 1.5em; }
   #math-expr-error { font-size: 1.3em; }
-  #card { padding: 24px 10px 14px; min-height: 100px; }
-  input[type="text"] { width: 80px; font-size: 1.3em; }
-  h2 { font-size: 1.25em; margin-bottom: 20px; }
-  h2::after { width: 80%; }
-  #task-counter, #round-badge { font-size: 0.8em; opacity: 0.65; }
-  #progress-text { font-size: 0.8em; opacity: 0.75; min-width: 48px; }
-  a.portal-link, a.next-link { font-size: 0.85em; opacity: 0.55; }
+  #card { padding: 30px 10px 18px; min-height: 112px; margin-top: 12px; }
+  input[type="text"] { width: 80px; font-size: 1em; }
+  h2 { font-size: 1.25em; margin-bottom: 12px; }
+  h2::after { width: 80%; margin-top: 8px; }
+  #task-counter, #round-badge { font-size: 0.82em; }
+  #progress-text { font-size: 0.85em; min-width: 48px; }
+  a.portal-link, a.next-link { font-size: 0.85em; }
+}
+
+@media (max-width: 520px) {
+  .trainer-top { flex-direction: column; align-items: stretch; gap: 6px; margin-bottom: 10px; }
+  .trainer-nav { flex: none; }
+  #progress-row, .list-mode #progress-container { flex: none; }
 }
 
 /* === Режим кнопок-вариантов (inputMode: choice) === */
@@ -814,19 +851,21 @@ svg.fig {
   color: #e8dcc0;
 }
 
-/* === Ссылка на страницу автора (видна без скролла, вверху) === */
+/* === Ссылка на страницу автора внизу тренажёра === */
 .author-strip {
   text-align: center;
-  margin: -14px 0 18px;
-  font-size: 1.05em;
+  margin: 34px 0 0;
+  font-size: 0.9em;
 }
 .author-strip a {
-  color: #c9a86a;
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 8px;
+  background: rgba(255, 250, 239, 0.48);
+  color: #3d3027;
   text-decoration: none;
-  font-weight: 600;
-  letter-spacing: 0.04em;
+  font-weight: 400;
   transition: opacity 0.2s ease;
-  text-shadow: 0 0 6px rgba(201, 168, 106, 0.2);
 }
 .author-strip a:hover {
   opacity: 0.8;
@@ -863,14 +902,16 @@ svg.fig {
     </style>
 </head>
 <body>
-    <a class="portal-link" href="../index.html">← Все тренажёры</a>
+    <header class="trainer-top">
+    <nav class="trainer-nav" aria-label="Навигация по тренажёрам">
+        <a class="portal-link" href="../index.html">← Все тренажёры</a>
     <a class="next-link" href="тренажер - фсу разность квадратов.html" title="ФСУ: разность квадратов">следующий<span class="nl-word"> тренажёр</span> →</a>
-    <div class="author-strip"><a href="https://bakhadov.ru">на страницу автора → bakhadov.ru</a></div>
+    </nav>
     <div id="progress-row">
         <div id="progress-bar-wrap"><div id="progress-bar"></div></div>
         <div id="progress-text">0 / 16</div>
-    </div>
-
+      </div>
+    </header>
     <h2>Перевод радиан в градусы</h2>
 
     <div id="card">
@@ -882,8 +923,10 @@ svg.fig {
             <button type="button" id="submit-btn" class="submit-btn" aria-label="Ответить">✓</button></div>
     </div>
 
-    <div id="big-feedback"></div>
-    <div id="correct-answer"></div>
+    <div class="answer-feedback" role="status" aria-live="polite">
+        <div id="big-feedback"></div>
+        <div id="correct-answer"></div>
+    </div>
 
     <div id="quote-overlay">
         <div id="quote-kicker">Знаете ли вы?</div>
@@ -906,9 +949,12 @@ svg.fig {
                 <input type="text" id="error-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" inputmode="none" placeholder="180°">
                 <button type="button" id="submit-btn-error" class="submit-btn" aria-label="Ответить">✓</button></div>
         </div>
-        <div id="big-feedback-error"></div>
-        <div id="correct-answer-error"></div>
+        <div class="answer-feedback" role="status" aria-live="polite">
+            <div id="big-feedback-error"></div>
+            <div id="correct-answer-error"></div>
+        </div>
     </div>
+    <footer class="author-strip"><a href="https://bakhadov.ru">Страница автора · bakhadov.ru</a></footer>
     <script>
 window.TRAINER_CONFIG = {
   "id": "радианы в градусы",
@@ -1685,7 +1731,7 @@ TrainerStorage.summary = function() {
     if (skillProgress) { skillProgress.record(ok); }
 
     if (ok) {
-      $feedback.textContent = '✓';
+      $feedback.textContent = '✓ Верно';
       $feedback.className = 'correct show';
       totalSolved++;
       streakCount++;
@@ -1695,7 +1741,7 @@ TrainerStorage.summary = function() {
       lockAnswerUI();
       setTimeout(function() { $feedback.className = ''; locked = false; advanceTask(); }, FEEDBACK_DELAY);
     } else {
-      $feedback.textContent = '✗';
+      $feedback.textContent = '✗ Попробуй ещё';
       $feedback.className = 'incorrect show';
       if (!RETRY_UNTIL_CORRECT) {
         $correct.textContent = getCorrectDisplay(task);
@@ -1770,6 +1816,7 @@ TrainerStorage.summary = function() {
     $errorSection.style.display = 'block';
     setMainInputVisible(false);
     $card.style.display = 'none';
+    placeKeyboard(true);
     $quoteOverlay.classList.remove('show');
     if ($roundBadge) $roundBadge.classList.remove('visible');
     showErrorTask(0);
@@ -1778,6 +1825,7 @@ TrainerStorage.summary = function() {
   function showErrorTask(errIdx) {
     if (errIdx >= sprintErrors.length) {
       $errorSection.style.display = 'none';
+      placeKeyboard(false);
       setMainInputVisible(true);
       sprintErrors = [];
       showQuote();
@@ -1817,7 +1865,7 @@ TrainerStorage.summary = function() {
     function errorFeedback(ok, clearInputs) {
       store.record(task.q, ok); // №9
       if (skillProgress) { skillProgress.record(ok); }
-      efeedback.textContent = ok ? '✓' : '✗';
+      efeedback.textContent = ok ? '✓ Верно' : '✗ Попробуй ещё';
       efeedback.className = ok ? 'correct' : 'incorrect';
       efeedback.style.opacity = '1'; efeedback.style.transform = 'scale(1.1)';
       if (ok) {
@@ -2114,6 +2162,13 @@ TrainerStorage.summary = function() {
   function hideKeyboard() { if ($keyboard) $keyboard.style.display = 'none'; }
   function showKeyboard() { if ($keyboard) $keyboard.style.display = ''; }
 
+  function placeKeyboard(inErrorSection) {
+    if (!$keyboard) return;
+    var scope = inErrorSection ? $errorSection : document;
+    var feedbackRow = scope.querySelector('.answer-feedback');
+    feedbackRow.parentNode.insertBefore($keyboard, feedbackRow.nextSibling);
+  }
+
   function initKeyboard() {
     if (!KB_MODE || CHOICE || DUAL) return;
 
@@ -2159,9 +2214,8 @@ TrainerStorage.summary = function() {
       }
     }
 
-    var card = document.getElementById('card');
-    card.parentNode.insertBefore(kbd, card.nextSibling);
     $keyboard = kbd;
+    placeKeyboard(false);
   }
 
   function getKbTarget() {

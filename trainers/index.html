@@ -144,7 +144,7 @@
             padding: 2px 10px;
             border-radius: 3px;
             color: inherit;
-            opacity: 0.75;
+            font-weight: 700;
         }
 
         .trainer-card .card-title {
@@ -155,13 +155,13 @@
 
         .trainer-card .card-sub {
             font-size: 1em;
-            opacity: 0.7;
+            color: #382a21;
             margin-bottom: 12px;
         }
 
         .trainer-card .card-tasks {
             font-size: 0.9em;
-            opacity: 0.55;
+            color: #48392d;
         }
 
         .trainer-card .card-btn {
@@ -176,7 +176,7 @@
             background: transparent;
             color: inherit;
             cursor: pointer;
-            opacity: 0.7;
+            opacity: 1;
             transition: opacity 0.2s, background 0.2s;
         }
         .trainer-card:hover .card-btn {
@@ -301,7 +301,7 @@
         },
         {
             title: "Степени чисел",
-            subtitle: "2¹–2¹⁰, 3¹–3⁶, 4¹–4⁵, 5¹–5⁴, 6¹–6³, 7¹–7³, 8¹–8³, 9¹–9³",
+            subtitle: "Степени чисел от 2 до 9",
             file: "trainers/тренажер - степени 2-9.html",
             classes: ["5-6","7"],
             tasks: 37,
@@ -453,7 +453,7 @@
         },
         {
             title: "Площади фигур",
-            subtitle: "Квадрат, треугольник, параллелограмм, ромб, трапеция, круг",
+            subtitle: "Площади основных плоских фигур",
             file: "trainers/тренажер - площади фигур.html",
             classes: ["8","9"],
             tasks: 48,
@@ -501,7 +501,7 @@
         },
         {
             title: "Свойства степеней",
-            subtitle: "aᵐ·aⁿ=aᵐ⁺ⁿ, aᵐ/aⁿ, (aᵐ)ⁿ, aᵐ·bᵐ",
+            subtitle: "Умножение, деление и возведение в степень",
             file: "trainers/тренажер - свойства степеней.html",
             classes: ["7","8"],
             tasks: 37,
@@ -527,7 +527,7 @@
         card.className = 'trainer-card';
         card.href = t.file;
         card.target = '_blank';
-        card.style.background = t.gradient;
+        card.style.background = 'linear-gradient(rgba(255, 248, 233, 0.62), rgba(255, 248, 233, 0.62)), ' + t.gradient;
         card.dataset.classes = t.classes.join(',');
 
         card.innerHTML =
