@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="data:,">
+  <title>Прямая и плоскость · Геометрия в движении</title>
+  <link rel="stylesheet" href="shared/scene.css">
+  <style>
+    .scene{min-width:0}
+    .scene canvas{height:520px}
+    .badge{font-size:18px;color:#344f77}
+    .eyebrow{color:#71839b}
+    .intro{margin:0 0 22px;color:#61738b}
+    .presets{display:grid;gap:8px}
+    .presets button{text-align:left}
+    .presets button[aria-pressed="true"]{background:#344f77;color:#fff;border-color:#344f77}
+    .presets button[aria-pressed="true"]:hover{background:#283f61}
+    .readout{margin:14px 0 0;padding:14px 16px;background:#f2f6fb;border-radius:12px;min-height:88px}
+    .readout strong{display:block;color:#283f5d}
+    .readout p{margin:4px 0 0;color:#5a6e86;font-size:13px}
+    .sub{line-height:1.45}
+    .view-actions{display:flex;flex-wrap:wrap;gap:8px}
+    .line-key{display:inline-block;width:17px;height:4px;vertical-align:middle;background:#7756c8;border-radius:4px;margin-right:5px}
+    @media(max-width:760px){.scene canvas{height:400px}.side{display:block}.panel{margin:0 0 10px}}
+    @media(max-width:400px){.scene canvas{height:340px}.badge{font-size:15px}}
+  </style>
+</head>
+<body><main>
+  <div class="eyebrow">ГЕОМЕТРИЯ В ДВИЖЕНИИ</div>
+  <h1>Прямая и плоскость</h1>
+  <p class="intro"><strong>Следствие из аксиомы A₂.</strong> Если прямая не лежит в данной плоскости, то она имеет с ней не более одной общей точки.</p>
+  <div class="layout">
+    <section>
+      <div class="scene">
+        <canvas id="scene" aria-label="Прямая a и плоскость альфа в пространстве. Тяните поле, чтобы вращать модель; параметры можно изменить ползунками."></canvas>
+        <div class="badge" id="badge">a пересекает α</div>
+        <div class="hint">Тяните поле — вращайте модель. Цветная область — фрагмент плоскости α.</div>
+      </div>
+      <div class="panel status" role="status" aria-live="polite" aria-atomic="true">
+        <strong id="status-title"></strong>
+        <p id="status-detail"></p>
+      </div>
+    </section>
+    <aside class="side">
+      <div class="panel">
+        <h2>Три положения</h2>
+        <div class="presets" role="group" aria-label="Точные положения прямой">
+          <button type="button" data-preset="contained" aria-pressed="false">Лежит в плоскости</button>
+          <button type="button" data-preset="intersecting" aria-pressed="false">Пересекает</button>
+          <button type="button" data-preset="parallel" aria-pressed="false">Параллельна</button>
+        </div>
+      </div>
+      <div class="panel">
+        <h2>Положение прямой <i>a</i></h2>
+        <label class="range" for="height">Высота точки A <output id="height-value" for="height"></output>
+          <input id="height" type="range" min="-1.5" max="1.5" step="0.05" value="0.75">
+        </label>
+        <label class="range" for="tilt">Наклон <output id="tilt-value" for="tilt"></output>
+          <input id="tilt" type="range" min="-75" max="75" step="1" value="-35">
+        </label>
+        <label class="range" for="azimuth">Поворот <output id="azimuth-value" for="azimuth"></output>
+          <input id="azimuth" type="range" min="-180" max="180" step="1" value="25">
+        </label>
+        <p class="sub">A задаёт положение прямой; наклон и поворот — её направление.</p>
+      </div>
+      <div class="panel view">
+        <div class="view-actions">
+          <button type="button" id="reset-view">Исходный ракурс</button>
+          <button type="button" id="reset-all">Сбросить всё</button>
+        </div>
+      </div>
+    </aside>
+  </div>
+  <footer><span class="line-key"></span>Прямая <i>a</i> и плоскость α бесконечны; рисунок показывает только их фрагменты.</footer>
+</main>
+<script src="shared/scene-core.js"></script>
+<script src="line-plane.js"></script>
+</body></html>

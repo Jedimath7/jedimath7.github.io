@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Сопоставление функции и графика</title>
+    <script src="https://cdn.jsdelivr.net/npm/plotly.js-dist@2.27.0/plotly.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .stats-panel {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 1.5rem;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            display: block;
+        }
+
+        .stat-number.correct { color: #28a745; }
+        .stat-number.incorrect { color: #dc3545; }
+        .stat-number.streak { color: #ffc107; }
+        .stat-number.time { color: #6f42c1; }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 0.5rem;
+        }
+
+        .game-area {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+            margin-bottom: 2rem;
+        }
+
+        .problem {
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            color: #333;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .graphs-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .graph-card {
+            border: 3px solid #ddd;
+            border-radius: 15px;
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .graph-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        }
+
+        .graph-card.selected {
+            border-color: #667eea;
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.5);
+        }
+
+        .graph-card.correct {
+            border-color: #28a745;
+            background-color: rgba(40, 167, 69, 0.1);
+        }
+
+        .graph-card.incorrect {
+            border-color: #dc3545;
+            background-color: rgba(220, 53, 69, 0.1);
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .graph-label {
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #667eea;
+            margin-top: 0.5rem;
+        }
+
+        .feedback {
+            margin-top: 2rem;
+            padding: 1rem;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .feedback.correct {
+            background: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+            border: 2px solid rgba(40, 167, 69, 0.3);
+        }
+
+        .feedback.incorrect {
+            background: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+            border: 2px solid rgba(220, 53, 69, 0.3);
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #ffd700, #ffed4e);
+            color: #333;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .difficulty-selector {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 1.5rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .difficulty-selector h3 {
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+        .difficulty-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .difficulty-btn {
+            padding: 0.8rem 1.5rem;
+            border: 2px solid #ddd;
+            background: white;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        .difficulty-btn:hover {
+            background: #f0f0f0;
+            transform: translateY(-2px);
+        }
+
+        .difficulty-btn.active {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border-color: #667eea;
+        }
+
+        .progress-bar {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 1rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+        }
+
+        .progress-bar-fill {
+            height: 30px;
+            background: linear-gradient(90deg, #28a745, #20c997);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .music-btn {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #ffd700, #ffed4e);
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .music-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .music-btn.playing {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .achievement {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: linear-gradient(45deg, #ffd700, #ffed4e);
+            padding: 2rem 3rem;
+            border-radius: 20px;
+            font-size: 2rem;
+            font-weight: bold;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            z-index: 2000;
+            transition: transform 0.5s ease;
+        }
+
+        .achievement.show {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .timer {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 1rem 1.5rem;
+            border-radius: 15px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        sup {
+            font-size: 0.6em;
+            vertical-align: super;
+            line-height: 0;
+            position: relative;
+            top: -0.5em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 Сопоставление функции и графика</h1>
+            <p>Найди график, соответствующий данной функции</p>
+        </div>
+
+        <div class="difficulty-selector">
+            <h3>Выберите уровень сложности:</h3>
+            <div class="difficulty-buttons">
+                <button class="difficulty-btn active" onclick="setDifficulty('easy')">🟢 Лёгкий (линейные)</button>
+                <button class="difficulty-btn" onclick="setDifficulty('medium')">🟡 Средний (параболы)</button>
+                <button class="difficulty-btn" onclick="setDifficulty('hard')">🔴 Сложный (разные)</button>
+            </div>
+        </div>
+
+        <div class="stats-panel">
+            <div class="stat-card">
+                <span class="stat-number correct" id="correctCount">0</span>
+                <div class="stat-label">Правильно</div>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number incorrect" id="incorrectCount">0</span>
+                <div class="stat-label">Неправильно</div>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number streak" id="streakCount">0</span>
+                <div class="stat-label">Подряд</div>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number time" id="timeCount">0</span>
+                <div class="stat-label">Секунд</div>
+            </div>
+        </div>
+
+        <div class="progress-bar">
+            <div class="progress-bar-fill" id="progressFill" style="width: 0%;">
+                <span id="progressText">0%</span>
+            </div>
+        </div>
+
+        <div class="game-area">
+            <div class="problem" id="problem">f(x) = </div>
+            
+            <div class="graphs-container" id="graphsContainer">
+                <!-- Графики будут генерироваться динамически -->
+            </div>
+
+            <div class="feedback" id="feedback"></div>
+
+            <div class="controls">
+                <button class="btn" onclick="newProblem()">→ Следующий</button>
+                <button class="btn" onclick="resetStats()">↻ Сброс</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="timer" id="timer">⏱️ 0 сек</div>
+    <button class="music-btn" id="musicBtn" onclick="toggleMusic()">🎵</button>
+    <div class="achievement" id="achievement"></div>
+
+    <audio id="backgroundMusic" loop>
+        <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSyBzvLXiTYIG2m98OScTgwOUKzn77RgGgU7k9n1ynUrBSh+zPLaizsKGGS46+mjUhELTKXh8bllHAU2jdXzzn0vBSl9y/HajDwKFmO16+mjUhELTKXh8bllHAU2jdXzzn0vBSl9y/HajDwKFmO16+mjUhELTKXh8bllHAU2jdXzzn0vBSl9y/HajDwKFmO16+mjUhELTKXh8bllHAU2jdXzzn0vBSl9y/HajDwKFmO16+mjUhELTKXh8bllHAU2jdXzzn0vBSl9y/HajDwKFmO16+mjUhELTKXh8bllHAU2jdXzzn0vBSl9y/HajDwKFmO16+mjUhELTKXh8bllHAU2jdXzzn0vBSl9y/HajDwKFmO16+mjUhELTKXh8bllHAU2jdXzzn0vBSl9y/HajDwKFmO16+mjUhELTKXh8bllHAU2jdXzzn0vBSl9y/HajDwKFmO16+mjUhELTKXh8bllHAU2jdXzzn0vBSl9y/HajDwKFmO16+mjUhELTKXh8bllHAU2jdXzzn0vBSl9y/HajDwKFmO16+mjUhELTKXh8bllHAU2jdXzzn0vBSl9y/HajDwKFmO16+mjUhELTKXh8bllHAU2jdXzzn0vBSl9y/HajDwKFmO16+mjUhELTKXh8bllHAU2jdXzzn0vBSl9y/HajDwKFmO16+mjUhELTKXh8bllHAU2jdXzzn0vBSl9y/HajDwKFmO16+mjUhELTKXh8bllHAU2jdXzzn0vBSl9y/HajDwKFmO16+mjUhELTKXh8bllHAU2jdXzzn0vBSl9y/HajDwKFmO16+mjUhELTKXh8bllHAU2jdXzzn0vBSl9y/HajDwKFmO16+mjUhELTKXh8bllHAU2jdXzzn0vBSl9y/HajDwKFmO16+mjUhELTKXh8bllHAU2jdXzzn0vBSl9y/HajDwKFmO16+mjUhELTKXh8bllHAU2jdXzzn0vBSl9y/HajDwKFmO16+mjUhELTKXh8bllHAU2jdXzzn0vBSl9y/HajDwKFmO16+mjUhELTKXh8bllHAU2jdXzzn0vBSl9y/HajDwKFmO16+mjUhELTKXh8bllHAU2jdXzzn0vBSl9y/HajDwKFmO16+mjUhELTKXh8bllHAU2jdXzzn0vBSl9y/HajDwKFmO16+mjUhELTKXh8bllHAU2jdXzzn0vBSl9y/HajDwKFmO16+mjUhELTKXh8bllHAU2jdXzzn0vBSl9y/HajDwKFmO16+mjUhELTKXh8bllHAU2jdXzzn0vBSl9y/HajDwKFmO16+mjUhELTKXh8bllHAU2jdXzzn0vBSl9y/HajDwKFmO16+mjUhELTKXh8bllHAU2jdXzzn0vBSl9y/HajDwKFmO16+mjUhELTKXh8bllHAU2jdXzzn0vBSl9y/HajDwKFmO16+mjUhELTKXh8bllHAU2jdXzzn0vBQ==" type="audio/wav">
+    </audio>
+
+    <script>
+        let correctCount = 0;
+        let incorrectCount = 0;
+        let streakCount = 0;
+        let startTime = Date.now();
+        let answerChecked = false;
+        let difficulty = 'easy';
+        let currentProblem = null;
+        let selectedGraphIndex = null;
+        
+        const backgroundMusic = document.getElementById('backgroundMusic');
+        let isMusicPlaying = false;
+
+        function toggleMusic() {
+            const musicBtn = document.getElementById('musicBtn');
+            if (isMusicPlaying) {
+                backgroundMusic.pause();
+                musicBtn.textContent = '🎵';
+                musicBtn.classList.remove('playing');
+                isMusicPlaying = false;
+            } else {
+                backgroundMusic.play().then(() => {
+                    musicBtn.textContent = '🔇';
+                    musicBtn.classList.add('playing');
+                    isMusicPlaying = true;
+                }).catch(error => {
+                    console.log('Музыка недоступна');
+                });
+            }
+        }
+
+        // Генерация функций в зависимости от сложности
+        function generateFunctions() {
+            let functions = [];
+            
+            if (difficulty === 'easy') {
+                // Линейные функции: y = kx + b
+                const k1 = Math.floor(Math.random() * 5) - 2; // от -2 до 2
+                const b1 = Math.floor(Math.random() * 7) - 3; // от -3 до 3
+                
+                const k2 = Math.floor(Math.random() * 5) - 2;
+                const b2 = Math.floor(Math.random() * 7) - 3;
+                
+                const k3 = Math.floor(Math.random() * 5) - 2;
+                const b3 = Math.floor(Math.random() * 7) - 3;
+                
+                functions = [
+                    {
+                        formula: k1 === 0 ? `${b1}` : (b1 === 0 ? `${k1}x` : `${k1}x ${b1 > 0 ? '+' : ''} ${b1}`),
+                        func: (x) => k1 * x + b1,
+                        type: 'linear'
+                    },
+                    {
+                        formula: k2 === 0 ? `${b2}` : (b2 === 0 ? `${k2}x` : `${k2}x ${b2 > 0 ? '+' : ''} ${b2}`),
+                        func: (x) => k2 * x + b2,
+                        type: 'linear'
+                    },
+                    {
+                        formula: k3 === 0 ? `${b3}` : (b3 === 0 ? `${k3}x` : `${k3}x ${b3 > 0 ? '+' : ''} ${b3}`),
+                        func: (x) => k3 * x + b3,
+                        type: 'linear'
+                    }
+                ];
+                
+            } else if (difficulty === 'medium') {
+                // Параболы: y = ax² + bx + c
+                const a1 = Math.random() < 0.5 ? 1 : -1;
+                const b1 = Math.floor(Math.random() * 5) - 2;
+                const c1 = Math.floor(Math.random() * 5) - 2;
+                
+                const a2 = Math.random() < 0.5 ? 1 : -1;
+                const b2 = Math.floor(Math.random() * 5) - 2;
+                const c2 = Math.floor(Math.random() * 5) - 2;
+                
+                const a3 = Math.random() < 0.5 ? 1 : -1;
+                const b3 = Math.floor(Math.random() * 5) - 2;
+                const c3 = Math.floor(Math.random() * 5) - 2;
+                
+                functions = [
+                    {
+                        formula: `${a1 === 1 ? '' : '-'}x<sup>2</sup>${b1 !== 0 ? (b1 > 0 ? ' + ' + b1 + 'x' : ' - ' + Math.abs(b1) + 'x') : ''}${c1 !== 0 ? (c1 > 0 ? ' + ' + c1 : ' - ' + Math.abs(c1)) : ''}`,
+                        func: (x) => a1 * x * x + b1 * x + c1,
+                        type: 'parabola'
+                    },
+                    {
+                        formula: `${a2 === 1 ? '' : '-'}x<sup>2</sup>${b2 !== 0 ? (b2 > 0 ? ' + ' + b2 + 'x' : ' - ' + Math.abs(b2) + 'x') : ''}${c2 !== 0 ? (c2 > 0 ? ' + ' + c2 : ' - ' + Math.abs(c2)) : ''}`,
+                        func: (x) => a2 * x * x + b2 * x + c2,
+                        type: 'parabola'
+                    },
+                    {
+                        formula: `${a3 === 1 ? '' : '-'}x<sup>2</sup>${b3 !== 0 ? (b3 > 0 ? ' + ' + b3 + 'x' : ' - ' + Math.abs(b3) + 'x') : ''}${c3 !== 0 ? (c3 > 0 ? ' + ' + c3 : ' - ' + Math.abs(c3)) : ''}`,
+                        func: (x) => a3 * x * x + b3 * x + c3,
+                        type: 'parabola'
+                    }
+                ];
+                
+            } else {
+                // Разные функции
+                const types = ['linear', 'parabola', 'cubic', 'rational', 'absolute'];
+                const selectedTypes = [];
+                
+                // Выбираем 3 разных типа
+                while (selectedTypes.length < 3) {
+                    const type = types[Math.floor(Math.random() * types.length)];
+                    if (!selectedTypes.includes(type)) {
+                        selectedTypes.push(type);
+                    }
+                }
+                
+                functions = selectedTypes.map(type => {
+                    if (type === 'linear') {
+                        const k = Math.floor(Math.random() * 5) - 2;
+                        const b = Math.floor(Math.random() * 5) - 2;
+                        return {
+                            formula: `${k}x ${b >= 0 ? '+' : ''} ${b}`,
+                            func: (x) => k * x + b,
+                            type: 'linear'
+                        };
+                    } else if (type === 'parabola') {
+                        const a = Math.random() < 0.5 ? 1 : -1;
+                        const c = Math.floor(Math.random() * 5) - 2;
+                        return {
+                            formula: `${a === 1 ? '' : '-'}x<sup>2</sup> ${c >= 0 ? '+' : ''} ${c}`,
+                            func: (x) => a * x * x + c,
+                            type: 'parabola'
+                        };
+                    } else if (type === 'cubic') {
+                        return {
+                            formula: 'x<sup>3</sup>',
+                            func: (x) => x * x * x,
+                            type: 'cubic'
+                        };
+                    } else if (type === 'rational') {
+                        return {
+                            formula: '1/x',
+                            func: (x) => x === 0 ? null : 1 / x,
+                            type: 'rational'
+                        };
+                    } else if (type === 'absolute') {
+                        return {
+                            formula: '|x|',
+                            func: (x) => Math.abs(x),
+                            type: 'absolute'
+                        };
+                    }
+                });
+            }
+            
+            return functions;
+        }
+
+        // Построение графика с клетчатым фоном
+        function plotGraph(divId, func, isRational = false) {
+            const xValues = [];
+            const yValues = [];
+            
+            const xMin = -5;
+            const xMax = 5;
+            const step = 0.1;
+            
+            for (let x = xMin; x <= xMax; x += step) {
+                const y = func(x);
+                if (y !== null && !isNaN(y) && Math.abs(y) < 20) {
+                    xValues.push(x);
+                    yValues.push(y);
+                } else if (isRational) {
+                    // Для рациональных функций добавляем разрывы
+                    if (xValues.length > 0) {
+                        xValues.push(null);
+                        yValues.push(null);
+                    }
+                }
+            }
+            
+            const trace = {
+                x: xValues,
+                y: yValues,
+                type: 'scatter',
+                mode: 'lines',
+                line: {
+                    color: '#667eea',
+                    width: 3
+                }
+            };
+            
+            const layout = {
+                xaxis: {
+                    range: [-5, 5],
+                    zeroline: true,
+                    zerolinewidth: 2,
+                    zerolinecolor: '#000',
+                    gridcolor: '#d0d0d0',
+                    gridwidth: 1,
+                    dtick: 1,
+                    showticklabels: true
+                },
+                yaxis: {
+                    range: [-5, 5],
+                    zeroline: true,
+                    zerolinewidth: 2,
+                    zerolinecolor: '#000',
+                    gridcolor: '#d0d0d0',
+                    gridwidth: 1,
+                    dtick: 1,
+                    showticklabels: true
+                },
+                plot_bgcolor: '#fff',
+                paper_bgcolor: '#fff',
+                margin: { l: 40, r: 20, t: 20, b: 40 },
+                showlegend: false,
+                hovermode: false
+            };
+            
+            const config = {
+                displayModeBar: false,
+                staticPlot: true
+            };
+            
+            Plotly.newPlot(divId, [trace], layout, config);
+        }
+
+        function newProblem() {
+            currentProblem = generateFunctions();
+            selectedGraphIndex = null;
+            
+            // Выбираем правильную функцию
+            const correctIndex = Math.floor(Math.random() * 3);
+            const correctFunction = currentProblem[correctIndex];
+            
+            // Отображаем формулу
+            document.getElementById('problem').innerHTML = `f(x) = ${correctFunction.formula}`;
+            
+            // Создаём контейнеры для графиков
+            const container = document.getElementById('graphsContainer');
+            container.innerHTML = '';
+            
+            for (let i = 0; i < 3; i++) {
+                const card = document.createElement('div');
+                card.className = 'graph-card';
+                card.id = `card-${i}`;
+                card.onclick = () => selectGraph(i);
+                
+                const graphDiv = document.createElement('div');
+                graphDiv.id = `graph-${i}`;
+                graphDiv.style.width = '100%';
+                graphDiv.style.height = '300px';
+                
+                const label = document.createElement('div');
+                label.className = 'graph-label';
+                label.textContent = `График ${i + 1}`;
+                
+                card.appendChild(graphDiv);
+                card.appendChild(label);
+                container.appendChild(card);
+                
+                // Строим график
+                const isRational = currentProblem[i].type === 'rational';
+                setTimeout(() => plotGraph(`graph-${i}`, currentProblem[i].func, isRational), 100);
+            }
+            
+            // Сохраняем правильный индекс
+            currentProblem.correctIndex = correctIndex;
+            
+            // Сброс обратной связи
+            document.getElementById('feedback').textContent = '';
+            document.getElementById('feedback').className = 'feedback';
+            
+            answerChecked = false;
+        }
+
+        function selectGraph(index) {
+            if (answerChecked) return;
+            
+            // Сразу проверяем ответ при клике
+            selectedGraphIndex = index;
+            checkAnswer();
+        }
+
+        function checkAnswer() {
+            if (answerChecked || selectedGraphIndex === null) {
+                if (selectedGraphIndex === null) {
+                    const feedback = document.getElementById('feedback');
+                    feedback.innerHTML = '⚠️ Выберите график!';
+                    feedback.className = 'feedback incorrect';
+                }
+                return;
+            }
+            
+            answerChecked = true;
+            const feedback = document.getElementById('feedback');
+            const correctIndex = currentProblem.correctIndex;
+            
+            if (selectedGraphIndex === correctIndex) {
+                correctCount++;
+                streakCount++;
+                
+                document.getElementById(`card-${selectedGraphIndex}`).classList.remove('selected');
+                document.getElementById(`card-${selectedGraphIndex}`).classList.add('correct');
+                
+                feedback.innerHTML = '🎉 Правильно!';
+                feedback.className = 'feedback correct';
+                
+                // Достижения
+                if (streakCount === 5) showAchievement('🔥 5 подряд!');
+                if (streakCount === 10) showAchievement('⭐ 10 подряд!');
+                if (correctCount === 20) showAchievement('🏆 20 правильных ответов!');
+                
+            } else {
+                incorrectCount++;
+                streakCount = 0;
+                
+                document.getElementById(`card-${selectedGraphIndex}`).classList.remove('selected');
+                document.getElementById(`card-${selectedGraphIndex}`).classList.add('incorrect');
+                document.getElementById(`card-${correctIndex}`).classList.add('correct');
+                
+                feedback.innerHTML = `❌ Неверно! Правильный график — ${correctIndex + 1}`;
+                feedback.className = 'feedback incorrect';
+            }
+            
+            updateStats();
+            updateProgress();
+            
+            // Автоматически переходим к следующему примеру через 3 секунды
+            setTimeout(() => {
+                newProblem();
+            }, 3000);
+        }
+
+        function updateStats() {
+            document.getElementById('correctCount').textContent = correctCount;
+            document.getElementById('incorrectCount').textContent = incorrectCount;
+            document.getElementById('streakCount').textContent = streakCount;
+            
+            const timeElapsed = Math.floor((Date.now() - startTime) / 1000);
+            document.getElementById('timeCount').textContent = timeElapsed;
+            document.getElementById('timer').textContent = `⏱️ ${timeElapsed} сек`;
+        }
+
+        function updateProgress() {
+            const total = correctCount + incorrectCount;
+            if (total > 0) {
+                const percentage = Math.round((correctCount / total) * 100);
+                document.getElementById('progressFill').style.width = percentage + '%';
+                document.getElementById('progressText').textContent = percentage + '%';
+            }
+        }
+
+        function resetStats() {
+            correctCount = 0;
+            incorrectCount = 0;
+            streakCount = 0;
+            startTime = Date.now();
+            updateStats();
+            updateProgress();
+            newProblem();
+        }
+
+        function setDifficulty(level) {
+            difficulty = level;
+            
+            // Обновляем кнопки
+            document.querySelectorAll('.difficulty-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Генерируем новый пример
+            newProblem();
+        }
+
+        function showAchievement(text) {
+            const achievement = document.getElementById('achievement');
+            achievement.textContent = text;
+            achievement.classList.add('show');
+            
+            setTimeout(() => {
+                achievement.classList.remove('show');
+            }, 2000);
+        }
+
+        // Обработка Enter для проверки
+        document.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                if (!answerChecked) {
+                    checkAnswer();
+                } else {
+                    newProblem();
+                }
+            }
+        });
+
+        // Обработка цифр 1, 2, 3 для быстрого выбора
+        document.addEventListener('keypress', function(event) {
+            if (!answerChecked) {
+                if (event.key === '1') selectGraph(0);
+                if (event.key === '2') selectGraph(1);
+                if (event.key === '3') selectGraph(2);
+            }
+        });
+
+        // Обновление таймера каждую секунду
+        setInterval(updateStats, 1000);
+
+        // Инициализация
+        document.addEventListener('DOMContentLoaded', () => {
+            backgroundMusic.volume = 0.3;
+            newProblem();
+            updateStats();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Карточки · Задание 1 (планиметрия)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Prata&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#efe9dc;        /* фон страницы */
+    --paper2:#e7e0cf;
+    --card:#fbf8f1;         /* лицо карточки */
+    --ink:#322e28;          /* основной цвет линий и текста */
+    --muted:#8d8475;        /* приглушённый текст */
+    --accent:#bf5a2e;       /* терракотовый акцент */
+    --accent-soft:#f0d9c9;
+    --good:#5d8a55;         /* "знаю" */
+    --line:#d9d0bf;
+    --shadow:rgba(60,50,35,.18);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    font-family:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
+    background:radial-gradient(120% 120% at 50% 0%,var(--paper) 0%,var(--paper2) 100%);
+    color:var(--ink);
+    min-height:100%;
+    display:flex;flex-direction:column;align-items:center;
+    padding:18px 14px 40px;
+    -webkit-tap-highlight-color:transparent;
+  }
+
+  header{text-align:center;margin-bottom:14px}
+  header h1{font-family:'Prata',Georgia,serif;font-weight:400;font-size:clamp(22px,5vw,32px);letter-spacing:.3px}
+  header p{color:var(--muted);font-size:13px;margin-top:4px}
+
+  /* панель управления */
+  .panel{width:100%;max-width:640px;display:flex;flex-direction:column;gap:10px;margin-bottom:14px}
+  .chips{display:flex;flex-wrap:wrap;gap:7px;justify-content:center}
+  .chip{
+    border:1px solid var(--line);background:var(--card);color:var(--ink);
+    font:500 12.5px/1 'Inter',sans-serif;padding:7px 11px;border-radius:999px;cursor:pointer;
+    transition:.15s;white-space:nowrap;
+  }
+  .chip:hover{border-color:var(--accent)}
+  .chip.active{background:var(--ink);color:var(--card);border-color:var(--ink)}
+  .chip .n{opacity:.55;margin-left:4px;font-size:11px}
+
+  .tools{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:center}
+  .tbtn{
+    border:1px solid var(--line);background:var(--card);color:var(--ink);
+    font:600 13px 'Inter',sans-serif;padding:9px 14px;border-radius:10px;cursor:pointer;
+    display:inline-flex;align-items:center;gap:7px;transition:.15s;
+  }
+  .tbtn:hover{border-color:var(--accent);color:var(--accent)}
+  .tbtn.on{background:var(--accent);border-color:var(--accent);color:#fff}
+  .tbtn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2}
+
+  /* карточка */
+  .scene{width:100%;max-width:520px;perspective:1400px;margin:0 auto}
+  .card{
+    position:relative;width:100%;min-height:62vh;max-height:560px;height:480px;
+    transform-style:preserve-3d;transition:transform .55s cubic-bezier(.4,.1,.2,1);cursor:pointer;
+  }
+  .card.flipped{transform:rotateY(180deg)}
+  .face{
+    position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;
+    background:var(--card);border:1px solid var(--line);border-radius:22px;
+    box-shadow:0 14px 34px -12px var(--shadow),0 2px 0 rgba(255,255,255,.6) inset;
+    display:flex;flex-direction:column;padding:22px 22px 18px;overflow:hidden;
+  }
+  .face::before{ /* тонкая рамка-инкрустация */
+    content:"";position:absolute;inset:10px;border:1px solid var(--line);border-radius:15px;pointer-events:none;opacity:.7;
+  }
+  .back{transform:rotateY(180deg)}
+
+  .cat{font:600 11px/1 'Inter';letter-spacing:1.4px;text-transform:uppercase;color:var(--accent);z-index:1}
+  .knownmark{position:absolute;top:18px;right:20px;color:var(--good);font-size:13px;font-weight:700;display:none;align-items:center;gap:5px;z-index:2}
+  .knownmark.show{display:flex}
+  .knownmark svg{width:16px;height:16px;stroke:var(--good);fill:none;stroke-width:2.5}
+
+  .fig{flex:1;display:flex;align-items:center;justify-content:center;min-height:0;z-index:1;margin:6px 0}
+  .fig svg{width:100%;height:100%;max-height:300px;color:var(--ink);overflow:visible}
+  .fig svg :is(line,polygon,circle,rect,path,polyline){fill:none;stroke:currentColor;stroke-width:1.7;stroke-linejoin:round;stroke-linecap:round}
+  .fig svg .m{stroke:var(--accent);stroke-width:2.3}
+  .fig svg .m2{stroke:var(--accent);stroke-width:3.2}
+  .fig svg .d{fill:var(--accent);stroke:none}
+  .fig svg text{fill:currentColor;stroke:none;font:italic 15px Georgia,serif}
+  .fig svg .lt{font-style:normal;font-size:13px}
+
+  .title{font-family:'Prata',Georgia,serif;font-size:clamp(18px,4.5vw,23px);text-align:center;line-height:1.25;z-index:1}
+  .hint{text-align:center;color:var(--muted);font-size:11.5px;margin-top:8px;z-index:1}
+
+  /* оборот — формула */
+  .back .fig{flex:0 0 auto;max-height:160px;margin-top:4px}
+  .back .fig svg{max-height:150px;opacity:.85}
+  .answer{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
+    font-size:clamp(19px,5vw,26px);line-height:1.45;z-index:1;gap:6px}
+  .answer b{color:var(--accent);font-weight:700}
+  .answer .note{display:block;font-size:13px;color:var(--muted);font-weight:400;margin-top:4px;line-height:1.4}
+  .answer .sm{font-size:.8em}
+
+  /* дроби и корни */
+  .frac{display:inline-flex;flex-direction:column;text-align:center;vertical-align:middle;margin:0 .18em;font-size:.92em}
+  .frac .num{border-bottom:1.7px solid currentColor;padding:0 .4em 1px}
+  .frac .den{padding:2px .4em 0}
+  .rad{border-top:1.6px solid currentColor;padding:0 1px}
+  sub{font-size:.7em}
+
+  /* нижние кнопки */
+  .controls{width:100%;max-width:520px;display:flex;gap:10px;margin:16px auto 0;align-items:stretch}
+  .nav{flex:0 0 auto;width:54px;border:1px solid var(--line);background:var(--card);border-radius:14px;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;transition:.15s;color:var(--ink)}
+  .nav:hover{border-color:var(--accent);color:var(--accent)}
+  .nav svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:2.2}
+  .know{flex:1;border:none;border-radius:14px;cursor:pointer;font:700 15px 'Inter';color:#fff;transition:.15s;display:flex;align-items:center;justify-content:center;gap:8px}
+  .know.no{background:#b9b0a0}
+  .know.no:hover{background:#a89e8c}
+  .know.yes{background:var(--good)}
+  .know.yes:hover{filter:brightness(1.06)}
+  .know svg{width:18px;height:18px;stroke:#fff;fill:none;stroke-width:2.4}
+
+  .counter{text-align:center;color:var(--muted);font-size:13px;margin-top:14px}
+  .counter b{color:var(--ink)}
+  .progress{width:100%;max-width:520px;height:6px;background:var(--paper2);border:1px solid var(--line);border-radius:999px;margin:8px auto 0;overflow:hidden}
+  .progress i{display:block;height:100%;background:var(--good);width:0;transition:width .3s}
+
+  .kbd{margin-top:18px;color:var(--muted);font-size:11.5px;text-align:center}
+  .kbd kbd{background:var(--card);border:1px solid var(--line);border-radius:5px;padding:1px 6px;font-family:inherit;font-size:11px}
+
+  /* список */
+  .listview{display:none;width:100%;max-width:1000px;margin-top:6px}
+  .listview.show{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
+  .lcard{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;box-shadow:0 6px 16px -10px var(--shadow)}
+  .lcard .cat{font-size:10px}
+  .lcard .lfig{height:120px;display:flex;align-items:center;justify-content:center;margin:6px 0}
+  .lcard .lfig svg{max-height:118px;color:var(--ink);overflow:visible}
+  .lcard .lfig svg :is(line,polygon,circle,rect,path,polyline){fill:none;stroke:currentColor;stroke-width:1.7;stroke-linejoin:round;stroke-linecap:round}
+  .lcard .lfig svg .m{stroke:var(--accent);stroke-width:2.3}
+  .lcard .lfig svg .m2{stroke:var(--accent);stroke-width:3.2}
+  .lcard .lfig svg .d{fill:var(--accent);stroke:none}
+  .lcard .lfig svg text{fill:currentColor;stroke:none;font:italic 14px Georgia,serif}
+  .lcard .lfig svg .lt{font-style:normal;font-size:12px}
+  .lcard .ltitle{font-family:'Prata',serif;font-size:15px;text-align:center;margin-bottom:6px}
+  .lcard .lans{text-align:center;font-size:16px;line-height:1.4;border-top:1px solid var(--line);padding-top:8px}
+  .lcard .lans b{color:var(--accent)}
+  .lcard .lans .note{display:block;font-size:11px;color:var(--muted);margin-top:3px}
+
+  @media(max-width:480px){
+    .card{height:auto;min-height:66vh}
+    .controls{max-width:520px}
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>Планиметрия · Задание 1</h1>
+  <p>Карточки для запоминания формул и теорем</p>
+</header>
+
+<div class="panel">
+  <div class="chips" id="chips"></div>
+  <div class="tools">
+    <button class="tbtn" id="shuffleBtn"><svg viewBox="0 0 24 24"><path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg>Перемешать</button>
+    <button class="tbtn" id="unknownBtn"><svg viewBox="0 0 24 24"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>Только «не знаю»</button>
+    <button class="tbtn" id="resetBtn"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5"/></svg>Сбросить</button>
+    <button class="tbtn" id="viewBtn"><svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg>Список</button>
+  </div>
+</div>
+
+<div class="scene" id="scene">
+  <div class="card" id="card">
+    <div class="face front">
+      <span class="cat" id="fCat"></span>
+      <span class="knownmark" id="fMark"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>знаю</span>
+      <div class="fig" id="fFig"></div>
+      <div class="title" id="fTitle"></div>
+      <div class="hint">нажми, чтобы увидеть формулу ↻</div>
+    </div>
+    <div class="face back">
+      <span class="cat" id="bCat"></span>
+      <div class="fig" id="bFig"></div>
+      <div class="answer" id="bAns"></div>
+    </div>
+  </div>
+</div>
+
+<div class="controls">
+  <button class="nav" id="prevBtn" title="Назад"><svg viewBox="0 0 24 24"><path d="M15 18 9 12l6-6"/></svg></button>
+  <button class="know no" id="noBtn"><svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>Не знаю</button>
+  <button class="know yes" id="yesBtn"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>Знаю</button>
+  <button class="nav" id="nextBtn" title="Вперёд"><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></button>
+</div>
+
+<div class="progress"><i id="progBar"></i></div>
+<div class="counter" id="counter"></div>
+<div class="kbd">Клавиши: <kbd>←</kbd> <kbd>→</kbd> листать · <kbd>пробел</kbd> перевернуть · <kbd>З</kbd> знаю · <kbd>Н</kbd> не знаю</div>
+
+<div class="listview" id="listview"></div>
+
+<script>
+/* ===== вспомогательные функции для формул ===== */
+const fr=(n,d)=>`<span class="frac"><span class="num">${n}</span><span class="den">${d}</span></span>`;
+const rt=(x)=>`&#8730;<span class="rad">${x}</span>`; // корень
+
+/* ===== геометрия чертежей: аккуратные отметки на углах ===== */
+const _r=n=>Math.round(n*100)/100;                       // округление координат
+const _u=(dx,dy)=>{const L=Math.hypot(dx,dy)||1;return[dx/L,dy/L];}; // единичный вектор
+// дуга-отметка угла: вершина (vx,vy); стороны идут к точкам A и B; r — радиус, cls — класс
+function ang(vx,vy,ax,ay,bx,by,r=16,cls='m'){
+  const a1=Math.atan2(ay-vy,ax-vx), a2=Math.atan2(by-vy,bx-vx);
+  let d=a2-a1; while(d<=-Math.PI)d+=2*Math.PI; while(d>Math.PI)d-=2*Math.PI;
+  const sw=d>0?1:0;                                       // направление обхода — внутрь угла
+  const x1=_r(vx+r*Math.cos(a1)), y1=_r(vy+r*Math.sin(a1));
+  const x2=_r(vx+r*Math.cos(a2)), y2=_r(vy+r*Math.sin(a2));
+  return `<path class="${cls}" d="M${x1} ${y1} A${r} ${r} 0 0 ${sw} ${x2} ${y2}"/>`;
+}
+// значок прямого угла (квадратик): вершина V; стороны к A и B; s — размер
+function rang(vx,vy,ax,ay,bx,by,s=12){
+  const[u1x,u1y]=_u(ax-vx,ay-vy),[u2x,u2y]=_u(bx-vx,by-vy);
+  const p1=`${_r(vx+u1x*s)} ${_r(vy+u1y*s)}`;
+  const p2=`${_r(vx+u1x*s+u2x*s)} ${_r(vy+u1y*s+u2y*s)}`;
+  const p3=`${_r(vx+u2x*s)} ${_r(vy+u2y*s)}`;
+  return `<polyline points="${p1} ${p2} ${p3}"/>`;
+}
+// засечки равных сторон на отрезке P→Q: t — доля длины (где ставить), n — число штрихов, len — длина штриха
+function tick(px,py,qx,qy,t=0.5,n=1,len=7){
+  const[ux,uy]=_u(qx-px,qy-py);                           // вдоль отрезка
+  const nx=-uy, ny=ux;                                    // перпендикуляр
+  const mx=px+(qx-px)*t, my=py+(qy-py)*t;                 // точка установки
+  let s=''; const gap=4, start=-(n-1)/2;
+  for(let i=0;i<n;i++){
+    const off=(start+i)*gap, cx=mx+ux*off, cy=my+uy*off;
+    s+=`<line class="m" x1="${_r(cx-nx*len/2)}" y1="${_r(cy-ny*len/2)}" x2="${_r(cx+nx*len/2)}" y2="${_r(cy+ny*len/2)}"/>`;
+  }
+  return s;
+}
+
+/* ===== данные: 54 карточки ===== */
+const CARDS=[
+/* --- УГЛЫ --- */
+{c:'Углы',t:'Смежные углы',
+ f:`<svg viewBox="0 0 200 120"><line x1="12" y1="90" x2="188" y2="90"/><line x1="96" y1="90" x2="152" y2="26"/>${ang(96,90,188,90,152,26,16)}${ang(96,90,12,90,152,26,16)}</svg>`,
+ a:`В сумме <b>180°</b>`},
+{c:'Углы',t:'Вертикальные углы',
+ f:`<svg viewBox="0 0 200 130"><line x1="18" y1="38" x2="182" y2="98"/><line x1="36" y1="112" x2="164" y2="24"/>${ang(100,68,18,38,36,112,18)}${ang(100,68,182,98,164,24,18)}</svg>`,
+ a:`<b>Равны</b> между собой`},
+{c:'Углы',t:'Накрест лежащие углы',
+ f:`<svg viewBox="0 0 200 140"><line x1="15" y1="50" x2="185" y2="50"/><line x1="15" y1="102" x2="185" y2="102"/><line x1="55" y1="22" x2="150" y2="128"/>${ang(80,50,185,50,150,128,15)}${ang(126.7,102,15,102,55,22,15)}</svg>`,
+ a:`Если равны — прямые <b>параллельны</b><span class="note">признак параллельности прямых</span>`},
+{c:'Углы',t:'Соответственные углы',
+ f:`<svg viewBox="0 0 200 140"><line x1="15" y1="50" x2="185" y2="50"/><line x1="15" y1="102" x2="185" y2="102"/><line x1="55" y1="22" x2="150" y2="128"/>${ang(80,50,185,50,150,128,15)}${ang(126.7,102,185,102,150,128,15)}</svg>`,
+ a:`Если равны — прямые <b>параллельны</b><span class="note">признак параллельности прямых</span>`},
+{c:'Углы',t:'Односторонние углы',
+ f:`<svg viewBox="0 0 200 140"><line x1="15" y1="50" x2="185" y2="50"/><line x1="15" y1="102" x2="185" y2="102"/><line x1="55" y1="22" x2="150" y2="128"/>${ang(80,50,185,50,150,128,15)}${ang(126.7,102,185,102,55,22,15)}</svg>`,
+ a:`Если сумма = <b>180°</b> — прямые <b>параллельны</b>`},
+{c:'Углы',t:'Сумма углов треугольника',
+ f:`<svg viewBox="0 0 200 130"><polygon points="20,112 180,112 75,22"/>${ang(20,112,180,112,75,22,16)}${ang(180,112,20,112,75,22,16)}${ang(75,22,20,112,180,112,16)}</svg>`,
+ a:`<b>180°</b>`},
+{c:'Углы',t:'Сумма углов четырёхугольника',
+ f:`<svg viewBox="0 0 200 135"><polygon points="28,32 168,22 184,110 42,122"/>${ang(28,32,42,122,168,22,15)}${ang(168,22,28,32,184,110,15)}${ang(184,110,168,22,42,122,15)}${ang(42,122,184,110,28,32,15)}</svg>`,
+ a:`<b>360°</b>`},
+{c:'Углы',t:'Сумма углов многоугольника',
+ f:`<svg viewBox="0 0 200 150"><polygon points="100,16 174,68 146,150 54,150 26,68"/></svg>`,
+ a:`<b>180° · (n − 2)</b><span class="note">пятиугольник — 540°, шестиугольник — 720°</span>`},
+
+/* --- ТРЕУГОЛЬНИК --- */
+{c:'Треугольник',t:'Площадь — через сторону и высоту',
+ f:`<svg viewBox="0 0 200 138"><polygon points="20,115 180,115 82,28"/><line x1="82" y1="28" x2="82" y2="115"/><polyline points="82,115 82,106 91,106"/><text x="96" y="132">a</text><text x="88" y="78">h<tspan dy="3" font-size="11">a</tspan></text></svg>`,
+ a:`S = ${fr('1','2')}·a·h<sub>a</sub>`},
+{c:'Треугольник',t:'Площадь — через две стороны и угол',
+ f:`<svg viewBox="0 0 200 138"><polygon points="20,118 178,118 80,22"/>${ang(80,22,20,118,178,118,18)}<text x="86" y="42">α</text><text x="40" y="72">a</text><text x="132" y="68">c</text></svg>`,
+ a:`S = ${fr('1','2')}·a·c·sin&#8201;α`},
+{c:'Треугольник',t:'Площадь — через вписанную окружность',
+ f:`<svg viewBox="0 0 200 140"><polygon points="20,120 182,120 96,20"/><circle cx="96" cy="92" r="27"/><line x1="96" y1="92" x2="96" y2="120"/><text x="100" y="112">r</text></svg>`,
+ a:`S = p · r<span class="note">p — полупериметр</span>`},
+{c:'Треугольник',t:'Площадь — через описанную окружность',
+ f:`<svg viewBox="0 0 200 150"><circle cx="100" cy="78" r="58"/><polygon points="100,20 50,114 158,104"/><line x1="100" y1="78" x2="100" y2="20"/><text x="104" y="52">R</text><text x="66" y="72">a</text><text x="136" y="64">b</text><text x="98" y="128">c</text></svg>`,
+ a:`S = ${fr('a·b·c','4R')}`},
+{c:'Треугольник',t:'Теорема синусов',
+ f:`<svg viewBox="0 0 200 150"><circle cx="100" cy="76" r="58"/><polygon points="96,18 48,108 158,98"/><text x="60" y="72">a</text><text x="134" y="60">b</text><text x="98" y="124">c</text><text x="84" y="36" class="lt">γ</text><text x="56" y="96" class="lt">β</text><text x="138" y="90" class="lt">α</text></svg>`,
+ a:`${fr('a','sin α')} = ${fr('b','sin β')} = ${fr('c','sin γ')} = 2R`},
+{c:'Треугольник',t:'Средняя линия треугольника',
+ f:`<svg viewBox="0 0 200 135"><polygon points="20,118 180,118 90,22"/><line class="m2" x1="55" y1="70" x2="135" y2="70"/><text x="42" y="68">M</text><text x="140" y="68">N</text><line x1="35" y1="98" x2="42" y2="92"/><line x1="143" y1="92" x2="150" y2="98"/></svg>`,
+ a:`<span class="note" style="font-size:.92em;color:var(--ink)">• лежит на серединах сторон<br>• параллельна основанию<br>• равна <b>половине</b> основания</span>`},
+{c:'Треугольник',t:'Отношение площадей подобных',
+ f:`<svg viewBox="0 0 200 135"><polygon points="14,118 110,118 48,38"/><polygon points="126,118 188,118 152,68"/><text x="55" y="100">S<tspan dy="3" font-size="11">1</tspan></text><text x="150" y="108">S<tspan dy="3" font-size="11">2</tspan></text></svg>`,
+ a:`${fr('S<sub>1</sub>','S<sub>2</sub>')} = k²<span class="note">k — коэффициент подобия</span>`},
+{c:'Треугольник',t:'Первый признак равенства',
+ f:`<svg viewBox="0 0 200 130"><polygon points="15,112 95,112 35,42"/><polygon points="105,112 185,112 125,42"/>${tick(15,112,35,42,0.5,1,7)}${tick(15,112,95,112,0.5,1,7)}${ang(15,112,95,112,35,42,12)}${tick(105,112,125,42,0.5,1,7)}${tick(105,112,185,112,0.5,1,7)}${ang(105,112,185,112,125,42,12)}</svg>`,
+ a:`По <b>двум сторонам</b> и <b>углу</b> между ними`},
+{c:'Треугольник',t:'Второй признак равенства',
+ f:`<svg viewBox="0 0 200 130"><polygon points="15,112 95,112 35,42"/><polygon points="105,112 185,112 125,42"/>${tick(15,112,95,112,0.5,1,7)}${ang(15,112,95,112,35,42,12)}${ang(95,112,15,112,35,42,12)}${tick(105,112,185,112,0.5,1,7)}${ang(105,112,185,112,125,42,12)}${ang(185,112,105,112,125,42,12)}</svg>`,
+ a:`По <b>стороне</b> и <b>двум прилежащим</b> углам`},
+{c:'Треугольник',t:'Третий признак равенства',
+ f:`<svg viewBox="0 0 200 130"><polygon points="15,112 95,112 35,42"/><polygon points="105,112 185,112 125,42"/>${tick(15,112,95,112,0.5,1,7)}${tick(15,112,35,42,0.5,2,7)}${tick(95,112,35,42,0.5,3,7)}${tick(105,112,185,112,0.5,1,7)}${tick(105,112,125,42,0.5,2,7)}${tick(185,112,125,42,0.5,3,7)}</svg>`,
+ a:`По <b>трём сторонам</b>`},
+
+/* --- ПРЯМОУГОЛЬНЫЙ ТРЕУГОЛЬНИК --- */
+{c:'Прямоугольный',t:'Теорема Пифагора',
+ f:`<svg viewBox="0 0 200 138"><polygon points="35,115 175,115 35,28"/>${rang(35,115,175,115,35,28,12)}<text x="20" y="74">a</text><text x="100" y="132">b</text><text x="112" y="64">c</text></svg>`,
+ a:`c² = a² + b²<span class="note">c — гипотенуза, a и b — катеты</span>`},
+{c:'Прямоугольный',t:'Площадь прямоугольного треугольника',
+ f:`<svg viewBox="0 0 200 138"><polygon points="35,115 175,115 35,28"/>${rang(35,115,175,115,35,28,12)}<text x="20" y="74">a</text><text x="100" y="132">b</text></svg>`,
+ a:`S = ${fr('a·b','2')}`},
+{c:'Прямоугольный',t:'Свойство катета против угла 30°',
+ f:`<svg viewBox="0 0 200 130"><polygon points="40,112 172,112 172,30"/>${rang(172,112,40,112,172,30,12)}${ang(40,112,172,112,172,30,22)}<text x="70" y="106" class="lt">30°</text><text x="178" y="76">a</text><text x="92" y="62">2a</text></svg>`,
+ a:`Катет против угла <b>30°</b> равен <b>половине</b> гипотенузы`},
+{c:'Прямоугольный',t:'Медиана к гипотенузе',
+ f:`<svg viewBox="0 0 200 130"><polygon points="20,112 180,112 100,26"/><line x1="100" y1="26" x2="100" y2="112"/>${rang(100,26,20,112,180,112,13)}${tick(20,112,100,112,0.5,1,7)}${tick(100,112,180,112,0.5,1,7)}${tick(100,26,100,112,0.5,1,7)}</svg>`,
+ a:`Медиана к гипотенузе равна <b>половине</b> гипотенузы`},
+{c:'Прямоугольный',t:'Синус, косинус, тангенс острых углов',
+ f:`<svg viewBox="0 0 200 130"><polygon points="35,112 35,26 175,112"/>${rang(35,112,35,26,175,112,12)}<text x="20" y="20">A</text><text x="18" y="120">C</text><text x="178" y="120">B</text></svg>`,
+ a:`<span class="sm">sin&#8201;A = cos&#8201;B&nbsp;&nbsp;•&nbsp;&nbsp;sin&#8201;B = cos&#8201;A<br>tg&#8201;A = ctg&#8201;B&nbsp;&nbsp;•&nbsp;&nbsp;tg&#8201;B = ctg&#8201;A</span><span class="note">синус одного острого угла = косинусу другого</span>`},
+{c:'Прямоугольный',t:'Радиус описанной окружности',
+ f:`<svg viewBox="0 0 200 150"><circle cx="100" cy="74" r="55"/><polygon points="45,74 155,74 100,19"/><line x1="45" y1="74" x2="155" y2="74"/>${rang(100,19,45,74,155,74,12)}<text x="96" y="90">c</text></svg>`,
+ a:`R = ${fr('c','2')}<span class="note">c — гипотенуза (это диаметр)</span>`},
+
+/* --- РАВНОБЕДРЕННЫЙ --- */
+{c:'Равнобедренный',t:'Равнобедренный треугольник',
+ f:`<svg viewBox="0 0 200 135"><polygon points="30,116 170,116 100,24"/><line x1="100" y1="24" x2="100" y2="116"/>${rang(100,116,170,116,100,24,11)}${tick(30,116,100,24,0.5,1,7)}${tick(170,116,100,24,0.5,1,7)}${tick(30,116,100,116,0.5,2,6)}${tick(100,116,170,116,0.5,2,6)}</svg>`,
+ a:`Биссектриса, медиана и высота к основанию <b>совпадают</b>`},
+
+/* --- РАВНОСТОРОННИЙ --- */
+{c:'Равносторонний',t:'Высота равностороннего треугольника',
+ f:`<svg viewBox="0 0 200 135"><polygon points="30,116 170,116 100,24"/><line x1="100" y1="24" x2="100" y2="116"/>${rang(100,116,170,116,100,24,11)}<text x="36" y="112" class="lt">60°</text><text x="150" y="112" class="lt">60°</text><text x="88" y="48" class="lt">60°</text><text x="56" y="74">a</text><text x="104" y="80">h</text></svg>`,
+ a:`h = ${fr(rt('3')+'·a','2')}`},
+{c:'Равносторонний',t:'Радиус вписанной окружности',
+ f:`<svg viewBox="0 0 200 140"><polygon points="30,120 170,120 100,28"/><circle cx="100" cy="89" r="31"/><line x1="100" y1="89" x2="100" y2="120"/><text x="104" y="112">r</text><text x="56" y="78">a</text></svg>`,
+ a:`r = ${fr(rt('3')+'·a','6')} = ${fr('1','3')}·h`},
+{c:'Равносторонний',t:'Радиус описанной окружности',
+ f:`<svg viewBox="0 0 200 150"><circle cx="100" cy="76" r="56"/><polygon points="100,20 51,104 149,104"/><line x1="100" y1="76" x2="100" y2="20"/><text x="104" y="50">R</text><text x="62" y="70">a</text></svg>`,
+ a:`R = ${fr(rt('3')+'·a','3')} = ${fr('2','3')}·h`},
+
+/* --- ПАРАЛЛЕЛОГРАММ --- */
+{c:'Параллелограмм',t:'Площадь — через высоту',
+ f:`<svg viewBox="0 0 200 138"><polygon points="40,112 150,112 178,40 68,40"/><line x1="84" y1="40" x2="84" y2="112"/>${rang(84,112,150,112,84,40,11)}<text x="96" y="128">a</text><text x="90" y="80">h<tspan dy="3" font-size="11">a</tspan></text></svg>`,
+ a:`S = a · h<sub>a</sub>`},
+{c:'Параллелограмм',t:'Площадь — через стороны и угол',
+ f:`<svg viewBox="0 0 200 135"><polygon points="40,112 150,112 180,44 70,44"/>${ang(40,112,150,112,70,44,18)}<text x="66" y="104">α</text><text x="92" y="128">a</text><text x="40" y="82">c</text></svg>`,
+ a:`S = a · c · sin&#8201;α`},
+{c:'Параллелограмм',t:'Свойство углов параллелограмма',
+ f:`<svg viewBox="0 0 200 135"><polygon points="40,116 150,116 180,40 70,40"/><text x="56" y="36" class="lt">B</text><text x="184" y="40" class="lt">C</text><text x="26" y="122" class="lt">A</text><text x="152" y="130" class="lt">D</text>${ang(40,116,150,116,70,40,16)}${ang(70,40,40,116,180,40,16)}</svg>`,
+ a:`Сумма углов при одной стороне = <b>180°</b>`},
+
+/* --- РОМБ --- */
+{c:'Ромб',t:'Площадь ромба — через диагонали',
+ f:`<svg viewBox="0 0 200 160"><polygon points="100,18 165,80 100,142 35,80"/><line x1="100" y1="18" x2="100" y2="142"/><line x1="35" y1="80" x2="165" y2="80"/><text x="106" y="58">d<tspan dy="3" font-size="11">1</tspan></text><text x="128" y="76">d<tspan dy="3" font-size="11">2</tspan></text></svg>`,
+ a:`S = ${fr('d<sub>1</sub> · d<sub>2</sub>','2')}`},
+{c:'Ромб',t:'Площадь ромба — через вписанную окружность',
+ f:`<svg viewBox="0 0 200 160"><polygon points="100,22 162,82 100,142 38,82"/><circle cx="100" cy="82" r="33"/><circle cx="100" cy="82" r="2.5" class="d"/><line x1="100" y1="82" x2="121" y2="56"/><text x="116" y="74">r</text></svg>`,
+ a:`S = p · r<span class="note">p — полупериметр</span>`},
+
+/* --- ТРАПЕЦИЯ --- */
+{c:'Трапеция',t:'Площадь трапеции',
+ f:`<svg viewBox="0 0 200 138"><polygon points="55,40 145,40 180,116 25,116"/><line x1="72" y1="40" x2="72" y2="116"/>${rang(72,116,180,116,72,40,11)}<text x="96" y="34">a</text><text x="100" y="132">b</text><text x="56" y="82">h</text></svg>`,
+ a:`S = ${fr('a + b','2')} · h`},
+{c:'Трапеция',t:'Средняя линия трапеции',
+ f:`<svg viewBox="0 0 200 135"><polygon points="55,34 145,34 180,114 25,114"/><line class="m2" x1="40" y1="74" x2="162" y2="74"/><text x="27" y="73">M</text><text x="166" y="73">N</text><text x="96" y="28">a</text><text x="100" y="130">b</text></svg>`,
+ a:`<span class="note" style="font-size:.92em;color:var(--ink)">• на серединах боковых сторон<br>• параллельна основаниям<br>• равна <b>полусумме</b> оснований</span>`},
+{c:'Трапеция',t:'Свойство углов трапеции',
+ f:`<svg viewBox="0 0 200 135"><polygon points="60,34 150,34 185,114 20,114"/><text x="50" y="30" class="lt">B</text><text x="152" y="30" class="lt">C</text><text x="9" y="120" class="lt">A</text><text x="186" y="124" class="lt">D</text>${ang(20,114,185,114,60,34,16)}${ang(60,34,20,114,150,34,16)}</svg>`,
+ a:`Сумма углов при боковой стороне = <b>180°</b>`},
+{c:'Трапеция',t:'Равнобедренная трапеция',
+ f:`<svg viewBox="0 0 200 160"><circle cx="100" cy="80" r="62"/><polygon points="49,45 151,45 147,120 53,120"/>${tick(49,45,53,120,0.5,1,7)}${tick(151,45,147,120,0.5,1,7)}</svg>`,
+ a:`Если трапеция вписана в окружность — она <b>равнобедренная</b>`},
+
+/* --- ПРЯМОУГОЛЬНИК И КВАДРАТ --- */
+{c:'Прямоугольник',t:'Площадь прямоугольника',
+ f:`<svg viewBox="0 0 200 138"><rect x="35" y="32" width="140" height="78"/>${rang(35,32,175,32,35,110,11)}${rang(175,110,35,110,175,32,11)}<text x="20" y="76">a</text><text x="100" y="128">b</text></svg>`,
+ a:`S = a · b`},
+{c:'Прямоугольник',t:'Площадь квадрата',
+ f:`<svg viewBox="0 0 200 138"><rect x="55" y="22" width="95" height="95"/>${rang(55,22,150,22,55,117,11)}${rang(150,117,55,117,150,22,11)}<text x="40" y="74">a</text><text x="98" y="134">a</text></svg>`,
+ a:`S = a²`},
+
+/* --- ШЕСТИУГОЛЬНИК --- */
+{c:'Шестиугольник',t:'Радиус описанной окружности',
+ f:`<svg viewBox="0 0 200 160"><circle cx="100" cy="80" r="60"/><polygon points="160,80 130,28 70,28 40,80 70,132 130,132"/><line x1="100" y1="80" x2="160" y2="80"/><text x="120" y="75">R</text><text x="94" y="22">a</text></svg>`,
+ a:`R = a<span class="note">радиус описанной = стороне</span>`},
+{c:'Шестиугольник',t:'Радиус вписанной окружности',
+ f:`<svg viewBox="0 0 200 160"><polygon points="160,80 130,28 70,28 40,80 70,132 130,132"/><circle cx="100" cy="80" r="52"/><line x1="100" y1="80" x2="100" y2="28"/><text x="104" y="58">r</text><text x="138" y="50">a</text></svg>`,
+ a:`r = ${fr(rt('3')+'·a','2')}`},
+
+/* --- МНОГОУГОЛЬНИК --- */
+{c:'Многоугольник',t:'Площадь многоугольника',
+ f:`<svg viewBox="0 0 200 160"><polygon points="100,20 168,70 142,150 58,150 32,70"/><circle cx="100" cy="92" r="40"/><line x1="100" y1="92" x2="100" y2="132"/><text x="104" y="120">r</text></svg>`,
+ a:`S = p · r<span class="note">p — полупериметр<br>(для описанного многоугольника)</span>`},
+
+/* --- ТРИГОНОМЕТРИЯ --- */
+{c:'Тригонометрия',t:'Основные тригонометрические формулы',
+ f:`<svg viewBox="0 0 200 120"><polygon points="35,100 170,100 35,28"/>${rang(35,100,170,100,35,28,11)}${ang(170,100,35,100,35,28,22)}<text x="142" y="94" class="lt">α</text></svg>`,
+ a:`<span class="sm" style="line-height:1.7">sin²α + cos²α = 1<br>1 + tg²α = ${fr('1','cos²α')}<br>1 + ctg²α = ${fr('1','sin²α')}<br>tg&#8201;α · ctg&#8201;α = 1</span>`},
+{c:'Тригонометрия',t:'Синус острого угла',
+ f:`<svg viewBox="0 0 200 130"><polygon points="35,108 170,108 35,28"/><line class="m2" x1="35" y1="28" x2="35" y2="108"/><line class="m2" x1="35" y1="28" x2="170" y2="108"/>${rang(35,108,170,108,35,28,11)}${ang(170,108,35,108,35,28,22)}<text x="142" y="102" class="lt">α</text></svg>`,
+ a:`sin&#8201;α = ${fr('противолежащий катет','гипотенуза')}`},
+{c:'Тригонометрия',t:'Косинус острого угла',
+ f:`<svg viewBox="0 0 200 130"><polygon points="35,108 170,108 35,28"/><line class="m2" x1="35" y1="108" x2="170" y2="108"/><line class="m2" x1="35" y1="28" x2="170" y2="108"/>${rang(35,108,170,108,35,28,11)}${ang(170,108,35,108,35,28,22)}<text x="142" y="102" class="lt">α</text></svg>`,
+ a:`cos&#8201;α = ${fr('прилежащий катет','гипотенуза')}`},
+{c:'Тригонометрия',t:'Тангенс острого угла',
+ f:`<svg viewBox="0 0 200 130"><polygon points="35,108 170,108 35,28"/><line class="m2" x1="35" y1="28" x2="35" y2="108"/><line class="m2" x1="35" y1="108" x2="170" y2="108"/>${rang(35,108,170,108,35,28,11)}${ang(170,108,35,108,35,28,22)}<text x="142" y="102" class="lt">α</text></svg>`,
+ a:`tg&#8201;α = ${fr('противолежащий','прилежащий')} = ${fr('sin α','cos α')}`},
+{c:'Тригонометрия',t:'Котангенс острого угла',
+ f:`<svg viewBox="0 0 200 130"><polygon points="35,108 170,108 35,28"/><line class="m2" x1="35" y1="108" x2="170" y2="108"/><line class="m2" x1="35" y1="28" x2="35" y2="108"/>${rang(35,108,170,108,35,28,11)}${ang(170,108,35,108,35,28,22)}<text x="142" y="102" class="lt">α</text></svg>`,
+ a:`ctg&#8201;α = ${fr('прилежащий','противолежащий')} = ${fr('cos α','sin α')}`},
+
+/* --- ОКРУЖНОСТЬ --- */
+{c:'Окружность',t:'Теорема о вписанном угле',
+ f:`<svg viewBox="0 0 200 150"><circle cx="100" cy="80" r="60"/><line x1="100" y1="20" x2="48" y2="112"/><line x1="100" y1="20" x2="152" y2="112"/><line x1="100" y1="80" x2="48" y2="112"/><line x1="100" y1="80" x2="152" y2="112"/><circle cx="100" cy="80" r="2.5" class="d"/><text x="92" y="44" class="lt">α</text><text x="86" y="104" class="lt">2α</text></svg>`,
+ a:`Вписанный угол равен <b>половине</b> дуги (или половине центрального угла)`},
+{c:'Окружность',t:'Центральный угол',
+ f:`<svg viewBox="0 0 200 145"><circle cx="100" cy="76" r="58"/><line x1="100" y1="76" x2="50" y2="106"/><line x1="100" y1="76" x2="150" y2="106"/><path class="m" d="M50 106 A58 58 0 0 0 150 106"/><circle cx="100" cy="76" r="2.5" class="d"/><text x="90" y="100" class="lt">α</text></svg>`,
+ a:`Равен <b>градусной мере дуги</b>, на которую опирается`},
+{c:'Окружность',t:'Свойство касательной',
+ f:`<svg viewBox="0 0 200 150"><circle cx="82" cy="78" r="48"/><line x1="130" y1="18" x2="130" y2="138"/><line x1="82" y1="78" x2="130" y2="78"/>${rang(130,78,82,78,130,18,11)}<circle cx="130" cy="78" r="2.5" class="d"/><text x="98" y="73">R</text></svg>`,
+ a:`Касательная <b>⊥ радиусу</b>, проведённому в точку касания`},
+{c:'Окружность',t:'Свойство отрезков касательных',
+ f:`<svg viewBox="0 0 200 150"><circle cx="78" cy="78" r="45"/><line x1="180" y1="78" x2="100" y2="40"/><line x1="180" y1="78" x2="100" y2="116"/><line x1="78" y1="78" x2="180" y2="78"/><circle cx="180" cy="78" r="2.5" class="d"/>${tick(180,78,100,40,0.5,1,7)}${tick(180,78,100,116,0.5,1,7)}</svg>`,
+ a:`Отрезки касательных из одной точки <b>равны</b> и составляют равные углы с прямой через точку и центр`},
+{c:'Окружность',t:'Угол между касательной и хордой',
+ f:`<svg viewBox="0 0 200 150"><circle cx="100" cy="74" r="55"/><line x1="22" y1="126" x2="125" y2="108"/><line x1="62" y1="118" x2="150" y2="52"/>${ang(62,118,125,108,150,52,17)}<circle cx="62" cy="118" r="2.5" class="d"/><text x="150" y="49" class="lt">B</text><text x="94" y="108" class="lt">α</text></svg>`,
+ a:`α = ${fr('дуга AB','2')}<span class="note">равен половине заключённой дуги</span>`},
+{c:'Окружность',t:'Свойство описанного четырёхугольника',
+ f:`<svg viewBox="0 0 200 145"><polygon points="42,38 150,28 178,108 28,120"/><circle cx="98" cy="76" r="38"/><text x="88" y="30">a</text><text x="170" y="74">b</text><text x="98" y="130">c</text><text x="24" y="80">d</text></svg>`,
+ a:`a + c = b + d<span class="note">суммы противоположных сторон равны</span>`},
+{c:'Окружность',t:'Свойство вписанного четырёхугольника',
+ f:`<svg viewBox="0 0 200 150"><circle cx="100" cy="78" r="60"/><polygon points="45,48 150,52 152,108 48,114"/><text x="33" y="46" class="lt">A</text><text x="154" y="50" class="lt">B</text><text x="156" y="118" class="lt">C</text><text x="35" y="124" class="lt">D</text></svg>`,
+ a:`∠A + ∠C = 180°<br>∠B + ∠D = 180°<span class="note">суммы противоположных углов</span>`},
+];
+
+/* ===== логика ===== */
+const cats=[...new Set(CARDS.map(c=>c.c))];
+let activeCat='Все', deck=[], pos=0, onlyUnknown=false;
+const known=JSON.parse(localStorage.getItem('g1_known')||'{}');
+const saveKnown=()=>localStorage.setItem('g1_known',JSON.stringify(known));
+
+const $=id=>document.getElementById(id);
+
+/* чипы тем */
+function buildChips(){
+  const wrap=$('chips'); wrap.innerHTML='';
+  const mk=(label,val,count)=>{
+    const b=document.createElement('button');
+    b.className='chip'+(activeCat===val?' active':'');
+    b.innerHTML=label+`<span class="n">${count}</span>`;
+    b.onclick=()=>{activeCat=val;applyFilters();buildChips();};
+    wrap.appendChild(b);
+  };
+  mk('Все','Все',CARDS.length);
+  cats.forEach(c=>mk(c,c,CARDS.filter(x=>x.c===c).length));
+}
+
+function applyFilters(){
+  deck=CARDS.map((_,i)=>i)
+    .filter(i=>activeCat==='Все'||CARDS[i].c===activeCat)
+    .filter(i=>!onlyUnknown||!known[CARDS[i].t]);
+  if(deck.length===0)deck=[0]; // на случай пустого
+  pos=0; show();
+}
+function shuffle(){
+  for(let i=deck.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[deck[i],deck[j]]=[deck[j],deck[i]];}
+  pos=0; show();
+}
+
+function show(){
+  const card=$('card'); card.classList.remove('flipped');
+  const i=deck[pos], c=CARDS[i];
+  $('fCat').textContent=c.c; $('bCat').textContent=c.c;
+  $('fTitle').textContent=c.t;
+  $('fFig').innerHTML=c.f; $('bFig').innerHTML=c.f;
+  $('bAns').innerHTML=c.a;
+  $('fMark').classList.toggle('show',!!known[c.t]);
+  const total=CARDS.length, learned=Object.keys(known).filter(k=>known[k]).length;
+  $('counter').innerHTML=`Карточка <b>${pos+1}</b> из <b>${deck.length}</b> &nbsp;·&nbsp; изучено <b>${learned}</b> из ${total}`;
+  $('progBar').style.width=(learned/total*100)+'%';
+}
+
+function flip(){$('card').classList.toggle('flipped');}
+function next(){pos=(pos+1)%deck.length;show();}
+function prev(){pos=(pos-1+deck.length)%deck.length;show();}
+function setKnown(v){
+  const t=CARDS[deck[pos]].t;
+  if(v)known[t]=true; else delete known[t];
+  saveKnown();
+  if(onlyUnknown&&v){applyFilters();} else {next();}
+}
+
+/* кнопки */
+$('card').onclick=flip;
+$('prevBtn').onclick=e=>{e.stopPropagation();prev();};
+$('nextBtn').onclick=e=>{e.stopPropagation();next();};
+$('noBtn').onclick=()=>setKnown(false);
+$('yesBtn').onclick=()=>setKnown(true);
+$('shuffleBtn').onclick=shuffle;
+$('unknownBtn').onclick=function(){onlyUnknown=!onlyUnknown;this.classList.toggle('on',onlyUnknown);applyFilters();};
+$('resetBtn').onclick=()=>{if(confirm('Сбросить все отметки «знаю»?')){for(const k in known)delete known[k];saveKnown();applyFilters();}};
+
+/* список */
+let listOpen=false;
+$('viewBtn').onclick=function(){
+  listOpen=!listOpen;
+  $('listview').classList.toggle('show',listOpen);
+  $('scene').style.display=listOpen?'none':'';
+  document.querySelector('.controls').style.display=listOpen?'none':'';
+  $('counter').style.display=listOpen?'none':'';
+  document.querySelector('.progress').style.display=listOpen?'none':'';
+  document.querySelector('.kbd').style.display=listOpen?'none':'';
+  this.classList.toggle('on',listOpen);
+  this.lastChild.textContent=listOpen?' Карточки':' Список';
+  if(listOpen)buildList();
+};
+function buildList(){
+  const lv=$('listview'); lv.innerHTML='';
+  const items=CARDS.filter(c=>activeCat==='Все'||c.c===activeCat);
+  items.forEach(c=>{
+    const d=document.createElement('div'); d.className='lcard';
+    d.innerHTML=`<span class="cat">${c.c}</span><div class="lfig">${c.f}</div>`+
+      `<div class="ltitle">${c.t}</div><div class="lans">${c.a}</div>`;
+    lv.appendChild(d);
+  });
+}
+
+/* клавиатура */
+document.addEventListener('keydown',e=>{
+  if(listOpen)return;
+  if(e.key==='ArrowRight')next();
+  else if(e.key==='ArrowLeft')prev();
+  else if(e.key===' '){e.preventDefault();flip();}
+  else if(e.key==='з'||e.key==='З'||e.key==='z')setKnown(true);
+  else if(e.key==='н'||e.key==='Н'||e.key==='n')setKnown(false);
+});
+
+/* старт */
+buildChips();
+applyFilters();
+</script>
+</body>
+</html>

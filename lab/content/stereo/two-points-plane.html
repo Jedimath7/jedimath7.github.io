@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="data:,">
+  <title>Аксиома A2 · Две точки и прямая</title>
+  <link rel="stylesheet" href="shared/scene.css">
+  <style>
+    .scene{min-width:0}.scene canvas{height:520px}
+    .intro{margin:0 0 22px;color:#61738b}
+    .readout{margin:14px 0 0;padding:12px 14px;background:#f2f6fb;border-radius:12px;color:#344d6c}
+    .view-actions{display:flex;flex-wrap:wrap;gap:8px}
+    @media(max-width:760px){.scene canvas{height:400px}}
+    @media(max-width:400px){.scene canvas{height:340px}}
+  </style>
+</head>
+<body><main>
+  <div class="eyebrow">ГЕОМЕТРИЯ В ДВИЖЕНИИ · A2</div>
+  <h1>Две точки и прямая</h1>
+  <p class="intro"><strong>Аксиома A₂.</strong> Если две точки прямой лежат в плоскости, то все точки прямой лежат в этой плоскости.</p>
+  <div class="layout">
+    <section>
+      <div class="scene">
+        <canvas id="scene" aria-label="Точки A и B и прямая AB в плоскости альфа. Перетаскивайте поле, чтобы вращать модель."></canvas>
+        <div class="badge">A, B ∈ α &nbsp;·&nbsp; AB ⊂ α</div>
+        <div class="hint">Тяните поле — вращайте модель.</div>
+      </div>
+    </section>
+    <aside class="side">
+      <div class="panel">
+        <h2>Положение точек</h2>
+        <label class="range" for="b-angle">Положение B <output id="b-angle-value" for="b-angle"></output>
+          <input id="b-angle" type="range" min="0" max="359" step="1" value="35">
+        </label>
+        <label class="range" for="p-position">Точка P на AB <output id="p-position-value" for="p-position"></output>
+          <input id="p-position" type="range" min="-1" max="2" step="0.01" value="0.5">
+        </label>
+        <p class="sub">A неподвижна. P может выйти за отрезок AB.</p>
+        <div class="readout" id="readout" role="status" aria-live="polite">P на отрезке AB</div>
+      </div>
+      <div class="panel view">
+        <div class="view-actions"><button type="button" id="reset-all">Сбросить</button></div>
+      </div>
+    </aside>
+  </div>
+</main>
+<script src="shared/scene-core.js"></script>
+<script>
+'use strict';
+const canvas=document.getElementById('scene');
+const bAngle=document.getElementById('b-angle');
+const pPosition=document.getElementById('p-position');
+const bOutput=document.getElementById('b-angle-value');
+const pOutput=document.getElementById('p-position-value');
+const readout=document.getElementById('readout');
+const A=[0,0,0], B_RADIUS=1.4;
+function getB(){const a=Number(bAngle.value)*Math.PI/180;return [B_RADIUS*Math.cos(a),B_RADIUS*Math.sin(a),0];}
+function draw(v){
+  v.clear();
+  v.polygon([[-2.8,-2,0],[2.8,-2,0],[2.8,2,0],[-2.8,2,0]],'#568ed526','#7f9fc2');
+  v.label([-2.55,1.72,0],'α');
+  const B=getB(), t=Number(pPosition.value), P=Stereo.add(A,Stereo.mul(B,t));
+  const d=Stereo.unit(Stereo.add(B,Stereo.mul(A,-1)));
+  v.line(Stereo.add(A,Stereo.mul(d,-3.5)),Stereo.add(A,Stereo.mul(d,3.5)),'#7756c8',3);
+  v.point(A,'A','#d87545');v.point(B,'B','#d87545');v.point(P,'P','#167b78',5);
+  bOutput.textContent=`${bAngle.value}°`;
+  pOutput.textContent=Number(t).toFixed(2);
+  readout.textContent=t<0?'P за A':t>1?'P за B':'P на отрезке AB';
+}
+const view=new Stereo.View(canvas,draw,{span:7});
+bAngle.addEventListener('input',()=>draw(view));
+pPosition.addEventListener('input',()=>draw(view));
+document.getElementById('reset-all').addEventListener('click',()=>{
+  bAngle.value='35';pPosition.value='0.5';view.reset();draw(view);
+});
+</script>
+</body>
+</html>

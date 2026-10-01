@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Модуль · Вписанные и центральные углы</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Prata&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#efe9dc; --paper2:#e7e0cf; --card:#fbf8f1;
+    --ink:#322e28; --muted:#8d8475;
+    --accent:#bf5a2e; --accent-soft:#f0d9c9; --good:#5d8a55; --bad:#b4452f;
+    --line:#d9d0bf; --shadow:rgba(60,50,35,.18);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:'Inter',system-ui,sans-serif;
+    background:radial-gradient(120% 120% at 50% 0%,var(--paper) 0%,var(--paper2) 100%);
+    color:var(--ink);min-height:100vh;
+    display:flex;flex-direction:column;align-items:center;
+    padding:18px 14px 50px;-webkit-tap-highlight-color:transparent;
+  }
+  header{text-align:center;margin-bottom:16px}
+  header h1{font-family:'Prata',Georgia,serif;font-weight:400;font-size:clamp(20px,5vw,30px)}
+  header p{color:var(--muted);font-size:13px;margin-top:4px}
+
+  /* ---- меню ---- */
+  .menu{width:100%;max-width:660px;display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px}
+  .tile{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 16px 14px;
+    cursor:pointer;transition:.15s;box-shadow:0 6px 16px -10px var(--shadow);text-align:left;position:relative}
+  .tile:hover{border-color:var(--accent);transform:translateY(-2px)}
+  .tile .num{font:700 12px 'Inter';color:var(--accent);letter-spacing:1px}
+  .tile .nm{font-family:'Prata',serif;font-size:17px;margin:6px 0 8px;line-height:1.2}
+  .tile .pr{font-size:12px;color:var(--muted)}
+  .tile .pr b{color:var(--good)}
+
+  /* ---- общий контейнер раздела ---- */
+  .view{display:none;width:100%;max-width:480px;flex-direction:column;align-items:center}
+  .view.show{display:flex}
+  .back{align-self:flex-start;border:1px solid var(--line);background:var(--card);color:var(--ink);
+    font:600 13px 'Inter';padding:7px 13px;border-radius:10px;cursor:pointer;margin-bottom:12px}
+  .back:hover{border-color:var(--accent);color:var(--accent)}
+  .topbar{width:100%;display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+  .seqnav{display:flex;gap:8px}
+  .navbtn{border:1px solid var(--line);background:var(--card);color:var(--ink);font:600 12.5px 'Inter';
+    padding:7px 12px;border-radius:10px;cursor:pointer;white-space:nowrap;max-width:150px;overflow:hidden;text-overflow:ellipsis}
+  .navbtn:hover:not(:disabled){border-color:var(--accent);color:var(--accent)}
+  .navbtn:disabled{opacity:.35;cursor:default}
+  .navbtn.menu{font-weight:700}
+  .vtitle{font-family:'Prata',serif;font-size:20px;margin-bottom:12px;text-align:center}
+
+  .panel{width:100%;background:var(--card);border:1px solid var(--line);border-radius:20px;
+    box-shadow:0 14px 34px -12px var(--shadow);padding:20px 22px;position:relative}
+
+  /* ---- фигуры ---- */
+  .fig{width:100%;display:flex;justify-content:center;margin:2px 0 8px}
+  .fig svg{width:100%;max-width:300px;height:auto;color:var(--ink);overflow:visible}
+  .fig svg :is(line,polyline,path,circle){fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+  .fig svg .circ{stroke:var(--ink);opacity:.38;stroke-width:1.3}
+  .fig svg .hl{stroke:var(--accent);stroke-width:2.6}
+  .fig svg .sect{fill:var(--accent);fill-opacity:.14;stroke:var(--accent);stroke-width:1.2}
+  .fig svg .tan{stroke:var(--ink);stroke-width:1.6}
+  .fig svg .goal{stroke:var(--ink);stroke-width:2.6}
+  .fig svg .d{fill:var(--accent);stroke:none}
+  .fig svg text{fill:var(--ink);stroke:none;font:italic 13px Georgia,serif;text-anchor:middle;dominant-baseline:central}
+  .fig svg .lt{font-style:normal}
+  .fig svg .cap{font-style:normal;font-size:9.5px;fill:var(--muted)}
+  .fig svg .val{fill:var(--accent);font-style:normal;font-weight:700;font-size:13px}
+
+  .q{font-family:'Prata',serif;font-size:clamp(15px,3.8vw,18px);text-align:center;line-height:1.35;min-height:24px}
+
+  .row{display:flex;gap:8px;margin-top:14px;width:100%;max-width:320px;margin-left:auto;margin-right:auto}
+  input.ans{flex:1;font:600 18px 'Inter';text-align:center;padding:10px 8px;color:var(--ink);
+    background:#fff;border:1px solid var(--line);border-radius:11px;outline:none;min-width:0}
+  input.ans:focus{border-color:var(--accent)}
+  .go{flex:0 0 auto;border:none;background:var(--ink);color:var(--card);font:700 14px 'Inter';padding:0 16px;border-radius:11px;cursor:pointer}
+  .go:hover{background:var(--accent)}
+
+  .fb{height:24px;margin-top:8px;font:700 16px 'Inter';text-align:center}
+  .fb.good{color:var(--good)} .fb.bad{color:var(--bad);font-size:14px}
+  .why{font-size:13px;color:var(--muted);text-align:center;margin-top:6px;line-height:1.4;min-height:18px}
+
+  /* варианты ответа */
+  .opts{display:flex;flex-direction:column;gap:9px;margin-top:14px}
+  .opt{border:1px solid var(--line);background:#fff;border-radius:12px;padding:11px 14px;cursor:pointer;
+    font:500 15px 'Inter';transition:.12s;text-align:left;line-height:1.35}
+  .opt:hover{border-color:var(--accent)}
+  .opt.correct{background:#e9f1e6;border-color:var(--good);color:#34532e}
+  .opt.wrong{background:#f5e3dd;border-color:var(--bad);color:#7a2a1a}
+  .opt.dim{opacity:.55}
+  .opt ol{margin:0 0 0 18px;padding:0}
+  .opt ol li{margin:2px 0}
+  .opt .seqhead{font-weight:600;font-size:12px;color:var(--muted);margin-bottom:4px}
+
+  .progress{width:100%;max-width:480px;height:6px;background:var(--paper2);border:1px solid var(--line);border-radius:999px;margin:14px auto 0;overflow:hidden}
+  .progress i{display:block;height:100%;background:var(--good);width:0;transition:width .35s}
+  .counter{text-align:center;color:var(--muted);font-size:13px;margin-top:9px}
+  .counter b{color:var(--ink)}
+
+  .nav{display:flex;gap:10px;margin-top:14px;justify-content:center}
+  .btn{border:1px solid var(--line);background:var(--card);color:var(--ink);font:600 14px 'Inter';padding:10px 16px;border-radius:11px;cursor:pointer}
+  .btn:hover{border-color:var(--accent);color:var(--accent)}
+  .btn.prim{background:var(--good);border-color:var(--good);color:#fff}
+  .btn.dark{background:var(--ink);border-color:var(--ink);color:var(--card)}
+
+  /* теория */
+  .theory p{font-size:15px;line-height:1.55;margin-bottom:12px}
+  .theory h3{font-family:'Prata',serif;font-weight:400;font-size:16px;margin:14px 0 8px;color:var(--accent)}
+  .theory ul{margin:0 0 4px 2px;list-style:none}
+  .theory li{font-size:14px;line-height:1.5;margin-bottom:10px;padding-left:18px;position:relative}
+  .theory li::before{content:"◆";position:absolute;left:0;color:var(--accent);font-size:11px;top:2px}
+  .theory .figs{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:8px 0 14px}
+  .theory .figcap{display:flex;flex-direction:column;align-items:center;max-width:150px}
+  .theory .figcap .fig{max-width:150px}
+  .theory .figcap span{font-size:11px;color:var(--muted);text-align:center;margin-top:-2px}
+
+  /* карточки */
+  .flash{min-height:320px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;cursor:pointer}
+  .flash .cat{font:600 11px 'Inter';letter-spacing:1.2px;text-transform:uppercase;color:var(--accent)}
+  .flash .ft{font-family:'Prata',serif;font-size:21px;margin-top:8px}
+  .flash .fa{font-size:18px;color:var(--ink);margin-top:6px;line-height:1.4}
+  .flash .fa b{color:var(--accent)}
+  .flash .hint{font-size:11.5px;color:var(--muted);margin-top:12px}
+
+  .done{text-align:center;padding:10px 0}
+  .done h2{font-family:'Prata',serif;font-weight:400;font-size:21px;margin-bottom:6px}
+  .done p{color:var(--muted);font-size:14px;margin-bottom:14px}
+</style>
+</head>
+<body>
+<header>
+  <h1 id="hTitle">Вписанные и центральные углы</h1>
+  <p>Модуль · 7 разделов · прогресс сохраняется</p>
+</header>
+
+<div class="menu" id="menu"></div>
+<div class="view" id="view"></div>
+
+<script>
+/* ====================== РИСОВАЛКИ ====================== */
+const _r = n => Math.round(n*100)/100;
+const CX=110, CY=96, R=72;
+function P(deg){ const a=deg*Math.PI/180; return [_r(CX+R*Math.cos(a)), _r(CY - R*Math.sin(a))]; }
+const SVG = inner => '<svg viewBox="0 0 220 200">'+inner+'</svg>';
+const circ = () => `<circle class="circ" cx="${CX}" cy="${CY}" r="${R}"/>`;
+const seg = (p1,p2,cls) => `<line ${cls?`class="${cls}" `:''}x1="${p1[0]}" y1="${p1[1]}" x2="${p2[0]}" y2="${p2[1]}"/>`;
+const dot = p => `<circle class="d" cx="${p[0]}" cy="${p[1]}" r="2.2"/>`;
+const txt = (p,s,cls) => `<text ${cls?`class="${cls}" `:''}x="${p[0]}" y="${p[1]}">${s}</text>`;
+function ang(vx,vy,ax,ay,bx,by,r=18,cls='m'){
+  const a1=Math.atan2(ay-vy,ax-vx), a2=Math.atan2(by-vy,bx-vx);
+  let d=a2-a1; while(d<=-Math.PI)d+=2*Math.PI; while(d>Math.PI)d-=2*Math.PI;
+  const sw=d>0?1:0;
+  return `<path class="${cls}" d="M${_r(vx+r*Math.cos(a1))} ${_r(vy+r*Math.sin(a1))} A${r} ${r} 0 0 ${sw} ${_r(vx+r*Math.cos(a2))} ${_r(vy+r*Math.sin(a2))}"/>`;
+}
+function rang(vx,vy,ax,ay,bx,by,s=12){
+  const u=(dx,dy)=>{const L=Math.hypot(dx,dy)||1;return[dx/L,dy/L];};
+  const [u1x,u1y]=u(ax-vx,ay-vy),[u2x,u2y]=u(bx-vx,by-vy);
+  return `<polyline points="${_r(vx+u1x*s)} ${_r(vy+u1y*s)} ${_r(vx+u1x*s+u2x*s)} ${_r(vy+u1y*s+u2y*s)} ${_r(vx+u2x*s)} ${_r(vy+u2y*s)}"/>`;
+}
+function arcPoly(d1,d2,steps=48){
+  let pts=[];
+  for(let i=0;i<=steps;i++){ const d=d1+(d2-d1)*i/steps; const [x,y]=P(d); pts.push(x+','+y); }
+  return `<polyline class="hl" points="${pts.join(' ')}"/>`;
+}
+function arcPolyC(cx,cy,r,d1,d2,steps=40){
+  let pts=[];
+  for(let i=0;i<=steps;i++){ const d=(d1+(d2-d1)*i/steps)*Math.PI/180; pts.push(_r(cx+r*Math.cos(d))+','+_r(cy-r*Math.sin(d))); }
+  return `<polyline class="hl" points="${pts.join(' ')}"/>`;
+}
+// подпись точки окружности — выносится наружу по радиусу
+function lblPt(deg, s, extra=14, cls){
+  const a=deg*Math.PI/180;
+  return txt([_r(CX+(R+extra)*Math.cos(a)), _r(CY-(R+extra)*Math.sin(a))], s, cls);
+}
+// значение угла — по биссектрисе из вершины, на одинаковом отступе
+function valAt(vx,vy,ax,ay,bx,by,s,dist=28){
+  const a1=Math.atan2(ay-vy,ax-vx), a2=Math.atan2(by-vy,bx-vx);
+  const m=Math.atan2(Math.sin(a1)+Math.sin(a2), Math.cos(a1)+Math.cos(a2));
+  return txt([_r(vx+dist*Math.cos(m)), _r(vy+dist*Math.sin(m))], s, 'val');
+}
+// засечка угла — залитый сектор + тонкая дуга
+function sector(vx,vy,ax,ay,bx,by,r=18){
+  const a1=Math.atan2(ay-vy,ax-vx), a2=Math.atan2(by-vy,bx-vx);
+  let d=a2-a1; while(d<=-Math.PI)d+=2*Math.PI; while(d>Math.PI)d-=2*Math.PI;
+  const sw=d>0?1:0;
+  const x1=_r(vx+r*Math.cos(a1)), y1=_r(vy+r*Math.sin(a1));
+  const x2=_r(vx+r*Math.cos(a2)), y2=_r(vy+r*Math.sin(a2));
+  return `<path class="sect" d="M${_r(vx)} ${_r(vy)} L${x1} ${y1} A${r} ${r} 0 0 ${sw} ${x2} ${y2} Z"/>`;
+}
+
+// центральный + вписанный
+function figCentralInscribed(arc, cLab='?', iLab='?'){
+  const half=arc/2, A=P(90+half), B=P(90-half), C=P(270), O=[CX,CY];
+  let s=circ()+arcPoly(90-half,90+half)+seg(O,A)+seg(O,B)+seg(C,A)+seg(C,B);
+  s+=sector(O[0],O[1],A[0],A[1],B[0],B[1],19)+sector(C[0],C[1],A[0],A[1],B[0],B[1],23)+dot(O);
+  s+=lblPt(90+half,'A')+lblPt(90-half,'B')+lblPt(270,'C')+txt([O[0],O[1]+13],'O','lt');
+  s+=valAt(O[0],O[1],A[0],A[1],B[0],B[1],cLab,30)+valAt(C[0],C[1],A[0],A[1],B[0],B[1],iLab,33);
+  return SVG(s);
+}
+function figInscribedArc(arc, angLab='?', arcLab=arc+'°'){
+  const half=arc/2, A=P(90+half), B=P(90-half), C=P(270);
+  let s=circ()+arcPoly(90-half,90+half)+seg(C,A)+seg(C,B)+sector(C[0],C[1],A[0],A[1],B[0],B[1],23);
+  s+=lblPt(90+half,'A')+lblPt(90-half,'B')+lblPt(270,'C');
+  s+=valAt(C[0],C[1],A[0],A[1],B[0],B[1],angLab,33)+lblPt(90,arcLab,13,'val');
+  return SVG(s);
+}
+function figDiameter(angLab='?'){
+  const A=P(180), B=P(0), C=P(62), O=[CX,CY];
+  let s=circ()+seg(A,B)+seg(C,A)+seg(C,B)+rang(C[0],C[1],A[0],A[1],B[0],B[1],11)+dot(O);
+  s+=lblPt(180,'A')+lblPt(0,'B')+lblPt(62,'C')+txt([O[0],O[1]+14],'O','lt');
+  s+=valAt(C[0],C[1],A[0],A[1],B[0],B[1],angLab,30);
+  return SVG(s);
+}
+function figTwoInscribed(angle, cLab=angle+'°', dLab='?'){
+  const A=P(90+angle), B=P(90-angle), C=P(250), D=P(290);
+  let s=circ()+arcPoly(90-angle,90+angle)+seg(C,A)+seg(C,B)+seg(D,A)+seg(D,B);
+  s+=sector(C[0],C[1],A[0],A[1],B[0],B[1],18)+sector(D[0],D[1],A[0],A[1],B[0],B[1],18);
+  s+=lblPt(90+angle,'A')+lblPt(90-angle,'B')+lblPt(250,'C')+lblPt(290,'D');
+  s+=valAt(C[0],C[1],A[0],A[1],B[0],B[1],cLab,28)+valAt(D[0],D[1],A[0],A[1],B[0],B[1],dLab,28);
+  return SVG(s);
+}
+function figTangentChord(arc, angLab='?', arcLab=arc+'°'){
+  const A=P(270), B=P(270+arc);
+  let s=circ()+arcPoly(270,270+arc)+`<line class="tan" x1="26" y1="${A[1]}" x2="194" y2="${A[1]}"/>`+seg(A,B);
+  s+=sector(A[0],A[1],194,A[1],B[0],B[1],18)+dot(A);
+  s+=lblPt(270,'A',15)+lblPt(270+arc,'B')+valAt(A[0],A[1],194,A[1],B[0],B[1],angLab,28)+lblPt(270+arc/2,arcLab,15,'val');
+  return SVG(s);
+}
+// иллюстрация «угол обстрела ворот»: игроки на дуге видят ворота AB под РАВНЫМ углом
+function figGoal(){
+  const ox=110, oy=110, r=60;
+  const Q=deg=>[_r(ox+r*Math.cos(deg*Math.PI/180)), _r(oy-r*Math.sin(deg*Math.PI/180))];
+  const A=Q(248), B=Q(292), C=Q(133), E=Q(47);
+  let s=`<circle class="circ" cx="${ox}" cy="${oy}" r="${r}"/>`+arcPolyC(ox,oy,r,248,292);
+  s+=seg(C,A)+seg(C,B)+seg(E,A)+seg(E,B);
+  s+=sector(C[0],C[1],A[0],A[1],B[0],B[1],15)+sector(E[0],E[1],A[0],A[1],B[0],B[1],15);
+  s+=`<line class="goal" x1="${A[0]}" y1="${A[1]}" x2="${B[0]}" y2="${B[1]}"/>`;
+  s+=`<line class="goal" x1="${A[0]}" y1="${A[1]}" x2="${A[0]}" y2="${A[1]-10}"/>`;
+  s+=`<line class="goal" x1="${B[0]}" y1="${B[1]}" x2="${B[0]}" y2="${B[1]-10}"/>`;
+  s+=dot(C)+dot(E);
+  s+=txt([C[0],C[1]-12],'игрок','cap')+txt([E[0],E[1]-12],'игрок','cap')+txt([(A[0]+B[0])/2,A[1]+15],'ворота','cap');
+  return SVG(s);
+}
+// иллюстрации для карточек (с буквенными подписями)
+const cardCentral   = ()=>figCentralInscribed(120,'α','');
+const cardInscribed = ()=>figInscribedArc(120,'α','2α');
+const cardRelation  = ()=>figCentralInscribed(120,'2α','α');
+const cardSameArc   = ()=>figTwoInscribed(40,'α','α');
+const cardDiameter  = ()=>figDiameter('90°');
+const cardTangent   = ()=>figTangentChord(120,'α','2α');
+
+/* ====================== ДАННЫЕ ====================== */
+const THEORY = {
+  summary:
+    "Центральный угол — угол с вершиной в центре окружности, его стороны — радиусы; он равен градусной мере дуги, на которую опирается. "+
+    "Вписанный угол — угол с вершиной на окружности, стороны — хорды; он равен половине дуги, на которую опирается, то есть вдвое меньше центрального угла на ту же дугу.",
+  facts: [
+    "«Угол, опирающийся на диаметр, — прямой» приписывают Фалесу Милетскому (VI в. до н.э.) — одна из древнейших доказанных теорем; общая теорема о вписанном угле есть у Евклида в «Началах» (книга III). <i>(достоверно)</i>",
+    "Все точки, из которых отрезок виден под одним углом, лежат на дуге окружности. Поэтому «угол обстрела» ворот в футболе одинаков вдоль такой дуги. <i>(применение)</i>",
+    "На этом свойстве построена «задача Потенота» в геодезии: своё положение определяют по углам между тремя ориентирами — решение лежит на пересечении дуг. <i>(применение)</i>"
+  ],
+  figs: [
+    {f:cardCentral,   cap:'центральный угол = дуге'},
+    {f:cardInscribed, cap:'вписанный угол = ½ дуги'},
+    {f:figGoal,       cap:'ворота видны под одним углом вдоль дуги'}
+  ]
+};
+
+const CARDS = [
+  {cat:'Определение', front:'Центральный угол равен…', back:'…<b>градусной мере дуги</b>, на которую он опирается', fig:cardCentral},
+  {cat:'Определение', front:'Вписанный угол равен…', back:'…<b>половине дуги</b>, на которую он опирается', fig:cardInscribed},
+  {cat:'Связь', front:'Вписанный угол, опирающийся на одну дугу с центральным,…', back:'…равен <b>половине центрального</b>', fig:cardRelation},
+  {cat:'Следствие', front:'Вписанные углы, опирающиеся на одну дугу,…', back:'…<b>равны</b> между собой', fig:cardSameArc},
+  {cat:'Следствие', front:'Вписанный угол, опирающийся на диаметр,…', back:'…<b>прямой</b> (равен 90°)', fig:cardDiameter},
+  {cat:'Следствие', front:'Угол между касательной и хордой равен…', back:'…<b>половине дуги</b>, заключённой между ними', fig:cardTangent}
+];
+
+const DRILL = [
+  {q:'Центральный угол AOB = 70°. Найдите вписанный угол ACB на ту же дугу.', a:'35', fig:()=>figCentralInscribed(70,'70°','?')},
+  {q:'Вписанный угол ACB = 28°. Найдите центральный угол AOB на ту же дугу.', a:'56', fig:()=>figCentralInscribed(56,'?','28°')},
+  {q:'Вписанный угол опирается на дугу 86°. Найдите угол ACB.', a:'43', fig:()=>figInscribedArc(86)},
+  {q:'Вписанный угол ACB опирается на диаметр AB. Чему он равен?', a:'90', fig:()=>figDiameter()},
+  {q:'Дуга AB равна 150°. Найдите вписанный угол ACB.', a:'75', fig:()=>figInscribedArc(150)},
+  {q:'∠ACB и ∠ADB опираются на одну дугу AB, ∠ACB = 40°. Найдите ∠ADB.', a:'40', fig:()=>figTwoInscribed(40)},
+  {q:'Вписанный угол опирается на дугу 120°. Найдите угол ACB.', a:'60', fig:()=>figInscribedArc(120)},
+  {q:'Угол между касательной и хордой AB опирается на дугу 100°. Найдите угол.', a:'50', fig:()=>figTangentChord(100)}
+];
+
+const SEQUENCE = [
+  {task:'Центральный угол AOB = 120°. Найдите вписанный угол ACB на ту же дугу.',
+   fig:()=>figCentralInscribed(120,'120°','?'),
+   correct:['Дуга AB равна центральному углу = 120°','Вписанный угол опирается на дугу AB','Вписанный = половина дуги: 120° : 2','Ответ: ∠ACB = 60°'],
+   distractors:[
+     ['Вписанный угол равен центральному','Ответ: 120°'],
+     ['Дуга AB = 120°','Вписанный вдвое больше дуги: 120° · 2','Ответ: 240°'],
+     ['Центральный = половина вписанного','120° · 2 = 240°','Ответ: 240°']
+   ]},
+  {task:'Вписанный угол ABC = 30°. Найдите центральный угол AOC на ту же дугу.',
+   fig:()=>figCentralInscribed(60,'?','30°'),
+   correct:['Дуга AC вдвое больше вписанного: 30° · 2 = 60°','Центральный угол равен дуге AC','Ответ: ∠AOC = 60°'],
+   distractors:[
+     ['Центральный = половина вписанного: 30° : 2','Ответ: 15°'],
+     ['Центральный равен вписанному','Ответ: 30°'],
+     ['Дуга AC = 30°','Центральный = половина дуги','Ответ: 15°']
+   ]}
+];
+
+const CHOICE = [
+  {q:'Вписанный угол опирается на дугу 140°. Чему он равен?', options:['70°','140°','280°','35°'], correct:0,
+   why:['','перепутал с центральным — взял всю дугу','удвоил дугу вместо деления пополам','разделил дугу на 4, а не на 2'], fig:()=>figInscribedArc(140)},
+  {q:'Центральный угол равен 90°. Чему равен вписанный на ту же дугу?', options:['45°','90°','180°','22,5°'], correct:0,
+   why:['','принял вписанный равным центральному','удвоил вместо деления','поделил на 4'], fig:()=>figCentralInscribed(90,'90°','?')},
+  {q:'Вписанный угол опирается на диаметр. Чему он равен?', options:['90°','180°','45°','60°'], correct:0,
+   why:['','взял всю дугу-полуокружность 180°','лишний раз поделил пополам','выбрал наугад'], fig:()=>figDiameter()},
+  {q:'∠ACB и ∠ADB опираются на одну дугу AB, ∠ACB = 52°. Чему равен ∠ADB?', options:['52°','104°','26°','128°'], correct:0,
+   why:['','ошибочно удвоил','ошибочно поделил пополам','посчитал как дополнение до 180°'], fig:()=>figTwoInscribed(52,'52°','?')}
+];
+
+const CLOZE = [
+  {before:'Вписанный угол равен', gap:'половине', after:'дуги, на которую он опирается.'},
+  {before:'Вписанный угол, опирающийся на диаметр, —', gap:'прямой', after:'.'},
+  {before:'Вписанные углы, опирающиеся на одну дугу, между собой', gap:'равны', after:'.'},
+  {before:'Вершина центрального угла находится в', gap:'центре', after:'окружности.'},
+  {before:'Центральный угол в', gap:'два', after:'раза больше вписанного на ту же дугу.'}
+];
+
+const FINDERR = [
+  {steps:['Вписанный угол опирается на дугу 70°.','Вписанный угол равен дуге.','Значит, угол = 70°.'],
+   errorAt:1, explain:'Вписанный угол равен ПОЛОВИНЕ дуги. Верно: 70° : 2 = 35°.'},
+  {steps:['Центральный угол AOB = 50°.','Вписанный угол вдвое больше центрального.','∠ACB = 50° · 2 = 100°.'],
+   errorAt:1, explain:'Наоборот: вписанный вдвое МЕНЬШЕ центрального. Верно: 50° : 2 = 25°.'},
+  {steps:['Угол ACB опирается на диаметр AB.','Диаметр стягивает дугу 180°.','Вписанный угол равен дуге → 180°.'],
+   errorAt:2, explain:'Вписанный угол равен половине дуги: 180° : 2 = 90°.'}
+];
+
+/* ====================== ПРОГРЕСС (зерно дашборда) ====================== */
+const PKEY='module_inscribed_angles';
+const loadProg = ()=>JSON.parse(localStorage.getItem(PKEY)||'{}');
+function logResult(section, correct){
+  const p=loadProg(); p[section]=p[section]||{done:0,correct:0};
+  p[section].done++; if(correct)p[section].correct++;
+  localStorage.setItem(PKEY,JSON.stringify(p));
+}
+function markVisited(section){
+  const p=loadProg(); p[section]=p[section]||{done:0,correct:0}; p[section].visited=true;
+  localStorage.setItem(PKEY,JSON.stringify(p));
+}
+
+/* ====================== УТИЛИТЫ ====================== */
+const $=id=>document.getElementById(id);
+const norm=s=>s.trim().replace(/\s+/g,'').replace(/,/g,'.').replace(/°/g,'').replace(/[−–]/g,'-').toLowerCase();
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+const SECTIONS = [
+  {id:'theory',  num:'01', name:'Теория и факты', run:runTheory},
+  {id:'cards',   num:'02', name:'Карточки',        run:runCards},
+  {id:'drill',   num:'03', name:'Тренажёр',        run:runDrill},
+  {id:'sequence',num:'04', name:'Последовательность',run:runSequence},
+  {id:'choice',  num:'05', name:'Выбор ответа',    run:runChoice},
+  {id:'cloze',   num:'06', name:'Пропущенное слово',run:runCloze},
+  {id:'error',   num:'07', name:'Найди ошибку',     run:runError}
+];
+
+function buildMenu(){
+  const p=loadProg(); const m=$('menu'); m.innerHTML='';
+  SECTIONS.forEach(sec=>{
+    const st=p[sec.id]||{};
+    let pr='— не начато';
+    if(sec.id==='theory'||sec.id==='cards'){ if(st.visited||st.done) pr='✓ открыто'; }
+    else if(st.done) pr=`решено ${st.done} · верно <b>${st.correct||0}</b>`;
+    const d=document.createElement('div'); d.className='tile';
+    d.innerHTML=`<div class="num">${sec.num}</div><div class="nm">${sec.name}</div><div class="pr">${pr}</div>`;
+    d.onclick=()=>openSection(sec);
+    m.appendChild(d);
+  });
+}
+function openSection(sec){
+  const idx=SECTIONS.indexOf(sec);
+  $('menu').style.display='none';
+  const v=$('view'); v.className='view show'; v.innerHTML='';
+  const bar=document.createElement('div'); bar.className='topbar';
+  bar.innerHTML=`<button class="navbtn menu" id="toMenu">☰ Разделы</button>
+    <div class="seqnav">
+      <button class="navbtn" id="prevSec" ${idx===0?'disabled':''} title="предыдущий раздел">‹ ${idx>0?SECTIONS[idx-1].name:'начало'}</button>
+      <button class="navbtn" id="nextSec" ${idx===SECTIONS.length-1?'disabled':''} title="следующий раздел">${idx<SECTIONS.length-1?SECTIONS[idx+1].name:'конец'} ›</button>
+    </div>`;
+  v.appendChild(bar);
+  const title=document.createElement('div'); title.className='vtitle'; title.textContent=sec.num+' · '+sec.name; v.appendChild(title);
+  const box=document.createElement('div'); box.id='secbox'; box.style.width='100%'; v.appendChild(box);
+  $('toMenu').onclick=goMenu;
+  if(idx>0) $('prevSec').onclick=()=>openSection(SECTIONS[idx-1]);
+  if(idx<SECTIONS.length-1) $('nextSec').onclick=()=>openSection(SECTIONS[idx+1]);
+  sec.run(box);
+}
+function goMenu(){ $('view').className='view'; $('view').innerHTML=''; $('menu').style.display='grid'; buildMenu(); }
+
+/* ====================== РАЗДЕЛ 1: ТЕОРИЯ ====================== */
+function runTheory(box){
+  markVisited('theory');
+  const figs = THEORY.figs.map(o=>`<div class="figcap"><div class="fig">${o.f()}</div><span>${o.cap}</span></div>`).join('');
+  box.innerHTML=`<div class="panel theory">
+    <p>${THEORY.summary}</p>
+    <div class="figs">${figs}</div>
+    <h3>Интересные факты</h3>
+    <ul>${THEORY.facts.map(f=>`<li>${f}</li>`).join('')}</ul>
+    <div class="nav"><button class="btn prim" id="ok">Понятно →</button></div>
+  </div>`;
+  $('ok').onclick=goMenu;
+}
+
+/* ====================== РАЗДЕЛ 2: КАРТОЧКИ ====================== */
+function runCards(box){
+  markVisited('cards');
+  let i=0, flipped=false;
+  box.innerHTML=`<div class="panel"><div class="flash" id="flash"></div></div>
+    <div class="counter" id="cnt"></div>
+    <div class="nav">
+      <button class="btn" id="prev">←</button>
+      <button class="btn" id="dunno">Не знаю</button>
+      <button class="btn prim" id="know">Знаю</button>
+      <button class="btn" id="next">→</button>
+    </div>`;
+  function show(){
+    const c=CARDS[i]; flipped=false;
+    $('flash').innerHTML=`<span class="cat">${c.cat}</span><div class="fig">${c.fig()}</div>
+      <div class="ft">${c.front}</div><div class="fa" id="fa" style="display:none">${c.back}</div>
+      <div class="hint" id="hint">продолжи про себя → нажми для ответа</div>`;
+    $('cnt').innerHTML=`Карточка <b>${i+1}</b> из ${CARDS.length}`;
+  }
+  function flip(){ flipped=!flipped; $('fa').style.display=flipped?'block':'none'; $('hint').style.display=flipped?'none':'block'; }
+  function adv(k){ logResult('cards',k); i=(i+1)%CARDS.length; show(); }
+  show();
+  $('flash').onclick=flip;
+  $('prev').onclick=()=>{i=(i-1+CARDS.length)%CARDS.length;show();};
+  $('next').onclick=()=>{i=(i+1)%CARDS.length;show();};
+  $('know').onclick=()=>adv(true);
+  $('dunno').onclick=()=>adv(false);
+}
+
+/* ====================== РАЗДЕЛ 3: ТРЕНАЖЁР ====================== */
+function runDrill(box){
+  const order=shuffle(DRILL.map((_,i)=>i));
+  let pos=0, errCount=0, phase='main', queue=[], qpos=0, locked=false;
+  box.innerHTML=`<div class="panel">
+      <div class="fig" id="fig"></div><div class="q" id="q"></div>
+      <div class="row"><input class="ans" id="inp" inputmode="numeric" autocomplete="off" placeholder="°"><button class="go" id="go">OK</button></div>
+      <div class="fb" id="fb"></div>
+    </div>
+    <div class="progress"><i id="bar"></i></div><div class="counter" id="cnt"></div>`;
+  const cur=()=>phase==='main'?DRILL[order[pos]]:queue[qpos];
+  function render(){
+    const t=cur(); $('fig').innerHTML=t.fig(); $('q').innerHTML=t.q;
+    const inp=$('inp'); inp.value=''; inp.disabled=false; locked=false; inp.focus();
+    $('fb').className='fb'; $('fb').textContent='';
+    $('bar').style.width=((phase==='main'?pos/DRILL.length:1)*100)+'%';
+    $('cnt').innerHTML=phase==='main'?`Задача <b>${pos+1}</b> из ${DRILL.length} · ошибок: <b>${errCount}</b>`
+      :`Работа над ошибками · <b>${qpos+1}</b> из ${queue.length}`;
+  }
+  function check(){
+    if(locked) return; const inp=$('inp'); if(inp.value.trim()==='') return;
+    const t=cur(), ok=norm(inp.value)===norm(t.a); locked=true; inp.disabled=true;
+    if(phase==='main') logResult('drill',ok);
+    const fb=$('fb');
+    if(ok){ fb.className='fb good'; fb.textContent='✓'; setTimeout(adv,700); }
+    else{ fb.className='fb bad'; fb.innerHTML='✗ &nbsp; верно: '+t.a+'°';
+      if(phase==='main'){ errCount++; queue.push(DRILL[order[pos]]); } setTimeout(adv,1500); }
+  }
+  function adv(){
+    if(phase==='main'){ pos++;
+      if(pos>=order.length){ if(queue.length){phase='rework';qpos=0;render();} else finish(true); } else render();
+    } else { qpos++; if(qpos>=queue.length) finish(false); else render(); }
+  }
+  function finish(perfect){
+    box.innerHTML=`<div class="panel done"><h2>${perfect?'Чистый круг!':'Круг завершён'}</h2>
+      <p>${perfect?'Все задания решены без ошибок.':'Ошибок: '+errCount+'. Все отработаны.'}</p>
+      <div class="nav"><button class="btn" onclick="goMenu()">← к разделам</button>
+      <button class="btn dark" id="again">Заново</button></div></div>`;
+    $('again').onclick=()=>runDrill(box);
+  }
+  render(); $('go').onclick=check; $('inp').addEventListener('keydown',e=>{if(e.key==='Enter')check();});
+}
+
+/* ====================== РАЗДЕЛ 4: ПОСЛЕДОВАТЕЛЬНОСТЬ ====================== */
+function runSequence(box){
+  let i=0, locked=false;
+  box.innerHTML=`<div class="panel"><div class="fig" id="sfig"></div><div class="q" id="q"></div>
+      <div style="font-size:13px;color:var(--muted);text-align:center;margin-top:6px">Выбери верную последовательность действий</div>
+      <div class="opts" id="opts"></div><div class="why" id="why"></div></div>
+    <div class="counter" id="cnt"></div>
+    <div class="nav" id="nav" style="display:none"><button class="btn dark" id="next">Дальше →</button></div>`;
+  function seqHtml(steps){ return `<ol>${steps.map(s=>`<li>${s}</li>`).join('')}</ol>`; }
+  function render(){
+    const t=SEQUENCE[i]; locked=false;
+    if(t.fig) $('sfig').innerHTML=t.fig();
+    $('q').textContent=t.task; $('why').textContent=''; $('nav').style.display='none';
+    const variants=shuffle([{steps:t.correct,ok:true},...t.distractors.map(d=>({steps:d,ok:false}))]);
+    const o=$('opts'); o.innerHTML='';
+    variants.forEach(v=>{
+      const d=document.createElement('div'); d.className='opt';
+      d.innerHTML=`<div class="seqhead">вариант</div>${seqHtml(v.steps)}`;
+      d.onclick=()=>pick(d,v,variants); o.appendChild(d);
+    });
+    $('cnt').innerHTML=`Задание <b>${i+1}</b> из ${SEQUENCE.length}`;
+  }
+  function pick(el,v,variants){
+    if(locked) return; locked=true; logResult('sequence',v.ok);
+    [...$('opts').children].forEach((c,idx)=>{ if(variants[idx].ok)c.classList.add('correct'); else c.classList.add('dim'); });
+    if(!v.ok){ el.classList.remove('dim'); el.classList.add('wrong'); $('why').textContent='Верная — выделена зелёным.'; }
+    else $('why').textContent='Верно!';
+    $('nav').style.display='flex';
+  }
+  $('next').onclick=()=>{ i++; if(i>=SEQUENCE.length) finish(); else render(); };
+  function finish(){ box.innerHTML=`<div class="panel done"><h2>Раздел пройден</h2><div class="nav"><button class="btn" onclick="goMenu()">← к разделам</button><button class="btn dark" id="ag">Заново</button></div></div>`; $('ag').onclick=()=>runSequence(box); }
+  render();
+}
+
+/* ====================== РАЗДЕЛ 5 и 7: ВЫБОР ИЗ 4 ====================== */
+function runMCQ(box, items, section, opts={}){
+  let i=0, locked=false, correctCnt=0;
+  box.innerHTML=`<div class="panel">${opts.fig?'<div class="fig" id="fig"></div>':''}
+      <div class="q" id="q"></div><div class="opts" id="opts"></div><div class="why" id="why"></div></div>
+    <div class="progress"><i id="bar"></i></div><div class="counter" id="cnt"></div>
+    <div class="nav" id="nav" style="display:none"><button class="btn dark" id="next">Дальше →</button></div>`;
+  function render(){
+    const t=items[i]; locked=false;
+    if(opts.fig) $('fig').innerHTML=opts.fig(t);
+    $('q').innerHTML=opts.q(t); $('why').textContent=''; $('nav').style.display='none';
+    const order=shuffle(opts.options(t).map((o,idx)=>({o,idx})));
+    const wrap=$('opts'); wrap.innerHTML='';
+    order.forEach(item=>{
+      const d=document.createElement('div'); d.className='opt'; d.innerHTML=item.o;
+      d.onclick=()=>pick(d,item.idx,t,order); wrap.appendChild(d);
+    });
+    $('bar').style.width=(i/items.length*100)+'%';
+    $('cnt').innerHTML=`Вопрос <b>${i+1}</b> из ${items.length} · верно: <b>${correctCnt}</b>`;
+  }
+  function pick(el,chosenIdx,t,order){
+    if(locked) return; locked=true;
+    const ok=chosenIdx===opts.correct(t); if(ok)correctCnt++; logResult(section,ok);
+    [...$('opts').children].forEach((c,k)=>{ if(order[k].idx===opts.correct(t))c.classList.add('correct'); else c.classList.add('dim'); });
+    if(!ok){ el.classList.remove('dim'); el.classList.add('wrong'); }
+    const w=opts.why?opts.why(t,chosenIdx):''; $('why').innerHTML = ok?'Верно!':(w?'✗ '+w:'Неверно.');
+    $('nav').style.display='flex';
+  }
+  $('next').onclick=()=>{ i++; if(i>=items.length) finish(); else render(); };
+  function finish(){ box.innerHTML=`<div class="panel done"><h2>Раздел пройден</h2><p>Верно ${correctCnt} из ${items.length}.</p><div class="nav"><button class="btn" onclick="goMenu()">← к разделам</button><button class="btn dark" id="ag">Заново</button></div></div>`; $('ag').onclick=()=>runMCQ(box,items,section,opts); }
+  render();
+}
+function runChoice(box){
+  runMCQ(box, CHOICE, 'choice', {
+    fig:t=>t.fig(),
+    q:t=>t.q, options:t=>t.options, correct:t=>t.correct,
+    why:(t,ch)=>t.why[ch]||'это типичная ошибка'
+  });
+}
+function runError(box){
+  runMCQ(box, FINDERR, 'error', {
+    q:t=>'Найди шаг с ошибкой:<br><br>'+t.steps.map((s,k)=>`<b>${k+1})</b> ${s}`).join('<br>'),
+    options:t=>t.steps.map((_,k)=>'Шаг '+(k+1)),
+    correct:t=>t.errorAt,
+    why:(t)=>t.explain
+  });
+}
+
+/* ====================== РАЗДЕЛ 6: ПРОПУЩЕННОЕ СЛОВО ====================== */
+function runCloze(box){
+  const order=shuffle(CLOZE.map((_,i)=>i));
+  let pos=0, locked=false, correctCnt=0;
+  box.innerHTML=`<div class="panel">
+      <div class="q" id="q" style="line-height:1.6"></div>
+      <div class="row"><input class="ans" id="inp" autocomplete="off" placeholder="слово"><button class="go" id="go">OK</button></div>
+      <div class="fb" id="fb"></div></div>
+    <div class="progress"><i id="bar"></i></div><div class="counter" id="cnt"></div>
+    <div class="nav" id="nav" style="display:none"><button class="btn dark" id="next">Дальше →</button></div>`;
+  const cur=()=>CLOZE[order[pos]];
+  function render(){
+    const t=cur(); locked=false;
+    $('q').innerHTML=`${t.before} <span style="color:var(--accent);font-weight:700">_____</span> ${t.after}`;
+    const inp=$('inp'); inp.value=''; inp.disabled=false; inp.focus();
+    $('fb').className='fb'; $('fb').textContent=''; $('nav').style.display='none';
+    $('bar').style.width=(pos/CLOZE.length*100)+'%';
+    $('cnt').innerHTML=`Фраза <b>${pos+1}</b> из ${CLOZE.length} · верно: <b>${correctCnt}</b>`;
+  }
+  function check(){
+    if(locked) return; const inp=$('inp'); if(inp.value.trim()==='') return;
+    const t=cur(), ok=norm(inp.value)===norm(t.gap); locked=true; inp.disabled=true; logResult('cloze',ok);
+    if(ok)correctCnt++;
+    const fb=$('fb');
+    if(ok){ fb.className='fb good'; fb.textContent='✓'; }
+    else{ fb.className='fb bad'; fb.innerHTML='✗ &nbsp; верно: '+t.gap; }
+    $('q').innerHTML=`${t.before} <span style="color:${ok?'var(--good)':'var(--bad)'};font-weight:700">${t.gap}</span> ${t.after}`;
+    $('nav').style.display='flex';
+  }
+  function nextItem(){ pos++; if(pos>=order.length) finish(); else render(); }
+  function finish(){ box.innerHTML=`<div class="panel done"><h2>Раздел пройден</h2><p>Верно ${correctCnt} из ${CLOZE.length}.</p><div class="nav"><button class="btn" onclick="goMenu()">← к разделам</button><button class="btn dark" id="ag">Заново</button></div></div>`; $('ag').onclick=()=>runCloze(box); }
+  render();
+  $('go').onclick=()=>{ if(!locked) check(); else nextItem(); };
+  $('inp').addEventListener('keydown',e=>{ if(e.key==='Enter'){ if(!locked)check(); else nextItem(); } });
+  $('next').onclick=nextItem;
+}
+
+/* ====================== СТАРТ ====================== */
+buildMenu();
+</script>
+</body>
+</html>

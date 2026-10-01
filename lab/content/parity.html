@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Чётность и нечётность функций</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .example-box {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 1.5rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .example-box h3 {
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+        .example {
+            font-size: 1.2rem;
+            color: #666;
+            line-height: 2;
+            text-align: left;
+        }
+
+        .stats-panel {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 1.5rem;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            display: block;
+        }
+
+        .stat-number.correct { color: #28a745; }
+        .stat-number.incorrect { color: #dc3545; }
+        .stat-number.streak { color: #ffc107; }
+        .stat-number.time { color: #6f42c1; }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 0.5rem;
+        }
+
+        .game-area {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .problem {
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .answer-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .answer-btn {
+            font-size: 1.5rem;
+            padding: 1rem 2rem;
+            border: 3px solid #ddd;
+            border-radius: 15px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            min-width: 150px;
+        }
+
+        .answer-btn:hover {
+            background: #f0f0f0;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .answer-btn.selected {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border-color: #667eea;
+        }
+
+        .answer-btn.correct {
+            background: #28a745;
+            color: white;
+            border-color: #28a745;
+        }
+
+        .answer-btn.incorrect {
+            background: #dc3545;
+            color: white;
+            border-color: #dc3545;
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .feedback {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .feedback.correct {
+            background: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+            border: 2px solid rgba(40, 167, 69, 0.3);
+        }
+
+        .feedback.incorrect {
+            background: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+            border: 2px solid rgba(220, 53, 69, 0.3);
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #ffd700, #ffed4e);
+            color: #333;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .difficulty-selector {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 1.5rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .difficulty-selector h3 {
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+        .difficulty-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .difficulty-btn {
+            padding: 0.8rem 1.5rem;
+            border: 2px solid #ddd;
+            background: white;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        .difficulty-btn:hover {
+            background: #f0f0f0;
+            transform: translateY(-2px);
+        }
+
+        .difficulty-btn.active {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border-color: #667eea;
+        }
+
+        .progress-bar {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 1rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+        }
+
+        .progress-bar-fill {
+            height: 30px;
+            background: linear-gradient(90deg, #28a745, #20c997);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .music-btn {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #ffd700, #ffed4e);
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .music-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .music-btn.playing {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .achievement {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: linear-gradient(45deg, #ffd700, #ffed4e);
+            padding: 2rem 3rem;
+            border-radius: 20px;
+            font-size: 2rem;
+            font-weight: bold;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            z-index: 2000;
+            transition: transform 0.5s ease;
+        }
+
+        .achievement.show {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .hint-box {
+            background: rgba(102, 126, 234, 0.1);
+            padding: 1.5rem;
+            border-radius: 10px;
+            text-align: left;
+            line-height: 1.8;
+        }
+
+        .timer {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 1rem 1.5rem;
+            border-radius: 15px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        sup {
+            font-size: 0.6em;
+            vertical-align: super;
+            line-height: 0;
+            position: relative;
+            top: -0.5em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 Чётность и нечётность функций</h1>
+            <p>Определи тип функции: чётная, нечётная или общего вида</p>
+        </div>
+
+        <div class="example-box">
+            <h3>📝 Определения:</h3>
+            <div class="example">
+                <strong>Чётная функция:</strong> f(−x) = f(x) для всех x<br>
+                <strong>Нечётная функция:</strong> f(−x) = −f(x) для всех x<br>
+                <strong>Общего вида:</strong> не является ни чётной, ни нечётной
+            </div>
+        </div>
+
+        <div class="difficulty-selector">
+            <h3>Выберите уровень сложности:</h3>
+            <div class="difficulty-buttons">
+                <button class="difficulty-btn active" onclick="setDifficulty('easy')">🟢 Лёгкий (степени)</button>
+                <button class="difficulty-btn" onclick="setDifficulty('medium')">🟡 Средний (дроби)</button>
+                <button class="difficulty-btn" onclick="setDifficulty('hard')">🔴 Сложный (все типы)</button>
+            </div>
+        </div>
+
+        <div class="stats-panel">
+            <div class="stat-card">
+                <span class="stat-number correct" id="correctCount">0</span>
+                <div class="stat-label">Правильно</div>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number incorrect" id="incorrectCount">0</span>
+                <div class="stat-label">Неправильно</div>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number streak" id="streakCount">0</span>
+                <div class="stat-label">Подряд</div>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number time" id="timeCount">0</span>
+                <div class="stat-label">Секунд</div>
+            </div>
+        </div>
+
+        <div class="progress-bar">
+            <div class="progress-bar-fill" id="progressFill" style="width: 0%;">
+                <span id="progressText">0%</span>
+            </div>
+        </div>
+
+        <div class="game-area">
+            <div class="problem" id="problem">f(x) = </div>
+            
+            <div class="answer-section">
+                <div class="button-group">
+                    <button class="answer-btn" onclick="selectAnswer('even')" id="btnEven">Чётная</button>
+                    <button class="answer-btn" onclick="selectAnswer('odd')" id="btnOdd">Нечётная</button>
+                    <button class="answer-btn" onclick="selectAnswer('general')" id="btnGeneral">Общего вида</button>
+                </div>
+            </div>
+
+            <div class="feedback" id="feedback"></div>
+
+            <div class="controls">
+                <button class="btn" onclick="checkAnswer()" id="checkBtn">✓ Проверить</button>
+                <button class="btn" onclick="showHint()">💡 Подсказка</button>
+                <button class="btn" onclick="newProblem()">→ Следующий</button>
+                <button class="btn" onclick="resetStats()">↻ Сброс</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="timer" id="timer">⏱️ 0 сек</div>
+    <button class="music-btn" id="musicBtn" onclick="toggleMusic()">🎵</button>
+    <div class="achievement" id="achievement"></div>
+
+    <audio id="backgroundMusic" loop>
+        <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSyBzvLXiTYIG2m98OScTgwOUKzn77RgGgU7k9n1ynUrBSh+zPLaizsKGGS46+mjUhELTKXh8bllHAU2jdXzzn0vBSl9y/HajDwKFmO16+mjUhELTKXh8bllHAU2jdXzzn0vBSl9y/HajDwKFmO16+mjUhELTKXh8bllHAU2jdXzzn0vBSl9y/HajDwKFmO16+mjUhELTKXh8bllHAU2jdXzzn0vBSl9y/HajDwKFmO16+mjUhELTKXh8bllHAU2jdXzzn0vBSl9y/HajDwKFmO16+mjUhELTKXh8bllHAU2jdXzzn0vBSl9y/HajDwKFmO16+mjUhELTKXh8bllHAU2jdXzzn0vBSl9y/HajDwKFmO16+mjUhELTKXh8bllHAU2jdXzzn0vBSl9y/HajDwKFmO16+mjUhELTKXh8bllHAU2jdXzzn0vBSl9y/HajDwKFmO16+mjUhELTKXh8bllHAU2jdXzzn0vBSl9y/HajDwKFmO16+mjUhELTKXh8bllHAU2jdXzzn0vBSl9y/HajDwKFmO16+mjUhELTKXh8bllHAU2jdXzzn0vBSl9y/HajDwKFmO16+mjUhELTKXh8bllHAU2jdXzzn0vBSl9y/HajDwKFmO16+mjUhELTKXh8bllHAU2jdXzzn0vBSl9y/HajDwKFmO16+mjUhELTKXh8bllHAU2jdXzzn0vBSl9y/HajDwKFmO16+mjUhELTKXh8bllHAU2jdXzzn0vBSl9y/HajDwKFmO16+mjUhELTKXh8bllHAU2jdXzzn0vBSl9y/HajDwKFmO16+mjUhELTKXh8bllHAU2jdXzzn0vBSl9y/HajDwKFmO16+mjUhELTKXh8bllHAU2jdXzzn0vBSl9y/HajDwKFmO16+mjUhELTKXh8bllHAU2jdXzzn0vBSl9y/HajDwKFmO16+mjUhELTKXh8bllHAU2jdXzzn0vBSl9y/HajDwKFmO16+mjUhELTKXh8bllHAU2jdXzzn0vBSl9y/HajDwKFmO16+mjUhELTKXh8bllHAU2jdXzzn0vBSl9y/HajDwKFmO16+mjUhELTKXh8bllHAU2jdXzzn0vBSl9y/HajDwKFmO16+mjUhELTKXh8bllHAU2jdXzzn0vBSl9y/HajDwKFmO16+mjUhELTKXh8bllHAU2jdXzzn0vBSl9y/HajDwKFmO16+mjUhELTKXh8bllHAU2jdXzzn0vBSl9y/HajDwKFmO16+mjUhELTKXh8bllHAU2jdXzzn0vBSl9y/HajDwKFmO16+mjUhELTKXh8bllHAU2jdXzzn0vBSl9y/HajDwKFmO16+mjUhELTKXh8bllHAU2jdXzzn0vBSl9y/HajDwKFmO16+mjUhELTKXh8bllHAU2jdXzzn0vBSl9y/HajDwKFmO16+mjUhELTKXh8bllHAU2jdXzzn0vBSl9y/HajDwKFmO16+mjUhELTKXh8bllHAU2jdXzzn0vBSl9y/HajDwKFmO16+mjUhELTKXh8bllHAU2jdXzzn0vBSl9y/HajDwKFmO16+mjUhELTKXh8bllHAU2jdXzzn0vBQ==" type="audio/wav">
+    </audio>
+
+    <script>
+        let correctCount = 0;
+        let incorrectCount = 0;
+        let streakCount = 0;
+        let startTime = Date.now();
+        let answerChecked = false;
+        let difficulty = 'easy';
+        let currentProblem = null;
+        let selectedAnswer = null;
+        
+        const backgroundMusic = document.getElementById('backgroundMusic');
+        let isMusicPlaying = false;
+
+        function toggleMusic() {
+            const musicBtn = document.getElementById('musicBtn');
+            if (isMusicPlaying) {
+                backgroundMusic.pause();
+                musicBtn.textContent = '🎵';
+                musicBtn.classList.remove('playing');
+                isMusicPlaying = false;
+            } else {
+                backgroundMusic.play().then(() => {
+                    musicBtn.textContent = '🔇';
+                    musicBtn.classList.add('playing');
+                    isMusicPlaying = true;
+                }).catch(error => {
+                    console.log('Музыка недоступна');
+                });
+            }
+        }
+
+        // Генерация функции
+        function generateFunction() {
+            const variables = ['x', 'y', 't'];
+            const variable = variables[Math.floor(Math.random() * variables.length)];
+            
+            let functionType, functionText, parity;
+            
+            if (difficulty === 'easy') {
+                // Только степенные функции
+                const type = Math.floor(Math.random() * 3);
+                
+                if (type === 0) {
+                    // Чётная: x^2, x^4, x^6
+                    const powers = [2, 4, 6];
+                    const power = powers[Math.floor(Math.random() * powers.length)];
+                    const coef = Math.floor(Math.random() * 5) + 1;
+                    functionText = coef === 1 ? `${variable}<sup>${power}</sup>` : `${coef}${variable}<sup>${power}</sup>`;
+                    parity = 'even';
+                } else if (type === 1) {
+                    // Нечётная: x^3, x^5, x
+                    const powers = [1, 3, 5];
+                    const power = powers[Math.floor(Math.random() * powers.length)];
+                    const coef = Math.floor(Math.random() * 5) + 1;
+                    if (power === 1) {
+                        functionText = coef === 1 ? variable : `${coef}${variable}`;
+                    } else {
+                        functionText = coef === 1 ? `${variable}<sup>${power}</sup>` : `${coef}${variable}<sup>${power}</sup>`;
+                    }
+                    parity = 'odd';
+                } else {
+                    // Общего вида: x^2 + x, x^3 + 1
+                    const power1 = [2, 4][Math.floor(Math.random() * 2)];
+                    const power2 = 1;
+                    const coef1 = Math.floor(Math.random() * 3) + 1;
+                    const coef2 = Math.floor(Math.random() * 3) + 1;
+                    functionText = `${coef1}${variable}<sup>${power1}</sup> + ${coef2}${variable}`;
+                    parity = 'general';
+                }
+                
+            } else if (difficulty === 'medium') {
+                // Добавляем дробные функции
+                const type = Math.floor(Math.random() * 4);
+                
+                if (type === 0) {
+                    // Чётная дробная: 1/x^2
+                    const powers = [2, 4];
+                    const power = powers[Math.floor(Math.random() * powers.length)];
+                    functionText = `1/${variable}<sup>${power}</sup>`;
+                    parity = 'even';
+                } else if (type === 1) {
+                    // Нечётная дробная: 1/x, 1/x^3
+                    const powers = [1, 3];
+                    const power = powers[Math.floor(Math.random() * powers.length)];
+                    functionText = power === 1 ? `1/${variable}` : `1/${variable}<sup>${power}</sup>`;
+                    parity = 'odd';
+                } else if (type === 2) {
+                    // Чётная степенная
+                    const power = [2, 4][Math.floor(Math.random() * 2)];
+                    const coef = Math.floor(Math.random() * 4) + 1;
+                    functionText = coef === 1 ? `${variable}<sup>${power}</sup>` : `${coef}${variable}<sup>${power}</sup>`;
+                    parity = 'even';
+                } else {
+                    // Общего вида: x + 1/x^2
+                    const addConst = Math.random() < 0.5;
+                    if (addConst) {
+                        const power = [2, 3][Math.floor(Math.random() * 2)];
+                        const constant = Math.floor(Math.random() * 5) + 1;
+                        functionText = `${variable}<sup>${power}</sup> + ${constant}`;
+                    } else {
+                        functionText = `${variable} + 1/${variable}<sup>2</sup>`;
+                    }
+                    parity = 'general';
+                }
+                
+            } else {
+                // Сложный уровень: все типы включая корни
+                const type = Math.floor(Math.random() * 5);
+                
+                if (type === 0) {
+                    // Чётная: |x|, sqrt(x^2)
+                    const subtype = Math.random() < 0.5;
+                    if (subtype) {
+                        functionText = `|${variable}|`;
+                    } else {
+                        functionText = `√(${variable}<sup>2</sup>)`;
+                    }
+                    parity = 'even';
+                } else if (type === 1) {
+                    // Нечётная сложная: x^3 - x
+                    const coef = Math.floor(Math.random() * 3) + 1;
+                    functionText = `${variable}<sup>3</sup> − ${coef}${variable}`;
+                    parity = 'odd';
+                } else if (type === 2) {
+                    // Чётная сложная: x^4 + x^2
+                    const coef1 = Math.floor(Math.random() * 3) + 1;
+                    const coef2 = Math.floor(Math.random() * 3) + 1;
+                    functionText = `${coef1}${variable}<sup>4</sup> + ${coef2}${variable}<sup>2</sup>`;
+                    parity = 'even';
+                } else if (type === 3) {
+                    // Нечётная дробная сложная: x/(x^2+1)
+                    functionText = `${variable}/(${variable}<sup>2</sup> + 1)`;
+                    parity = 'odd';
+                } else {
+                    // Общего вида сложная
+                    const subtype = Math.random() < 0.5;
+                    if (subtype) {
+                        functionText = `${variable}<sup>2</sup> + ${variable} + 1`;
+                    } else {
+                        functionText = `√${variable}`;
+                    }
+                    parity = 'general';
+                }
+            }
+            
+            return {
+                text: functionText,
+                parity: parity,
+                variable: variable
+            };
+        }
+
+        function newProblem() {
+            currentProblem = generateFunction();
+            selectedAnswer = null;
+            
+            document.getElementById('problem').innerHTML = `f(${currentProblem.variable}) = ${currentProblem.text}`;
+            
+            // Сброс кнопок
+            document.getElementById('btnEven').className = 'answer-btn';
+            document.getElementById('btnOdd').className = 'answer-btn';
+            document.getElementById('btnGeneral').className = 'answer-btn';
+            
+            // Сброс обратной связи
+            document.getElementById('feedback').textContent = '';
+            document.getElementById('feedback').className = 'feedback';
+            
+            answerChecked = false;
+        }
+
+        function selectAnswer(type) {
+            if (answerChecked) return;
+            
+            selectedAnswer = type;
+            
+            // Убираем выделение со всех кнопок
+            document.getElementById('btnEven').classList.remove('selected');
+            document.getElementById('btnOdd').classList.remove('selected');
+            document.getElementById('btnGeneral').classList.remove('selected');
+            
+            // Выделяем выбранную кнопку
+            if (type === 'even') {
+                document.getElementById('btnEven').classList.add('selected');
+            } else if (type === 'odd') {
+                document.getElementById('btnOdd').classList.add('selected');
+            } else {
+                document.getElementById('btnGeneral').classList.add('selected');
+            }
+        }
+
+        function checkAnswer() {
+            if (answerChecked || !selectedAnswer) {
+                if (!selectedAnswer) {
+                    const feedback = document.getElementById('feedback');
+                    feedback.innerHTML = '⚠️ Выберите ответ!';
+                    feedback.className = 'feedback incorrect';
+                }
+                return;
+            }
+            
+            answerChecked = true;
+            const feedback = document.getElementById('feedback');
+            
+            const correctParity = currentProblem.parity;
+            const correctText = {
+                'even': 'Чётная',
+                'odd': 'Нечётная',
+                'general': 'Общего вида'
+            };
+            
+            if (selectedAnswer === correctParity) {
+                correctCount++;
+                streakCount++;
+                
+                // Подсвечиваем правильный ответ
+                if (selectedAnswer === 'even') {
+                    document.getElementById('btnEven').className = 'answer-btn correct';
+                } else if (selectedAnswer === 'odd') {
+                    document.getElementById('btnOdd').className = 'answer-btn correct';
+                } else {
+                    document.getElementById('btnGeneral').className = 'answer-btn correct';
+                }
+                
+                feedback.innerHTML = `🎉 Правильно! Это ${correctText[correctParity].toLowerCase()} функция`;
+                feedback.className = 'feedback correct';
+                
+                // Достижения
+                if (streakCount === 5) showAchievement('🔥 5 подряд!');
+                if (streakCount === 10) showAchievement('⭐ 10 подряд!');
+                if (correctCount === 20) showAchievement('🏆 20 правильных ответов!');
+                
+            } else {
+                incorrectCount++;
+                streakCount = 0;
+                
+                // Подсвечиваем неправильный ответ
+                if (selectedAnswer === 'even') {
+                    document.getElementById('btnEven').className = 'answer-btn incorrect';
+                } else if (selectedAnswer === 'odd') {
+                    document.getElementById('btnOdd').className = 'answer-btn incorrect';
+                } else {
+                    document.getElementById('btnGeneral').className = 'answer-btn incorrect';
+                }
+                
+                // Показываем правильный ответ
+                if (correctParity === 'even') {
+                    document.getElementById('btnEven').className = 'answer-btn correct';
+                } else if (correctParity === 'odd') {
+                    document.getElementById('btnOdd').className = 'answer-btn correct';
+                } else {
+                    document.getElementById('btnGeneral').className = 'answer-btn correct';
+                }
+                
+                feedback.innerHTML = `❌ Неверно! Это ${correctText[correctParity].toLowerCase()} функция`;
+                feedback.className = 'feedback incorrect';
+            }
+            
+            updateStats();
+            updateProgress();
+            
+            // Автоматически переходим к следующему примеру через 3 секунды
+            setTimeout(() => {
+                newProblem();
+            }, 3000);
+        }
+
+        function updateStats() {
+            document.getElementById('correctCount').textContent = correctCount;
+            document.getElementById('incorrectCount').textContent = incorrectCount;
+            document.getElementById('streakCount').textContent = streakCount;
+            
+            const timeElapsed = Math.floor((Date.now() - startTime) / 1000);
+            document.getElementById('timeCount').textContent = timeElapsed;
+            document.getElementById('timer').textContent = `⏱️ ${timeElapsed} сек`;
+        }
+
+        function updateProgress() {
+            const total = correctCount + incorrectCount;
+            if (total > 0) {
+                const percentage = Math.round((correctCount / total) * 100);
+                document.getElementById('progressFill').style.width = percentage + '%';
+                document.getElementById('progressText').textContent = percentage + '%';
+            }
+        }
+
+        function resetStats() {
+            correctCount = 0;
+            incorrectCount = 0;
+            streakCount = 0;
+            startTime = Date.now();
+            updateStats();
+            updateProgress();
+            newProblem();
+        }
+
+        function setDifficulty(level) {
+            difficulty = level;
+            
+            // Обновляем кнопки
+            document.querySelectorAll('.difficulty-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Генерируем новый пример
+            newProblem();
+        }
+
+        function showHint() {
+            const var1 = currentProblem.variable;
+            const correctParity = currentProblem.parity;
+            
+            let hintText = '';
+            
+            if (correctParity === 'even') {
+                hintText = `
+                    <div class="hint-box">
+                        <strong>Подсказка для f(${var1}) = ${currentProblem.text}:</strong><br>
+                        1. Проверим f(−${var1}): подставим −${var1} вместо ${var1}<br>
+                        2. Если получится то же самое выражение → функция чётная<br>
+                        3. Чётные функции: ${var1}<sup>2</sup>, ${var1}<sup>4</sup>, |${var1}|, cos(${var1})<br>
+                        4. График чётной функции симметричен относительно оси OY
+                    </div>
+                `;
+            } else if (correctParity === 'odd') {
+                hintText = `
+                    <div class="hint-box">
+                        <strong>Подсказка для f(${var1}) = ${currentProblem.text}:</strong><br>
+                        1. Проверим f(−${var1}): подставим −${var1} вместо ${var1}<br>
+                        2. Если получится выражение с противоположным знаком → функция нечётная<br>
+                        3. Нечётные функции: ${var1}, ${var1}<sup>3</sup>, ${var1}<sup>5</sup>, sin(${var1})<br>
+                        4. График нечётной функции симметричен относительно начала координат
+                    </div>
+                `;
+            } else {
+                hintText = `
+                    <div class="hint-box">
+                        <strong>Подсказка для f(${var1}) = ${currentProblem.text}:</strong><br>
+                        1. Проверим f(−${var1}): подставим −${var1} вместо ${var1}<br>
+                        2. Если получится ни f(${var1}), ни −f(${var1}) → функция общего вида<br>
+                        3. Примеры общего вида: ${var1}<sup>2</sup> + ${var1}, ${var1}<sup>3</sup> + 1, √${var1}<br>
+                        4. Такие функции не имеют специальной симметрии
+                    </div>
+                `;
+            }
+            
+            document.getElementById('feedback').innerHTML = hintText;
+            document.getElementById('feedback').className = 'feedback';
+        }
+
+        function showAchievement(text) {
+            const achievement = document.getElementById('achievement');
+            achievement.textContent = text;
+            achievement.classList.add('show');
+            
+            setTimeout(() => {
+                achievement.classList.remove('show');
+            }, 2000);
+        }
+
+        // Обработка Enter для проверки
+        document.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                if (!answerChecked) {
+                    checkAnswer();
+                } else {
+                    newProblem();
+                }
+            }
+        });
+
+        // Обработка цифр 1, 2, 3 для быстрого выбора
+        document.addEventListener('keypress', function(event) {
+            if (!answerChecked) {
+                if (event.key === '1') selectAnswer('even');
+                if (event.key === '2') selectAnswer('odd');
+                if (event.key === '3') selectAnswer('general');
+            }
+        });
+
+        // Обновление таймера каждую секунду
+        setInterval(updateStats, 1000);
+
+        // Инициализация
+        document.addEventListener('DOMContentLoaded', () => {
+            backgroundMusic.volume = 0.3;
+            newProblem();
+            updateStats();
+        });
+    </script>
+</body>
+</html>
