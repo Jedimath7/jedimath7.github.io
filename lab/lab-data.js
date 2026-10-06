@@ -1,4 +1,5 @@
 const LAB_ITEMS = {
+  "derivative": {"title": "Функция и её производная", "description": "Два связанных графика: знак производной, экстремумы и значения на отрезке.", "path": "content/derivative.html", "group": "visuals"},
   "main-trainers": {
     "title": "Основные тренажёры",
     "description": "38 материалов: арифметика, дроби, алгебра, тригонометрия и геометрия.",
