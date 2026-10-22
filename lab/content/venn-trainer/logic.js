@@ -1,0 +1,14 @@
+/* Модель выражения: дерево операций, без eval и разбора пользовательского кода. */
+(function(root){
+const A='A',B='B',C='C',and=(a,b)=>['and',a,b],or=(a,b)=>['or',a,b],not=a=>['not',a];
+function evaluate(e,m){if(typeof e==='string')return Boolean(m & ({A:4,B:2,C:1}[e]));if(e[0]==='not')return !evaluate(e[1],m);return e[0]==='and'?evaluate(e[1],m)&&evaluate(e[2],m):evaluate(e[1],m)||evaluate(e[2],m)}
+function masks(e){return Array.from({length:8},(_,i)=>i).filter(i=>evaluate(e,i))}
+function format(e,words=false){if(typeof e==='string')return e;const op=e[0];if(op==='not')return (words?'НЕ ':'¬')+(typeof e[1]==='string'?format(e[1],words):'('+format(e[1],words)+')');return e.slice(1).map(x=>typeof x!=='string'&&x[0]!=='not'?'('+format(x,words)+')':format(x,words)).join(words?(op==='and'?' И ':' ИЛИ '):(op==='and'?' ∧ ':' ∨ '))}
+const tasks=[
+ [A,'Выбери все случаи, в которых A истинно.'],[not(A),'Всё, что находится вне круга A.'],[and(A,B),'Нужны оба свойства сразу, включая пересечение трёх кругов.'],[or(A,B),'Достаточно хотя бы одного свойства. Общее пересечение тоже подходит.'],[and(A,not(B)),'Внутри A, но за пределами B.'],[and(and(A,B),C),'Все три свойства одновременно.'],
+ [and(or(A,B),not(C)),'Хотя бы одно из A и B, но обязательно вне C.'],[or(A,and(B,C)),'Всё множество A и пересечение B с C.'],[not(or(A,B)),'За пределами обоих кругов A и B.'],[not(and(A,B)),'Исключи только те случаи, где A и B истинны одновременно.'],[and(or(A,C),B),'Внутри B и хотя бы одного из кругов A и C.'],[or(and(A,not(B)),and(B,not(A))),'Ровно одно из A и B. Значение C не ограничено.'],
+ [or(and(A,B),and(not(A),C)),'Объедини пересечение A с B и часть C вне A.'],[and(or(A,B),or(not(A),C)),'Должны выполняться обе части в скобках.'],[not(or(and(A,B),C)),'Исключи весь C и всё пересечение A с B.'],[or(or(and(A,not(or(B,C))),and(B,not(or(A,C)))),and(C,not(or(A,B)))),'Ровно одно из трёх свойств.'],[or(or(and(A,B),and(A,C)),and(B,C)),'Хотя бы два из трёх свойств.'],[and(and(A,B),not(A)),'Можно ли одновременно быть в A и вне A? Ответ может быть пустым.'],[or(A,not(A)),'Любой случай: A либо истинно, либо ложно.']
+].map(([expr,hint],i)=>({expr,hint,id:i,level:i<6?0:i<12?1:2}));
+function breakdown(e){const result=[];function walk(x){if(typeof x==='string'){if(!result.some(s=>s.label===x))result.push({expr:x,label:x,text:'Круг '+x+' — все случаи, в которых '+x+' истинно.'});return}walk(x[1]);if(x[2])walk(x[2]);result.push({expr:x,label:format(x),text:x[0]==='not'?'НЕ: возьми все области прямоугольника U, в которых выражение «'+format(x[1],true)+'» ложно.':x[0]==='and'?'И: оставь только области, общие для двух частей выражения.':'ИЛИ: собери области обеих частей. Их пересечение тоже входит в ответ.'})}walk(e);return result}
+const api={evaluate,masks,format,tasks,breakdown,and,or,not};if(typeof module!=='undefined')module.exports=api;root.VennLogic=api;
+})(typeof window!=='undefined'?window:globalThis);

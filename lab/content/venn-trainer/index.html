@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="ru">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#131a1f"><title>Круги Эйлера — Венна · Математическая лаборатория</title><link rel="icon" href="data:,"><link rel="stylesheet" href="style.css"><script src="logic.js" defer></script><script src="app.js" defer></script></head>
+<body>
+<a class="skip" href="#main">К тренажёру</a>
+<div class="wrap">
+<header><a href="../../index.html" id="home">Математическая лаборатория</a><span>Логика и множества</span></header>
+<main id="main">
+<div class="intro"><h1>Увидеть логику</h1><p>Переводи высказывания в области кругов Эйлера — Венна.</p></div>
+<div class="toolbar"><div class="tabs" role="group" aria-label="Режим"><button id="learn" aria-pressed="true">Сначала разберёмся</button><button id="practice" aria-pressed="false">Теперь я сам</button></div><label id="level-label" hidden>Сложность <select id="level"><option value="0">Основы</option><option value="1">Скобки и отрицания</option><option value="2">Логический вызов</option></select></label></div>
+<div class="workspace">
+<section class="diagram" aria-label="Диаграмма Венна"><div class="diagram-top"><span>Все возможные случаи · U</span><button class="text-button" id="clear" hidden>Снять выбор</button></div><svg id="venn" viewBox="0 0 640 530" aria-labelledby="diagram-title diagram-desc"><title id="diagram-title">Три множества A, B и C</title><desc id="diagram-desc">Восемь областей. В практике нажми на область, чтобы выбрать её. С клавиатуры: Tab, затем Enter или пробел.</desc></svg><div class="diagram-actions"><button id="check" class="primary" hidden>Проверить</button></div><div class="diagram-foot"><span><i></i> <span id="legend">Выделено на этом шаге</span></span><span id="selection-count"></span></div><p id="hover-info">Каждая область — свой набор истинных и ложных высказываний.</p></section>
+<section class="lesson" aria-label="Задание"><div class="progress-line"><span id="counter"></span><span id="score"></span></div><div class="progress" aria-hidden="true"><div id="progress-fill"></div></div><h2 id="task-title"></h2><div id="formula" class="formula"></div><p id="words" class="words"></p><div id="explanation" class="explanation"></div><div id="feedback" role="status" aria-live="polite"></div><div class="actions"><button id="prev" class="secondary">Назад</button><button id="next" class="primary">Дальше</button></div><div class="help-actions"><button id="hint" class="text-button" hidden>Подсказка</button><button id="solution" class="text-button" hidden>Разобрать ответ</button></div><div id="hint-text"></div></section>
+</div>
+<details class="reference"><summary>Как читать обозначения и области</summary><div class="reference-grid"><div><h3>Три действия</h3><p><b>∧ · И</b> — оба высказывания истинны.<br><b>∨ · ИЛИ</b> — истинно хотя бы одно, в том числе оба.<br><b>¬ · НЕ</b> — высказывание ложно.</p><p>Скобки задают порядок. Без скобок: сначала НЕ, затем И, затем ИЛИ. Круг A — все случаи, в которых A истинно.</p><p>Прямоугольник U включает и пространство вне кругов. Оно тоже может быть частью ответа. Область считается выбранной целиком.</p></div><div><h3>Восемь возможных случаев</h3><div id="region-list"></div></div></div></details>
+<footer>Не спеши. Прочитай выражение, найди области, проверь себя.</footer>
+</main></div></body></html>
