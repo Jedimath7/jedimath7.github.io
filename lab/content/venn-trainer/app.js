@@ -43,3 +43,22 @@ function advance(){index++;if(index<queue.length){loadTask();return}review=false
 /* В самостоятельной копии ссылка на каталог не ведёт в несуществующую папку. */
 if(!location.pathname.includes('/lab/')){$('home').removeAttribute('href');$('home').style.color='var(--gold)'}
 renderLearn();
+// Состояние задания сохраняется при входе и выходе из полного экрана.
+let screenScroll=0;
+function setImmersive(active){
+ document.body.classList.toggle('immersive',active);
+ $('fullscreen').setAttribute('aria-pressed',String(active));
+ $('fullscreen').querySelector('span').textContent=active?'Выйти из полного экрана':'На весь экран';
+ $('fullscreen').title=active?'Выйти из полного экрана (Esc)':'Развернуть тренажёр на весь экран';
+ if(active)window.scrollTo(0,0);else window.scrollTo(0,screenScroll);
+}
+$('fullscreen').onclick=async()=>{
+ if(document.body.classList.contains('immersive')){
+  if(document.fullscreenElement){try{await document.exitFullscreen()}catch{setImmersive(false)}}else setImmersive(false);
+  return;
+ }
+ screenScroll=window.scrollY;
+ try{if(!document.documentElement.requestFullscreen)throw new Error('unsupported');await document.documentElement.requestFullscreen();setImmersive(true)}catch{setImmersive(true)}
+};
+document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement)setImmersive(false)});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!document.fullscreenElement&&document.body.classList.contains('immersive'))setImmersive(false)});
