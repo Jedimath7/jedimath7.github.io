@@ -299,7 +299,7 @@ section[id]{scroll-margin-top:78px}
 .reviews-channel{text-align:center;margin-top:42px}
 
 /* ===== Цены ===== */
-.price-cols{display:grid;grid-template-columns:1.3fr 1fr;gap:24px}
+.price-cols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}
 .price-card{background:var(--surface);border:1px solid var(--line-soft);border-radius:10px;padding:38px 36px;transition:border-color .3s,box-shadow .3s}
 .price-card.feature{border:1px solid var(--gold);box-shadow:0 0 30px rgba(201,168,106,.08)}
 .price-card:hover{box-shadow:0 8px 30px rgba(0,0,0,.2)}
@@ -722,6 +722,10 @@ footer{background:#0C1115;color:var(--ink-soft);padding:40px 0;border-top:1px so
         <div class="price-row"><span class="desc"><b>4 занятия</b>по 60 минут</span><span class="val">32 000 ₽</span></div>
         <div class="price-row"><span class="desc"><b>4 занятия</b>по 90 минут</span><span class="val">48 000 ₽</span></div>
       </div>
+      <div class="price-card reveal">
+        <h3>Пары</h3>
+        <span class="ptag">два ученика</span>
+        <div class="price-row"><span class="desc"><b>4 занятия</b>по 60 минут</span><span class="val">20 000 ₽</span></div>
       <div class="price-card reveal">
         <h3>Мини-группа</h3>
         <span class="ptag">небольшой состав</span>
