@@ -7,32 +7,34 @@
   <meta name="description" content="Отметьте удобные часы для регулярных занятий по будням.">
   <title>Время для занятий</title>
   <link rel="icon" href="./favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="./styles.css">
+  <link rel="stylesheet" href="./styles.css?v=5">
 </head>
 <body>
   <header class="site-header"><a class="brand" href="./" aria-label="Время для занятий — главная"><svg viewBox="0 0 28 28" aria-hidden="true"><rect x="3" y="5" width="22" height="20" rx="5"/><path d="M8 3v5m12-5v5M3 11h22m-16 6 4 4 7-7"/></svg><span>Время для занятий</span></a></header>
   <main id="main">
-    <section class="intro"><h1>Когда удобно<br class="desktop-break"> заниматься?</h1><p>Закрасьте часы, когда вы свободны.<br>Звёздочкой отметьте самые удобные варианты.</p></section>
+    <h1 class="sr-only">Время для занятий</h1>
     <div id="connection-note" class="notice" hidden></div>
     <div id="load-note" class="notice" role="status" hidden></div>
     <form id="availability-form" novalidate>
-      <fieldset class="identity" id="identity-fields"><legend class="sr-only">Об ученике</legend><label>Имя ученика<input id="student-name" name="name" autocomplete="given-name" maxlength="80" required placeholder="Как к вам обращаться"></label><label class="grade-label">Класс<select id="student-grade" name="grade" required><option value="">Выберите</option><option value="1">1 класс</option><option value="2">2 класс</option><option value="3">3 класс</option><option value="4">4 класс</option><option value="5">5 класс</option><option value="6">6 класс</option><option value="7">7 класс</option><option value="8">8 класс</option><option value="9">9 класс</option><option value="10">10 класс</option><option value="11">11 класс</option></select></label></fieldset>
+      <fieldset class="identity" id="identity-fields"><legend class="sr-only">Об ученике</legend><label>Имя ученика<input id="student-name" name="name" autocomplete="given-name" maxlength="80" required></label><label class="grade-label">Класс<select id="student-grade" name="grade" required><option value="">Выберите</option><option value="1">1 класс</option><option value="2">2 класс</option><option value="3">3 класс</option><option value="4">4 класс</option><option value="5">5 класс</option><option value="6">6 класс</option><option value="7">7 класс</option><option value="8">8 класс</option><option value="9">9 класс</option><option value="10">10 класс</option><option value="11">11 класс</option></select></label></fieldset>
       <div class="workspace">
         <section class="schedule" aria-label="Выбор удобного времени">
-          <div class="schedule-heading"><h2>Ваша обычная неделя</h2><span id="timezone">По московскому времени</span></div>
+          
           <div class="toolbar"><div class="paint-tools" role="group" aria-label="Что отмечать"><button type="button" class="tool active" data-tool="available" aria-pressed="true"><span class="color-chip"></span>Могу заниматься</button><button type="button" class="tool" data-tool="best" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17.3l-5.6 2.9 1.1-6.2L3 9.6l6.2-.9Z"/></svg>Лучшее время</button></div><button type="button" id="clear-grid" class="text-button">Очистить</button></div>
-          <div class="mobile-controls"><div class="day-pages" role="group" aria-label="Дни недели"><button type="button" data-page="0" aria-pressed="true" class="active">Пн · Вт · Ср</button><button type="button" data-page="1" aria-pressed="false">Чт · Пт</button></div><label class="edit-toggle"><input type="checkbox" id="grid-editing">Закрашивание</label></div>
-          <p id="grid-help" class="grid-help">Проведите по клеткам или нажмите на отдельный час. Повторное нажатие снимает отметку.</p>
+          
+          <p id="grid-help" class="sr-only">Проведите по клеткам или нажмите на отдельный час. Повторное нажатие снимает отметку.</p>
           <div id="time-grid" class="time-grid" role="group" aria-label="Доступные часы по будням" aria-describedby="grid-help"></div>
-          <div class="grid-footer"><span><span class="legend-empty"></span>Не выбрано</span><span><span class="legend-available"></span>Могу</span><span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17.3l-5.6 2.9 1.1-6.2L3 9.6l6.2-.9Z"/></svg>Лучше всего</span></div>
+          <div class="submit-block"><div id="form-message" class="form-message" role="alert" hidden></div><button type="submit" id="submit-answer" class="primary-button">Отправить ответ<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15m-6-6 6 6-6 6"/></svg></button></div>
+          
         </section>
-        <aside class="answer-summary" aria-label="Ваш выбор"><h2>Ваш выбор</h2><p class="summary-count" id="summary-count">Пока нет выбранных часов</p><div id="summary-days" class="summary-days"></div><p id="best-hint" class="best-hint">Можно отметить лучшие часы звёздочкой. Это необязательно.</p><div id="form-message" class="form-message" role="alert" hidden></div><button type="submit" id="submit-answer" class="primary-button">Отправить ответ<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15m-6-6 6 6-6 6"/></svg></button><p class="submit-note">Это пожелания к расписанию.<br> Время урока преподаватель согласует с вами.</p></aside>
+        <aside class="answer-summary" id="answer-review" aria-label="Ваш выбор"><h2 id="review-title" tabindex="-1">Ваш выбор</h2><p class="summary-count" id="summary-count">Пока нет выбранных часов</p><div id="summary-days" class="summary-days"></div></aside>
       </div>
+      <div class="mobile-save" id="mobile-save" hidden><span id="mobile-count" role="status">Часы не выбраны</span><button type="submit" class="primary-button" id="review-answer">Отправить ответ</button></div>
     </form>
     <section id="success" class="success" hidden aria-labelledby="success-title"><div class="success-mark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg></div><h2 id="success-title">Ответ сохранён</h2><p>Преподаватель увидит ваши часы и свяжется с вами, чтобы договориться о занятиях.</p><div id="saved-summary"></div><label class="edit-link-label">Личная ссылка для изменения ответа<input id="edit-link" type="text" readonly aria-label="Личная ссылка для изменения ответа"></label><button type="button" id="copy-link" class="primary-button">Скопировать ссылку</button><p class="private-note">Сохраните ссылку у себя. По ней можно открыть и изменить ваш ответ.</p><button type="button" id="edit-answer" class="text-button">Изменить выбранное время</button><p id="copy-status" role="status"></p></section>
   </main>
   <div id="live-status" class="sr-only" aria-live="polite"></div>
-  <script type="module" src="./app.js?v=2"></script>
+  <script type="module" src="./app.js?v=5"></script>
 </body>
 </html>
 

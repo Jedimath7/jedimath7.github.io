@@ -1,11 +1,11 @@
 import { CONFIG } from './config.js?v=2';
-import { DAYS, SHORT_DAYS, HOURS, SLOT_COUNT, emptySlots, slotIndex, applyPaint, validateAnswer, dayIntervals } from './model.js';
+import { DAYS, SHORT_DAYS, HOURS, SLOT_COUNT, emptySlots, slotIndex, applyPaint, validateAnswer, dayIntervals } from './model.js?v=4';
 const $ = id => document.getElementById(id);
 const serviceReady = !!CONFIG.apiUrl && CONFIG.acceptingResponses !== false;
 const star = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17.3l-5.6 2.9 1.1-6.2L3 9.6l6.2-.9Z"/></svg>';
 const check = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg>';
 const media = matchMedia('(max-width: 760px)');
-let slots = emptySlots(), tool = 'available', page = 0, painting = null, busy = false, recordId = null;
+let slots = emptySlots(), tool = 'available', painting = null, busy = false, recordId = null;
 let lastPoint = null;
 let dirty = false;
 let lastClear = 0;
@@ -32,11 +32,10 @@ function restoreDraft() {
 }
 function live(text) { $('live-status').textContent = text; }
 function showMessage(text) { $('form-message').textContent = text; $('form-message').hidden = !text; }
-function visibleDays() { return !media.matches ? [0,1,2,3,4] : page === 0 ? [0,1,2] : [3,4]; }
-function isEditing() { return !media.matches || $('grid-editing').checked; }
+function visibleDays() { return [0,1,2,3,4]; }
+
 function updateHint() {
-  $('time-grid').classList.toggle('editing', isEditing());
-  $('grid-help').textContent = !isEditing() ? 'Включите «Закрашивание», чтобы выбрать часы. Сейчас сетку можно прокручивать.' : tool === 'best' ? 'Отметьте самые удобные часы среди уже закрашенных. Повторное нажатие убирает звёздочку.' : 'Проведите по клеткам или нажмите на отдельный час. Повторное нажатие снимает отметку.';
+  $('grid-help').textContent = tool === 'best' ? 'Нажмите на час, чтобы добавить звёздочку. Ещё раз — убрать её.' : media.matches ? 'Нажимайте на часы. Листайте сетку обычным движением пальца.' : 'Нажимайте на часы или выделяйте проведением мыши.';
 }
 function renderGrid() {
   const grid = $('time-grid'), days = visibleDays();
@@ -76,18 +75,19 @@ function makeSummary(target) {
 function renderSummary() {
   const count = slots.filter(Boolean).length, best = slots.filter(v=>v===2).length;
   $('summary-count').textContent = count ? `Выбрано часов: ${count}${best ? ` · лучших: ${best}` : ''}` : 'Пока нет выбранных часов';
-  makeSummary($('summary-days')); $('best-hint').hidden = best>0;
+  makeSummary($('summary-days'));
+  $('mobile-count').textContent = count ? `Выбрано: ${count} ч` : 'Часы не выбраны';
+  syncMobileBar();
 }
 function paint(index) {
   if (!painting || painting.visited.has(index)) return;
   painting.visited.add(index);
-  if (tool === 'best' && slots[index] === 0) { live('Сначала отметьте этот час как доступный.'); return; }
   dirty = true; slots = applyPaint(slots,index,tool,painting.value); refreshCell(index); renderSummary(); draftSave(); showMessage('');
 }
 function cellAt(x,y) { const cell = document.elementFromPoint(x,y)?.closest('.slot'); return cell && $('time-grid').contains(cell) ? Number(cell.dataset.index) : null; }
 function finishPaint() { if (painting) { painting = null; lastPoint = null; live(`Выбрано часов: ${slots.filter(Boolean).length}.`); } }
 $('time-grid').addEventListener('pointerdown', event => {
-  const cell = event.target.closest('.slot'); if (!cell || !isEditing() || busy || event.button !== 0) return;
+  const cell = event.target.closest('.slot'); if (!cell || event.pointerType !== 'mouse' || busy || event.button !== 0) return;
   event.preventDefault(); cell.focus({preventScroll:true});
   const index = Number(cell.dataset.index);
   painting = { value: tool === 'best' ? slots[index] !== 2 : slots[index] === 0, visited: new Set(), pointerId:event.pointerId };
@@ -104,7 +104,7 @@ $('time-grid').addEventListener('pointermove', event => {
 ['pointerup','pointercancel','lostpointercapture'].forEach(type => $('time-grid').addEventListener(type,finishPaint));
 window.addEventListener('blur',finishPaint);
 $('time-grid').addEventListener('click', event => {
-  const cell = event.target.closest('.slot'); if (!cell || event.detail !== 0 || busy) return;
+  const cell = event.target.closest('.slot'); if (!cell || (event.detail !== 0 && event.pointerType === 'mouse') || busy) return;
   const i=Number(cell.dataset.index);
   painting={value:tool==='best'?slots[i]!==2:slots[i]===0,visited:new Set()}; paint(i); finishPaint();
 });
@@ -112,12 +112,15 @@ document.querySelectorAll('[data-tool]').forEach(button=>button.addEventListener
   finishPaint(); tool=button.dataset.tool;
   document.querySelectorAll('[data-tool]').forEach(b=>{ const active=b===button;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active)); }); updateHint();
 }));
-document.querySelectorAll('[data-page]').forEach(button=>button.addEventListener('click',()=>{
-  finishPaint();page=Number(button.dataset.page);
-  document.querySelectorAll('[data-page]').forEach(b=>{b.classList.toggle('active',b===button);b.setAttribute('aria-pressed',String(b===button));}); renderGrid();
-}));
-$('grid-editing').addEventListener('change',()=>{finishPaint();updateHint();});
-media.addEventListener('change',()=>{finishPaint();renderGrid();});
+function syncMobileBar() {
+  const rect=$('submit-answer').getBoundingClientRect();
+  $('review-answer').textContent=busy?'Сохраняем…':hasSavedAnswer?'Сохранить изменения':'Отправить ответ';
+  $('mobile-save').hidden=!media.matches || $('availability-form').hidden || (rect.top>=0 && rect.bottom<=innerHeight);
+}
+window.addEventListener('scroll',syncMobileBar,{passive:true});
+window.addEventListener('resize',syncMobileBar);
+new MutationObserver(syncMobileBar).observe($('availability-form'),{attributes:true,attributeFilter:['hidden']});
+media.addEventListener('change',()=>{finishPaint();renderGrid();syncMobileBar();});
 $('clear-grid').addEventListener('click',()=>{
   if (!slots.some(Boolean)) return;
   if (Date.now()-lastClear>4000) { lastClear=Date.now();$('clear-grid').textContent='Подтвердить'; live('Нажмите «Подтвердить», чтобы очистить сетку.'); setTimeout(()=>{$('clear-grid').textContent='Очистить';},4000);return; }
@@ -151,7 +154,7 @@ function applyServerAnswer(data) {
   if(!data||typeof data.name!=='string'||!Number.isInteger(Number(data.grade))||Number(data.grade)<1||Number(data.grade)>11||!Array.isArray(data.slots)||data.slots.length!==SLOT_COUNT||data.slots.some(v=>![0,1,2].includes(v)))throw new Error('Сервис вернул неполный ответ. Попробуйте позже.');
   recordId=data.id;$('student-name').value=data.name;$('student-grade').value=String(data.grade);slots=data.slots;renderGrid();renderSummary();draftSave();
 }
-function setBusy(value){busy=value;$('submit-answer').disabled=value;$('submit-answer').textContent=value?'Сохраняем…':hasSavedAnswer?'Сохранить изменения':'Отправить ответ';$('identity-fields').disabled=value;$('clear-grid').disabled=value;}
+function setBusy(value){busy=value;$('submit-answer').disabled=value;$('review-answer').disabled=value;$('review-answer').textContent=value?'Сохраняем…':hasSavedAnswer?'Сохранить изменения':'Отправить ответ';$('submit-answer').textContent=value?'Сохраняем…':hasSavedAnswer?'Сохранить изменения':'Отправить ответ';$('identity-fields').disabled=value;$('clear-grid').disabled=value;}
 $('availability-form').addEventListener('submit',async event=>{
   event.preventDefault();if(busy)return;finishPaint();const error=validateAnswer({name:$('student-name').value,grade:$('student-grade').value,slots});
   if(error){showMessage(error);if(!$('student-name').value.trim())$('student-name').focus();else if(!$('student-grade').value)$('student-grade').focus();return;}
@@ -160,7 +163,7 @@ $('availability-form').addEventListener('submit',async event=>{
 });
 $('copy-link').addEventListener('click',async()=>{try{await navigator.clipboard.writeText($('edit-link').value);$('copy-status').textContent='Ссылка скопирована.';}catch{$('edit-link').select();$('copy-status').textContent='Выделили ссылку. Скопируйте её вручную.';}});
 $('edit-answer').addEventListener('click',()=>{$('success').hidden=true;$('availability-form').hidden=false;$('submit-answer').textContent='Сохранить изменения';$('student-name').focus();});
-restoreDraft();renderGrid();renderSummary();$('timezone').textContent=CONFIG.timezoneLabel;
+restoreDraft();renderGrid();renderSummary();
 if(!serviceReady){$('connection-note').hidden=false;$('connection-note').textContent='Приём ответов пока не открыт. Можно попробовать выбрать время; отправка станет доступна после подключения.';}
 if(hasSavedAnswer){
   $('submit-answer').textContent='Сохранить изменения';
