@@ -1,4 +1,4 @@
-import { CONFIG } from './config.js';
+import { CONFIG } from './config.js?v=2';
 import { DAYS, SHORT_DAYS, HOURS, SLOT_COUNT, emptySlots, slotIndex, applyPaint, validateAnswer, dayIntervals } from './model.js';
 const $ = id => document.getElementById(id);
 const serviceReady = !!CONFIG.apiUrl && CONFIG.acceptingResponses !== false;
