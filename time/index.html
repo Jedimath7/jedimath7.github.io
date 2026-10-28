@@ -7,7 +7,7 @@
   <meta name="description" content="Отметьте удобные часы для регулярных занятий по будням.">
   <title>Время для занятий</title>
   <link rel="icon" href="./favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="./styles.css?v=5">
+  <link rel="stylesheet" href="./styles.css?v=6">
 </head>
 <body>
   <header class="site-header"><a class="brand" href="./" aria-label="Время для занятий — главная"><svg viewBox="0 0 28 28" aria-hidden="true"><rect x="3" y="5" width="22" height="20" rx="5"/><path d="M8 3v5m12-5v5M3 11h22m-16 6 4 4 7-7"/></svg><span>Время для занятий</span></a></header>
@@ -31,7 +31,7 @@
       </div>
       <div class="mobile-save" id="mobile-save" hidden><span id="mobile-count" role="status">Часы не выбраны</span><button type="submit" class="primary-button" id="review-answer">Отправить ответ</button></div>
     </form>
-    <section id="success" class="success" hidden aria-labelledby="success-title"><div class="success-mark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg></div><h2 id="success-title">Ответ сохранён</h2><p>Преподаватель увидит ваши часы и свяжется с вами, чтобы договориться о занятиях.</p><div id="saved-summary"></div><label class="edit-link-label">Личная ссылка для изменения ответа<input id="edit-link" type="text" readonly aria-label="Личная ссылка для изменения ответа"></label><button type="button" id="copy-link" class="primary-button">Скопировать ссылку</button><p class="private-note">Сохраните ссылку у себя. По ней можно открыть и изменить ваш ответ.</p><button type="button" id="edit-answer" class="text-button">Изменить выбранное время</button><p id="copy-status" role="status"></p></section>
+    <section id="success" class="success" hidden aria-labelledby="success-title"><div class="success-mark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg></div><h2 id="success-title">Ответ сохранён</h2><p>Преподаватель увидит ваши часы и свяжется с вами, чтобы договориться о занятиях.</p><a class="site-link" href="https://bakhadov.ru/">Перейти на сайт преподавателя <span aria-hidden="true">→</span></a><div id="saved-summary"></div><label class="edit-link-label">Личная ссылка для изменения ответа<input id="edit-link" type="text" readonly aria-label="Личная ссылка для изменения ответа"></label><button type="button" id="copy-link" class="primary-button">Скопировать ссылку</button><p class="private-note">Сохраните ссылку у себя. По ней можно открыть и изменить ваш ответ.</p><button type="button" id="edit-answer" class="text-button">Изменить выбранное время</button><p id="copy-status" role="status"></p></section>
   </main>
   <div id="live-status" class="sr-only" aria-live="polite"></div>
   <script type="module" src="./app.js?v=5"></script>

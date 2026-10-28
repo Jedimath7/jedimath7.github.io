@@ -33,3 +33,5 @@ main{padding-top:24px}.toolbar{margin-bottom:8px}.answer-summary .summary-days:e
 @media(max-width:760px){main{padding-top:12px}.identity{margin-bottom:12px}.time-grid{grid-template-columns:38px repeat(5,minmax(0,1fr));gap:3px}.slot{height:44px}.day-heading{height:26px}.answer-summary{padding:16px;margin-top:14px}.summary-days{gap:0 12px}.summary-day{padding-bottom:8px;margin-bottom:8px}.summary-count{font-size:.8125rem}.site-header{min-height:46px}.toolbar{margin-bottom:2px}}
 
 .submit-block{margin-top:10px}.submit-block .form-message{margin-bottom:8px}.submit-block .primary-button{min-height:46px}.answer-summary .summary-days{margin-top:12px}@media(max-width:760px){.answer-summary{margin-top:12px}.mobile-save .primary-button{min-width:150px}.submit-block{margin-top:8px}}
+
+.site-link{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:22px;padding:14px 18px;min-height:50px;border:1px solid var(--green);border-radius:8px;color:var(--green);font-weight:650;text-decoration:none}.site-link:hover{background:var(--available)}.site-link span{font-size:20px;line-height:1}@media(max-width:760px){.site-link{width:100%;margin-top:18px}}
