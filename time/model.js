@@ -7,7 +7,7 @@ export const emptySlots = () => Array(SLOT_COUNT).fill(0);
 export const slotIndex = (day, hourIndex) => day * HOURS.length + hourIndex;
 export function applyPaint(slots, index, tool, value) {
   if (!Number.isInteger(index) || index < 0 || index >= SLOT_COUNT) return slots;
-  if (tool === 'best' && !value && slots[index] === 0) return slots;
+  if (tool === 'best' && slots[index] === 0) return slots;
   const next = slots.slice();
   next[index] = tool === 'best' ? (value ? 2 : 1) : (value ? 1 : 0);
   return next;

@@ -1,5 +1,5 @@
 import { CONFIG } from './config.js?v=2';
-import { DAYS, SHORT_DAYS, HOURS, SLOT_COUNT, emptySlots, slotIndex, applyPaint, validateAnswer, dayIntervals } from './model.js?v=4';
+import { DAYS, SHORT_DAYS, HOURS, SLOT_COUNT, emptySlots, slotIndex, applyPaint, validateAnswer, dayIntervals } from './model.js?v=5';
 const $ = id => document.getElementById(id);
 const serviceReady = !!CONFIG.apiUrl && CONFIG.acceptingResponses !== false;
 const star = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17.3l-5.6 2.9 1.1-6.2L3 9.6l6.2-.9Z"/></svg>';
@@ -35,7 +35,7 @@ function showMessage(text) { $('form-message').textContent = text; $('form-messa
 function visibleDays() { return [0,1,2,3,4]; }
 
 function updateHint() {
-  $('grid-help').textContent = tool === 'best' ? 'Нажмите на час, чтобы добавить звёздочку. Ещё раз — убрать её.' : media.matches ? 'Нажимайте на часы. Листайте сетку обычным движением пальца.' : 'Нажимайте на часы или выделяйте проведением мыши.';
+  $('grid-help').textContent = tool === 'best' ? 'Сначала отметьте доступные часы, затем добавьте звёздочку. Ещё раз — убрать её.' : media.matches ? 'Нажимайте на часы. Листайте сетку обычным движением пальца.' : 'Нажимайте на часы или выделяйте проведением мыши.';
 }
 function renderGrid() {
   const grid = $('time-grid'), days = visibleDays();
@@ -82,7 +82,9 @@ function renderSummary() {
 function paint(index) {
   if (!painting || painting.visited.has(index)) return;
   painting.visited.add(index);
-  dirty = true; slots = applyPaint(slots,index,tool,painting.value); refreshCell(index); renderSummary(); draftSave(); showMessage('');
+  const next = applyPaint(slots,index,tool,painting.value);
+  if (next === slots) return;
+  dirty = true; slots = next; refreshCell(index); renderSummary(); draftSave(); showMessage('');
 }
 function cellAt(x,y) { const cell = document.elementFromPoint(x,y)?.closest('.slot'); return cell && $('time-grid').contains(cell) ? Number(cell.dataset.index) : null; }
 function finishPaint() { if (painting) { painting = null; lastPoint = null; live(`Выбрано часов: ${slots.filter(Boolean).length}.`); } }
