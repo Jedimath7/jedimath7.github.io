@@ -4,10 +4,15 @@
 <link rel="canonical" href="https://bakhadov.ru/studio/">
 <script>
 (() => {
-  const accessCode = window.location.hash;
-  if (/^#[A-Za-z0-9_-]{22}$/.test(accessCode)) {
-    window.location.replace("https://follows-traveller-kit-cartoons.trycloudflare.com/enter/" + accessCode);
+  function openPersonalTrainer() {
+    const accessCode = window.location.hash;
+    if (/^#[A-Za-z0-9_-]{22}$/.test(accessCode)) {
+      window.location.replace("https://follows-traveller-kit-cartoons.trycloudflare.com/enter/" + accessCode);
+    }
   }
+
+  window.addEventListener("hashchange", openPersonalTrainer);
+  openPersonalTrainer();
 })();
 </script>
 <style>
