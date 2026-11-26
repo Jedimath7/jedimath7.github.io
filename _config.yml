@@ -1,0 +1,3 @@
+# The original trainer files are kept in Git. The site publishes the pause page below.
+exclude:
+  - trainers
